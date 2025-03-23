@@ -1,0 +1,47 @@
+@import "../../styles/responsive.scss";
+
+.search-container {
+  display: flex;
+  align-items: center;
+  .search-desktop {
+    display: block;
+    .input-search-component {
+      width: 35vw;
+      border-radius: 62px !important;
+      height: 48px;
+      border: none;
+      background-color: #F0F0F0;
+    }
+    .search-icon {
+        font-size: 20px;
+    }
+  }
+
+  .search-mobile {
+    display: none;
+  }
+
+  @include respond("mobile") {
+    .search-desktop {
+      display: none;
+    }
+
+    .search-mobile {
+      display: block;
+    }
+
+    .search-dropdown {
+      position: absolute;
+      width: 80%;
+      margin: auto;
+      top: 50px;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 5px;
+    }
+  }
+}

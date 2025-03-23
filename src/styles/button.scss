@@ -1,0 +1,85 @@
+@mixin btnDark {
+    background-color: #000000;
+    border-color: #000000 !important;
+    color: #fff;
+    &:hover {
+        color: #fff !important;
+        background-color: #000000 !important;
+    }
+    &:focus {
+        color: #fff !important;
+    }
+}
+
+@mixin btnWhite {
+    background-color: #fff;
+    border-color: #fff !important;
+    color: #000000;
+    &:hover {
+        color: #000000 !important;
+        background-color: #fff !important;
+    }
+    &:focus {
+        color: #000000 !important;
+    }
+}
+
+@mixin btnInfo {
+    background-color: #2196f3;
+    border-color: #2196f3 !important;
+    color: #fff;
+    box-shadow: 0px 10px 20px -10px #2196f3 !important;
+    &:hover {
+      color: #fff !important;
+      background-color: #2196f3d0 !important;
+    }
+  
+    &:focus {
+      color: #fff !important;
+    }
+  }
+
+@mixin btnDark {
+    background-color: #3b3f5c;
+    border-color: #3b3f5c !important;
+    color: #fff;
+    box-shadow: 0px 10px 20px -10px #3b3f5c !important;
+    &:hover {
+      color: #fff !important;
+      background-color: #3b3f5cd0 !important;
+    }
+  
+    &:focus {
+      color: #fff !important;
+    }
+  }
+  
+  @mixin btnDanger {
+    background-color: #e7515a;
+    border-color: #e7515a !important;
+    color: #fff;
+    box-shadow: 0px 10px 20px -10px #e7515a !important;
+    &:hover {
+      color: #fff !important;
+      background-color: #e7515ad0 !important;
+    }
+  
+    &:focus {
+      color: #fff !important;
+    }
+  }
+
+@mixin disabled {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgb(217, 217, 217) !important;
+    color: rgba(0, 0, 0, 0.25);
+    &:hover {
+      color: rgba(0, 0, 0, 0.25) !important;
+      background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+  
+    &:focus {
+      color: rgba(0, 0, 0, 0.25) !important;
+    }
+  }
+  

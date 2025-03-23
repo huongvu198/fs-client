@@ -1,0 +1,271 @@
+@import "../../styles/responsive.scss";
+
+.footer {
+  position: relative;
+  background-color: #f5f5f5;
+  color: #333;
+  margin: 10rem 0;
+}
+
+.footer-content {
+  padding: 10rem 0 0;
+  @include respond("mobile") {
+  }
+}
+
+.footer-container {
+  max-width: 65%;
+  margin: auto;
+  display: flex;
+  justify-content: flex-start;
+  gap: 4rem;
+  @include respond("mobile") {
+    display: block;
+    width: 100%;
+    margin: 0 2rem;
+  }
+}
+
+.news-letter {
+  position: absolute;
+  top: -100px;
+  left: 330px;
+  border-radius: 20px;
+  width: 65%;
+  margin: auto;
+  background-color: #000;
+  padding: 50px 0;
+  color: white;
+  @include respond("mobile") {
+    width: 95%;
+    top: -170px;
+    left: 10px;
+  }
+}
+
+.news-letter-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+
+  @include respond("mobile") {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.news-letter-heading {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+  flex: 1;
+  max-width: 500px;
+
+  @include respond("mobile") {
+    text-align: center;
+    font-size: 28px;
+  }
+}
+
+.news-letter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  max-width: 400px;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+    max-width: 100%;
+  }
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #777;
+}
+
+.email-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 15px 0 45px;
+  border-radius: 50px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.subscribe-button {
+  height: 50px;
+  border-radius: 50px;
+  border: none;
+  background-color: #fff;
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.brand-section {
+  margin-bottom: 40px;
+}
+
+.brand-name {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 0 0 15px;
+}
+
+.brand-description {
+  max-width: 300px;
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.social-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+  }
+}
+
+.link-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  @include respond("mobile") {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.link-column {
+  margin-bottom: 20px;
+  @include respond("mobile") {
+    width: 40%;
+  }
+}
+
+.link-heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 20px;
+}
+
+.link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin-bottom: 12px;
+  }
+
+  a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #000;
+    }
+  }
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  padding: 20px 0;
+  border-top: 1px solid #ddd;
+  width: 65%;
+  margin: auto;
+  @include respond("mobile") {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.footer-bottom-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.copyright {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.payment-methods {
+  height: 24px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .footer-bottom-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

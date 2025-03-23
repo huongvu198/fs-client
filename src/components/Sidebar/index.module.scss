@@ -1,0 +1,57 @@
+@import "../../styles/variables.scss";
+@import "../../styles/responsive.scss";
+
+:global(.sidebar-wrapper) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  transition: transform 0.3s ease-in-out;
+  z-index: 99;
+  background-color: rgba(128, 128, 128, 0.5);
+
+  &.hidden {
+    display: none;
+  }
+
+  :global(.sidebar-component) {
+    height: $min-height-user-layout-pc;
+    background-color: #ffffff;
+    border-inline-end: 1px solid rgba(5, 5, 5, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
+    overflow: auto;
+    box-shadow: $box-shadow !important;
+
+    @include respond("mobile") {
+      height: $min-height-user-layout-sp;
+    }
+
+    :global(.ant-menu-light.ant-menu-root) {
+      border-inline-end: none;
+    }
+
+    :global(.ant-menu-item-selected) {
+      border-radius: 0;
+    }
+
+    :global(li.ant-menu-item.ant-menu-item-selected) {
+      &::before {
+        content: "";
+        width: 2px;
+        height: 100%;
+        background: orange;
+        position: absolute;
+        right: 0;
+        z-index: 9999;
+      }
+    }
+
+    :global(.group-btn-bottom) {
+      border-top: 1px solid rgba(5, 5, 5, 0.06);
+      padding-top: 8px;
+    }
+  }
+}

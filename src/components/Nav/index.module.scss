@@ -1,0 +1,56 @@
+@import "../../styles/responsive.scss";
+
+.nav-wrapper {
+  padding: 10px 0px;
+  top: 0;
+  z-index: 99;
+  background: #ffffff;
+  width: 100%;
+  box-shadow: 0px -1px 0px 0px #f0f0f0 inset;
+  border-bottom: 1px solid #f0f0f0;
+  :global(.nav-component) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 30px;
+    width: 95%;
+    :global(.logo) {
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+      justify-content: center;
+      img {
+        cursor: pointer;
+        max-height: 40px;
+        @media (max-width: 992px) {
+          max-height: 20px;
+        }
+      }
+      :global(.btn-expaned-sp) {
+        display: block;
+        @media (min-width: 992px) {
+          display: none;
+        }
+      }
+      @include respond("tablet") {
+        justify-content: flex-start;
+      }
+    }
+    :global(.right-group-btn) {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      :global(.drop-down-info) {
+        cursor: pointer;
+      }
+      .shopping-cart-component {
+        font-size: 24px;
+        cursor: pointer;
+      }
+    }
+    @include respond("mobile") {
+      gap: 0px;
+      margin: auto;
+    }
+  }
+}

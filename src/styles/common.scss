@@ -1,0 +1,75 @@
+@import "./variables.scss";
+@import "./fonts.scss";
+@import "./button.scss";
+
+html,
+body,
+#root {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  margin: 0;
+  overscroll-behavior: none;
+  background: #fafbfa;
+  color: #000;
+  width: 100%;
+  height: 100vh;
+  .scroll-container {
+    overflow: scroll;
+  }
+
+  .scroll-container {
+    scroll-behavior: smooth;
+  }
+
+  /* This will affect the scrollbar globally */
+  ::-webkit-scrollbar {
+    width: 10px; /* width of the entire scrollbar */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* color of the tracking area */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c0c0c0; /* color of the scroll thumb */
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a6a6a6; /* color of the scroll thumb on hover */
+  }
+}
+
+body {
+  margin: 0;
+}
+.ant-form-item .ant-form-item-label {
+  &
+    > label.ant-form-item-required:not(
+      .ant-form-item-required-mark-optional
+    )::before {
+    position: absolute;
+    top: 2px;
+    right: 0px;
+  }
+}
+
+.modal-message {
+  .ant-modal-confirm-btns {
+    .btn-danger {
+      @include btnDanger;
+    }
+
+    .btn-dark {
+      @include btnDark;
+    }
+
+    .btn-info {
+      @include btnInfo;
+    }
+  }
+}
+
+.ant-btn[disabled] {
+  @include disabled;
+}

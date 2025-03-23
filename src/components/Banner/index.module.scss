@@ -1,0 +1,178 @@
+@import "../../styles/variables.scss";
+@import "../../styles/responsive.scss";
+@import "../../styles/fonts.scss";
+
+.banner-container {
+  display: flex;
+  background-color: #f2f0f1;
+  max-width: 100%;
+  max-height: $min-height-user-layout-pc;
+  margin: 0 auto;
+}
+
+.banner-content-side {
+  flex: 1;
+  padding: 0rem 0rem 0rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  height: $min-height-user-layout-pc;
+}
+
+.banner-title {
+  font-family: "Arial", sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  width: 80%;
+}
+
+.banner-subtitle {
+  font-family: "Arial", sans-serif;
+  font-size: 1rem;
+  line-height: 22px;
+  color: #00000099;
+  margin-bottom: 2rem;
+  max-width: 90%;
+}
+
+.banner-button {
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.3s;
+  margin-bottom: 2.5rem;
+
+  &:hover {
+    background-color: #333;
+  }
+}
+
+.stats-container {
+  margin: 2rem 0;
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  line-height: 100%;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #666;
+}
+
+.image-side {
+  flex: 1;
+  overflow: hidden;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.star-decor1,
+.star-decor2 {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  background-color: transparent;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.star-decor1 {
+  top: 15%;
+  right: 15%;
+  background-color: #000;
+}
+
+.star-decor2 {
+  bottom: 40%;
+  left: 55%;
+  background-color: #000;
+}
+
+@include respond("mobile") {
+  .banner-container {
+    flex-direction: column;
+    max-height: 100%;
+  }
+
+  .banner-content-side {
+    padding: 2rem 1.5rem 0rem 1.5rem;
+  }
+
+  .button-container {
+    text-align: center;
+  }
+
+  .banner-title {
+    font-size: 2rem;
+  }
+
+  .stats-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+  
+
+  .image-side {
+    min-height: 500px;
+  }
+  
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  
+
+  .star-decor1,
+  .star-decor2 {
+    display: none;
+  }
+}

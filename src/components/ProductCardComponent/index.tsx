@@ -5,7 +5,6 @@ import styles from "./index.module.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ButtonComponent from "@components/ButtonComponent";
-import { color } from "motion/react";
 const cx = classNames.bind(styles);
 
 const { Title, Text } = Typography;
@@ -22,7 +21,9 @@ interface Product {
 }
 
 interface ProductProps {
-  title: string;
+  isViewAll: boolean;
+  isSlider: boolean;
+  title?: string;
   products: Product[];
 }
 
@@ -78,7 +79,12 @@ const ProductCardComponent = ({ product }: { product: Product }) => {
   );
 };
 
-const ProductSection = ({ title, products }: ProductProps) => {
+const ProductSection = ({
+  title,
+  products,
+  isViewAll = false,
+  isSlider = false,
+}: ProductProps) => {
   const settings = {
     dots: false,
     infinite: false,
@@ -103,23 +109,40 @@ const ProductSection = ({ title, products }: ProductProps) => {
   };
 
   return (
-    <div className={cx("section")}>
-      <div className={cx("section-header")}>
-        <Title className={cx("section-title")}>
-          {title}
-        </Title>
+    <div
+      className={cx("section")}
+      style={
+        isSlider
+          ? {}
+          : { display: "flex", padding: 0, gap: "0.5rem", justifyContent:"flex-start", flexWrap:"wrap" }
+      }
+    >
+      <div className={cx("section-header")} style={!title ? {display: 'none'}: {}}>
+        <Title className={cx("section-title")}>{title}</Title>
       </div>
-      <Slider {...settings}>
-        {products.map((product) => (
-          <div key={product.id}>
-            <ProductCardComponent product={product} />
-          </div>
-        ))}
-      </Slider>
+      {isSlider ? (
+        <Slider {...settings}>
+          {products.map((product) => (
+            <div key={product.id}>
+              <ProductCardComponent product={product} />
+            </div>
+          ))}
+        </Slider>
+      ) : (
+        <>
+          {products.map((product) => (
+            <div key={product.id}>
+              <ProductCardComponent product={product} />
+            </div>
+          ))}
+        </>
+      )}
       <div className={cx("view-all-container")}>
-        <ButtonComponent className={cx("view-all-button")}>
-          View All
-        </ButtonComponent>
+        {isViewAll && (
+          <ButtonComponent className={cx("view-all-button")}>
+            View All
+          </ButtonComponent>
+        )}
       </div>
     </div>
   );

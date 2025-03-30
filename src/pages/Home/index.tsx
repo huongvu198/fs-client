@@ -66,7 +66,7 @@ const testimonials = [
   },
 ];
 
-const Example = () => {
+const Home = () => {
   const [stats, setStats] = useState(bannerProps.stats);
 
   useEffect(() => {
@@ -84,9 +84,9 @@ const Example = () => {
   return (
     <div>
       <BannerComponent {...bannerProps} stats={stats}/>
-      <ProductSection title="New Arrivals" products={newArrivals} />
+      <ProductSection isSlider={true} isViewAll={true} title="New Arrivals" products={newArrivals} />
       <hr style={{ border: "1px solid #0000001A", width: "75%", margin: "auto" }} />
-      <ProductSection title="Top Selling" products={topSelling} />
+      <ProductSection isSlider={true} isViewAll={true} title="Top Selling" products={topSelling} />
       <StyleBannerComponent />
       <TestimonialsCarousel testimonials={testimonials}/>
       <Footer />
@@ -94,4 +94,4 @@ const Example = () => {
   );
 };
 
-export default Example;
+export default Home;

@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 //import page
 const Home = lazy(() => import("@pages/Home"));
-
+const ListProduct = lazy(() => import("@pages/ListProduct"));
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -14,12 +14,16 @@ const RouteComponent = () => {
           path: "/",
           element: <Home />,
         },
+        {
+          path: "/category",
+          element: <ListProduct />,
+        },
       ],
     },
-  ]);  
-  return <RouterProvider router={router} />
+  ]);
+  return <RouterProvider router={router} />;
 };
 
-const Routers = () => <RouteComponent />
+const Routers = () => <RouteComponent />;
 
 export default Routers;

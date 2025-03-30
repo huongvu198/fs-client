@@ -64,6 +64,11 @@
 
 .section {
   padding: 0rem 15rem;
+  @include respond("mobile") {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .section-header {

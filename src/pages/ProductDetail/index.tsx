@@ -513,10 +513,11 @@ const ProductDetail = () => {
         <Reviews initialReviews={initialReviews} additionalReviews={additionalReviews}/>
         <div className={cx("product-card-container")}>
           <ProductSection
-            isSlider={true}
+            isSlider={false}
             isViewAll={false}
             title="You might also like"
             products={newArrivals}
+            justifyContent="center"
           />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 //import page
 const Home = lazy(() => import("@pages/Home"));
 const ListProduct = lazy(() => import("@pages/ListProduct"));
+const ProductDetail = lazy(() => import("@pages/ProductDetail"))
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ const RouteComponent = () => {
         {
           path: "/category",
           element: <ListProduct />,
+        },
+        {
+          path: "/productDetail",
+          element: <ProductDetail />,
         },
       ],
     },

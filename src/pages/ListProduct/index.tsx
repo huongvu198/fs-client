@@ -11,9 +11,9 @@ import PaginationComponent from "@components/PaginationComponent";
 const cx = classNames.bind(styles);
 
 const breadCrumbItems = [
-  { label: "Category", href: "/category" },
-  { label: "Sub-Category", href: "/category/sub-category" },
-  { label: "Product", href: "/category/sub-category/product" },
+  "Nữ",
+  "Áo",
+  "Áo Thun"
 ];
 
 const menuItems = [
@@ -82,7 +82,7 @@ const handleChange = (page: number, pageSize?: number) => {
   console.log(`Page changed to: ${page}, Page size: ${pageSize}`);
 };
 
-const Home = () => {
+const ListProduct = () => {
   const location = useLocation();
   const selectedKey = getSelectedKey(location.pathname);
   return (
@@ -113,4 +113,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ListProduct;

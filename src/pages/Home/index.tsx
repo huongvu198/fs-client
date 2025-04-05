@@ -84,9 +84,9 @@ const Home = () => {
   return (
     <div>
       <BannerComponent {...bannerProps} stats={stats}/>
-      <ProductSection isSlider={true} isViewAll={true} title="New Arrivals" products={newArrivals} />
+      <ProductSection justifyContent="center" isSlider={true} isViewAll={true} title="New Arrivals" products={newArrivals} />
       <hr style={{ border: "1px solid #0000001A", width: "75%", margin: "auto" }} />
-      <ProductSection isSlider={true} isViewAll={true} title="Top Selling" products={topSelling} />
+      <ProductSection justifyContent="center" isSlider={true} isViewAll={true} title="Top Selling" products={topSelling} />
       <StyleBannerComponent />
       <TestimonialsCarousel testimonials={testimonials}/>
       <Footer />

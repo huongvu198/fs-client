@@ -100,7 +100,7 @@ const ListProduct = () => {
           <div className={cx("content-container")}>
             <h1>Category Name</h1>
             <div className={cx("product-card-container")}> 
-                <ProductSection isViewAll={false} isSlider={false} products={listProducts}/>
+                <ProductSection justifyContent="flex-start" isViewAll={false} isSlider={false} products={listProducts}/>
             </div>
             <div className={cx("pagination-container")}>
               <PaginationComponent pageSize={5} onPageChange={handleChange} totalItems={listProducts.length}/>

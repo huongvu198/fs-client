@@ -23,6 +23,7 @@ interface Product {
 interface ProductProps {
   isViewAll: boolean;
   isSlider: boolean;
+  justifyContent: string;
   title?: string;
   products: Product[];
 }
@@ -84,6 +85,7 @@ const ProductSection = ({
   products,
   isViewAll = false,
   isSlider = false,
+  justifyContent
 }: ProductProps) => {
   const settings = {
     dots: false,
@@ -109,42 +111,53 @@ const ProductSection = ({
   };
 
   return (
-    <div
-      className={cx("section")}
-      style={
-        isSlider
-          ? {}
-          : { display: "flex", padding: 0, gap: "0.5rem", justifyContent:"flex-start", flexWrap:"wrap" }
-      }
-    >
-      <div className={cx("section-header")} style={!title ? {display: 'none'}: {}}>
+    <>
+      <div
+        className={cx("section-header")}
+        style={!title ? { display: "none" } : {}}
+      >
         <Title className={cx("section-title")}>{title}</Title>
       </div>
-      {isSlider ? (
-        <Slider {...settings}>
-          {products.map((product) => (
-            <div key={product.id}>
-              <ProductCardComponent product={product} />
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        <>
-          {products.map((product) => (
-            <div key={product.id}>
-              <ProductCardComponent product={product} />
-            </div>
-          ))}
-        </>
-      )}
-      <div className={cx("view-all-container")}>
-        {isViewAll && (
-          <ButtonComponent className={cx("view-all-button")}>
-            View All
-          </ButtonComponent>
+      <div
+        className={cx("section")}
+        style={
+          isSlider
+            ? {}
+            : {
+                display: "flex",
+                padding: 0,
+                gap: "0.5rem",
+                justifyContent: justifyContent,
+                flexWrap: "wrap",
+              }
+        }
+      >
+        {isSlider ? (
+          <Slider {...settings}>
+            {products.map((product) => (
+              <div key={product.id}>
+                <ProductCardComponent product={product} />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <>
+            {products.map((product) => (
+              <div key={product.id}>
+                <ProductCardComponent product={product} />
+              </div>
+            ))}
+          </>
         )}
+        <div className={cx("view-all-container")}>
+          {isViewAll && (
+            <ButtonComponent className={cx("view-all-button")}>
+              View All
+            </ButtonComponent>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

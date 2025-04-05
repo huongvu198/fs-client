@@ -1,0 +1,128 @@
+.cart-container {
+    display: inline-block;
+  }
+  
+  .cart-button {
+    font-size: 24px;
+    padding: 0;
+    height: auto;
+    
+    svg {
+      font-size: 24px;
+    }
+  }
+  
+  .drawer-title {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .cart-content {
+    margin-bottom: 20px;
+  }
+  
+  .cart-item {
+    display: flex;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .product-image {
+    width: 70px;
+    margin-right: 12px;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  .product-details {
+    flex: 1;
+    
+    h4 {
+      margin: 0 0 4px;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+  }
+  
+  .product-meta {
+    color: #777;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .quantity-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .quantity-input {
+    width: 100px;
+  }
+  
+  .cart-price {
+    font-weight: 500;
+    color: #cf1322;
+  }
+  
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  
+  .cart-total-price {
+    font-weight: bold;
+    color: #cf1322;
+    font-size: 18px;
+  }
+  
+  .drawer-footer {
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .view-cart-button {
+    background-color: black !important;
+    color: white !important;
+    width: 210px;
+    height: 52px;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 3.875rem;
+    &:hover,
+    &:focus {
+      background-color: white !important;
+      color: black !important;
+    }
+  }
+  
+  .login-button {
+    background-color: white !important;
+    color: black !important;
+    width: 210px;
+    height: 52px;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 3.875rem;
+    &:hover,
+    &:focus {
+      background-color: darken(black, 10%) !important;
+      color: white !important;
+    }
+  }

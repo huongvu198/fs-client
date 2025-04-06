@@ -198,5 +198,10 @@
     background-color: #333;
     border-color: #333;
   }
-  
+}
+
+.product-card-container {
+  @include respond("mobile") {
+      padding-bottom: 20px; 
+  }
 }

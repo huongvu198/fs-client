@@ -2,7 +2,7 @@ import Sidebar from "@components/Sidebar";
 import classNames from "classnames/bind";
 import { Outlet } from "react-router-dom";
 import styles from "./index.module.scss";
-import { Suspense, useEffect, useLayoutEffect, useState } from "react";
+import { Suspense, useLayoutEffect, useRef, useState } from "react";
 import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
 import { useWindowSize } from "@hooks/useWindowSize";
@@ -12,12 +12,15 @@ const cx = classNames.bind(styles);
 
 const ExampleLayout = () => {
   const [isOpenSideBar, setIsOpenSideBar] = useState(true);
+  const sidebarRef = useRef<any>(null);
   const resize = useWindowSize();
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
+    sidebarRef.current?.showDrawer();
   };
   const handleHiddenSideBar = () => {
     setIsOpenSideBar(false);
+    sidebarRef.current?.closeDrawer();
   };
 
   useLayoutEffect(() => {
@@ -28,13 +31,12 @@ const ExampleLayout = () => {
   return (
     <div>
       <Nav
-        isOpenSideBar={isOpenSideBar}
         handleHiddenSideBar={handleHiddenSideBar}
         handleShowSideBar={handleShowSideBar}
       />
       <div className={cx("example-layout")}>
-        <Sidebar isOpenSidebar={isOpenSideBar} setIsOpenSidebar={handleHiddenSideBar}/>
-        <div className='body-layout'>
+        <Sidebar ref={sidebarRef}/>
+        <div className="body-layout">
           <Suspense fallback={<Spinner />}>
             <Outlet />
           </Suspense>

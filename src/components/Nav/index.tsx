@@ -19,7 +19,6 @@ import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useState } from "react";
 interface Props {
-  isOpenSideBar: boolean;
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
 }
@@ -69,12 +68,9 @@ const notifications = [
   { id: 3, message: "Sản phẩm yêu thích của bạn đã có hàng!" },
 ];
 
-
 const cx = classNames.bind(styles);
 
 export default function Nav({
-  isOpenSideBar,
-  handleHiddenSideBar,
   handleShowSideBar,
 }: Props) {
   const navigate = useNavigate();
@@ -87,7 +83,8 @@ export default function Nav({
       size: "M",
       price: 145,
       quantity: 1,
-      image: "https://s3-alpha-sig.figma.com/img/f04a/017d/b094f9a20c2328f54a31b153619784f3?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tYJyKcr6xdA9nfd6RDxQEkku5PtvQ44DC1rA7dwrW3GUl-EpC9McVqRsKjiVovY6m1etnJGPlnYUsjSQl6K7CfxNHuKgsP~vDCLIDwkVtoPcOZwS3u7dpuwq8RvZhyTRBl5jumVhqOaXtmr4B2RIA0zhqvkIt3RmW8GH7bbVr06U9KfEmRLiQSeOwX2JEjpdLlCY-~3IUer-kxqkJ3ZmHhgFv86mrEZV4C-NK~Ni0lOrKW0YDgHi3Qh4MiBRsudicoCN1p-HJbjvqrreGpZ59Ziazrwqmpv7-rgiW67DqXP9~VMlYUWPd77TN0bTH-IIKWj4N4uexf5eto-xVaWHZA__",
+      image:
+        "https://s3-alpha-sig.figma.com/img/f04a/017d/b094f9a20c2328f54a31b153619784f3?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tYJyKcr6xdA9nfd6RDxQEkku5PtvQ44DC1rA7dwrW3GUl-EpC9McVqRsKjiVovY6m1etnJGPlnYUsjSQl6K7CfxNHuKgsP~vDCLIDwkVtoPcOZwS3u7dpuwq8RvZhyTRBl5jumVhqOaXtmr4B2RIA0zhqvkIt3RmW8GH7bbVr06U9KfEmRLiQSeOwX2JEjpdLlCY-~3IUer-kxqkJ3ZmHhgFv86mrEZV4C-NK~Ni0lOrKW0YDgHi3Qh4MiBRsudicoCN1p-HJbjvqrreGpZ59Ziazrwqmpv7-rgiW67DqXP9~VMlYUWPd77TN0bTH-IIKWj4N4uexf5eto-xVaWHZA__",
     },
   ]);
 
@@ -106,17 +103,10 @@ export default function Nav({
     <div className={cx(styles["nav-wrapper"])}>
       <div className="nav-component">
         <div className="logo">
-          {isOpenSideBar ? (
-            <CloseOutlined
-              className="btn-expaned-sp"
-              onClick={handleHiddenSideBar}
-            />
-          ) : (
-            <MenuOutlined
-              className="btn-expaned-sp"
-              onClick={handleShowSideBar}
-            />
-          )}
+          <MenuOutlined
+            className="btn-expaned-sp"
+            onClick={handleShowSideBar}
+          />
           <img src="https://cdn0424.cdn4s.com/media/bai%20viet/logo-social.png" />
         </div>
         <CategoryWithDropdownComponent />
@@ -136,7 +126,7 @@ export default function Nav({
           </Space>
           <Dropdown
             className="drop-down-info"
-            menu={{ items: [] }}
+            menu={{ items }}
             trigger={["click"]}
           >
             <Space>

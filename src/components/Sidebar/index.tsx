@@ -1,98 +1,205 @@
-  import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-  import Spinner from "@components/Spinner";
-  import {
-    BREAKPOINT_SCREEN,
-    DATA_SIDEBAR,
-    ICONS_NAV,
-    WIDTH_SIDE_BAR_PC,
-    WIDTH_SIDE_BAR_SP,
-  } from "@constants/const";
-  import { Button, Menu, type MenuProps } from "antd";
-  import classNames from "classnames/bind";
-  import { useEffect, useRef, useState } from "react";
-  import { useLocation, useNavigate } from "react-router-dom";
-  import styles from "./index.module.scss";
+import {
+  CloseOutlined,
+  CustomerServiceOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
-  const cx = classNames.bind(styles);
-  type MenuItem = Required<MenuProps>["items"][number];
-  interface Props {
-    isOpenSidebar: boolean;
-    setIsOpenSidebar: (isOpen: boolean) => void | undefined;
-  }
+import { Button, Drawer } from "antd";
+import classNames from "classnames/bind";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import styles from "./index.module.scss";
 
-  const renderIcon = (iconName: string) => ICONS_NAV[iconName] || null;
-  const Sidebar = ({ isOpenSidebar, setIsOpenSidebar }: Props) => {
-    const sidebarRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [collapsed, setCollapsed] = useState(false);
-    const [items, setItems] = useState<MenuItem[]>([]);
-    const onClick: MenuProps["onClick"] = (e) => {
-      navigate(e.key);
-    };
+const cx = classNames.bind(styles);
+interface MenuItem {
+  key: string;
+  label: string;
+  children?: MenuItem[];
+  type?: "highlight" | "normal";
+  expanded?: boolean;
+}
 
-    const dataSidebar = DATA_SIDEBAR;
-    const toggleCollapsed = () => {
-      setIsOpenSidebar(false);
-    };
+export interface SidebarRef {
+  showDrawer: () => void;
+  closeDrawer: () => void;
+}
 
-    useEffect(() => {
-      if (window.innerWidth < BREAKPOINT_SCREEN.lg) {
-        setIsOpenSidebar(false);
-      }
-    }, []);
+const Sidebar = forwardRef<SidebarRef>((props, ref) => {
+  const [visible, setVisible] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+    {
+      key: "women",
+      label: "Nữ",
+      expanded: false,
+      children: [
+        { key: "women-tops", label: "Áo" },
+        { key: "women-bottoms", label: "Quần" },
+        { key: "women-dresses", label: "Váy đầm" },
+      ],
+    },
+    {
+      key: "men",
+      label: "Nam",
+      expanded: true,
+      children: [
+        { key: "men-tops", label: "Áo" },
+        { key: "men-bottoms", label: "Quần" },
+        { key: "men-accessories", label: "Phụ kiện" },
+      ],
+    },
+    {
+      key: "new-arrival",
+      label: "NEW ARRIVAL",
+      type: "highlight",
+    },
+    {
+      key: "tops",
+      label: "ÁO",
+      expanded: false,
+      children: [
+        { key: "tops-tshirts", label: "Áo phông" },
+        { key: "tops-shirts", label: "Áo sơ mi" },
+        { key: "tops-sweaters", label: "Áo len" },
+      ],
+    },
+    {
+      key: "sale",
+      label: "Săn DEAL giá cuối từ 200k",
+      type: "highlight",
+    },
+    {
+      key: "men-pants",
+      label: "QUẦN NAM",
+      expanded: false,
+      children: [
+        { key: "men-pants-jeans", label: "Quần jeans" },
+        { key: "men-pants-shorts", label: "Quần short" },
+        { key: "men-pants-khakis", label: "Quần kaki" },
+      ],
+    },
+    {
+      key: "super-deal",
+      label: "SIÊU DEAL T4 - Sale upto 70%",
+      type: "highlight",
+      expanded: false,
+      children: [
+        { key: "super-deal-men", label: "Thời trang nam" },
+        { key: "super-deal-women", label: "Thời trang nữ" },
+      ],
+    },
+    {
+      key: "accessories",
+      label: "Bộ sưu tập",
+      expanded: false,
+      children: [
+        { key: "accessories-summer", label: "Bộ sưu tập hè" },
+        { key: "accessories-winter", label: "Bộ sưu tập đông" },
+      ],
+    },
+    {
+      key: "lifestyle",
+      label: "LIFESTYLE",
+    },
+    {
+      key: "about",
+      label: "Về Chúng Tôi",
+      expanded: false,
+      children: [
+        { key: "about-story", label: "Câu chuyện thương hiệu" },
+        { key: "about-stores", label: "Cửa hàng" },
+        { key: "about-contact", label: "Liên hệ" },
+      ],
+    },
+  ]);
+  const showDrawer = () => setVisible(true);
+  const closeDrawer = () => setVisible(false);
 
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (!sidebarRef.current?.contains(e.target as Node))
-          setIsOpenSidebar(false);
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    useEffect(() => {
-      if (dataSidebar) {
-        const convertMenu = dataSidebar.map((menu) => ({
-          key: menu.slug,
-          label: menu.label,
-        }));
-        setItems(convertMenu);
-      }
-    }, [dataSidebar]);
-
-
-    return (
-      <div
-        className={cx("sidebar-wrapper", { hidden: !isOpenSidebar })}
-      >
-        <Spinner isLoading={false}>
-          <div
-            ref={sidebarRef}
-            className={`sidebar-component`}
-            style={{ width: collapsed ? WIDTH_SIDE_BAR_SP : WIDTH_SIDE_BAR_PC }}
-          >
-            <Menu
-              onClick={onClick}
-              defaultSelectedKeys={[location.pathname]}
-              mode="inline"
-              items={items}
-              inlineCollapsed={collapsed}
-            />
-            <div className="group-btn-bottom">
-              <Button
-                type="text"
-                onClick={toggleCollapsed}
-                style={{ marginBottom: 8 }}
-              >
-                {<MenuFoldOutlined />}
-              </Button>
-            </div>
-          </div>
-        </Spinner>
-      </div>
+  const toggleExpand = (key: string) => {
+    setMenuItems((prevItems) =>
+      prevItems.map((item) =>
+        item.key === key ? { ...item, expanded: !item.expanded } : item
+      )
     );
   };
 
-  export default Sidebar;
+  useImperativeHandle(ref, () => ({
+    showDrawer,
+    closeDrawer,
+  }));
+
+  const renderMenu = () => {
+    return menuItems.map((item) => {
+      const hasChildren = item.children && item.children.length > 0;
+
+      return (
+        <div key={item.key} className={cx("menu-item")}>
+          <div
+            className={`${cx("menu-header")} ${item.type === "highlight" ? cx("menu-hightlight") : ""}`}
+          >
+            <p className={cx("menu-label")}>{item.label}</p>
+            {hasChildren && (
+              <Button
+                type="text"
+                icon={item.expanded ? <MinusOutlined /> : <PlusOutlined />}
+                onClick={() => toggleExpand(item.key)}
+                className={cx("expand-button")}
+              />
+            )}
+          </div>
+
+          {hasChildren && item.expanded && (
+            <div className={cx("sub-menu")}>
+              {item.children?.map((child) => (
+                <div key={child.key} className={cx("sub-menu-item")}>
+                  {child.label}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className={cx("navigation-container")}>
+      <Drawer
+        title={null}
+        placement="left"
+        closable={true}
+        onClose={closeDrawer}
+        open={visible}
+        closeIcon={<CloseOutlined className={cx("close-icon")} />}
+        width={300}
+        className={cx("navigation-drawer")}
+      >
+        <div className={cx("login-button")}>
+          <Button type="primary" block>
+            Đăng nhập
+          </Button>
+        </div>
+
+        <div className={cx("menu-container")}>{renderMenu()}</div>
+
+        <div className={cx("tab-bar")}>
+          <div className={cx("tab-item")}>
+            <SearchOutlined />
+            <span>Tìm kiếm</span>
+          </div>
+          <div className={cx("tab-item")}>
+            <UserOutlined />
+            <span>Đăng nhập</span>
+          </div>
+          <div className={cx("tab-item")}>
+            <CustomerServiceOutlined />
+            <span>Trợ giúp</span>
+          </div>
+        </div>
+      </Drawer>
+    </div>
+  );
+});
+
+export default Sidebar;

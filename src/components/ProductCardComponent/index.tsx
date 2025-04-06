@@ -21,8 +21,8 @@ interface Product {
 }
 
 interface ProductProps {
-  isViewAll: boolean;
-  isSlider: boolean;
+  isViewAll?: boolean;
+  isSlider?: boolean;
   justifyContent: string;
   title?: string;
   products: Product[];
@@ -101,7 +101,7 @@ const ProductSection = ({
       },
       {
         breakpoint: 768,
-        settings: { slidesToShow: 2 },
+        settings: { slidesToShow: 1 },
       },
       {
         breakpoint: 480,

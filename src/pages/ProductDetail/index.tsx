@@ -182,97 +182,108 @@ const newArrivals = [
 
 const initialReviews = [
   {
-    id: '1',
-    author: 'Samantha D.',
+    id: "1",
+    author: "Samantha D.",
     rating: 4.5,
     verified: true,
-    content: "I absolutely love this t-shirt! The design is unique and the fabric feels so comfortable. As a fellow designer, I appreciate the attention to detail. It's become my favorite go-to shirt.",
-    date: 'August 14, 2023'
+    content:
+      "I absolutely love this t-shirt! The design is unique and the fabric feels so comfortable. As a fellow designer, I appreciate the attention to detail. It's become my favorite go-to shirt.",
+    date: "August 14, 2023",
   },
   {
-    id: '2',
-    author: 'Alex M.',
+    id: "2",
+    author: "Alex M.",
     rating: 5,
     verified: true,
-    content: "This shirt exceeded my expectations! The colors are vibrant and the print quality is top-notch. Being a UI/UX designer myself, I'm quite picky about aesthetics, and this t-shirt definitely gets a thumbs up from me.",
-    date: 'August 15, 2023'
+    content:
+      "This shirt exceeded my expectations! The colors are vibrant and the print quality is top-notch. Being a UI/UX designer myself, I'm quite picky about aesthetics, and this t-shirt definitely gets a thumbs up from me.",
+    date: "August 15, 2023",
   },
   {
-    id: '3',
-    author: 'Ethan R.',
+    id: "3",
+    author: "Ethan R.",
     rating: 3.5,
     verified: true,
-    content: "This t-shirt is a must-have for anyone who appreciates good design. The minimalistic yet stylish pattern caught my eye, and the fit is perfect. I can see the designer\'s touch in every aspect of this shirt.",
-    date: 'August 16, 2023'
+    content:
+      "This t-shirt is a must-have for anyone who appreciates good design. The minimalistic yet stylish pattern caught my eye, and the fit is perfect. I can see the designer\'s touch in every aspect of this shirt.",
+    date: "August 16, 2023",
   },
   {
-    id: '4',
-    author: 'Olivia P.',
+    id: "4",
+    author: "Olivia P.",
     rating: 5,
     verified: true,
-    content: "As a UI/UX enthusiast, I value simplicity and functionality. This t-shirt not only represents those principles but also feels great to wear. It\'s evident that the designer poured their creativity into making this t-shirt stand out.",
-    date: 'August 17, 2023'
+    content:
+      "As a UI/UX enthusiast, I value simplicity and functionality. This t-shirt not only represents those principles but also feels great to wear. It\'s evident that the designer poured their creativity into making this t-shirt stand out.",
+    date: "August 17, 2023",
   },
   {
-    id: '5',
-    author: 'Liam K.',
+    id: "5",
+    author: "Liam K.",
     rating: 4,
     verified: true,
-    content: "This t-shirt is a fusion of comfort and creativity. The fabric is soft, and the design speaks volumes about the designer\'s skill. It\'s like wearing a piece of art that reflects my passion for both design and fashion.",
-    date: 'August 18, 2023',
-    highlighted: true
+    content:
+      "This t-shirt is a fusion of comfort and creativity. The fabric is soft, and the design speaks volumes about the designer\'s skill. It\'s like wearing a piece of art that reflects my passion for both design and fashion.",
+    date: "August 18, 2023",
+    highlighted: true,
   },
   {
-    id: '6',
-    author: 'Ava H.',
+    id: "6",
+    author: "Ava H.",
     rating: 4.5,
     verified: true,
-    content: "I\'m not just wearing a t-shirt; I\'m wearing a piece of design philosophy. The intricate details and thoughtful layout of the design make this shirt a conversation starter.",
-    date: 'August 19, 2023'
-  }
+    content:
+      "I\'m not just wearing a t-shirt; I\'m wearing a piece of design philosophy. The intricate details and thoughtful layout of the design make this shirt a conversation starter.",
+    date: "August 19, 2023",
+  },
 ];
 
 const additionalReviews = [
   {
-    id: '7',
-    author: 'Noah J.',
+    id: "7",
+    author: "Noah J.",
     rating: 5,
     verified: true,
-    content: "The attention to detail on this shirt is remarkable. The fabric quality is exceptional, and the design is both trendy and timeless. Definitely worth every penny!",
-    date: 'August 20, 2023'
+    content:
+      "The attention to detail on this shirt is remarkable. The fabric quality is exceptional, and the design is both trendy and timeless. Definitely worth every penny!",
+    date: "August 20, 2023",
   },
   {
-    id: '8',
-    author: 'Emma T.',
+    id: "8",
+    author: "Emma T.",
     rating: 4,
     verified: true,
-    content: "I've received so many compliments wearing this t-shirt. The design is unique and the fabric is incredibly soft. It's become my go-to shirt for both casual and semi-formal occasions.",
-    date: 'August 21, 2023'
+    content:
+      "I've received so many compliments wearing this t-shirt. The design is unique and the fabric is incredibly soft. It's become my go-to shirt for both casual and semi-formal occasions.",
+    date: "August 21, 2023",
   },
   {
-    id: '9',
-    author: 'Jackson B.',
+    id: "9",
+    author: "Jackson B.",
     rating: 3.5,
     verified: false,
-    content: "Overall good quality and design. The fit is slightly larger than expected, but the material feels premium. The print has held up well after several washes.",
-    date: 'August 22, 2023'
+    content:
+      "Overall good quality and design. The fit is slightly larger than expected, but the material feels premium. The print has held up well after several washes.",
+    date: "August 22, 2023",
   },
   {
-    id: '10',
-    author: 'Sophia C.',
+    id: "10",
+    author: "Sophia C.",
     rating: 5,
     verified: true,
-    content: "This t-shirt perfectly balances style and comfort. The design is subtle yet distinctive, making it versatile for various occasions. I'm already planning to buy it in other colors!",
-    date: 'August 23, 2023'
+    content:
+      "This t-shirt perfectly balances style and comfort. The design is subtle yet distinctive, making it versatile for various occasions. I'm already planning to buy it in other colors!",
+    date: "August 23, 2023",
   },
   {
-    id: '11',
-    author: 'Lucas P.',
+    id: "11",
+    author: "Lucas P.",
     rating: 4.5,
     verified: true,
-    content: "As someone who values both aesthetics and functionality, I'm impressed with this t-shirt. The fabric breathes well during workouts, and the design maintains its vibrancy even after multiple washes.",
-    date: 'August 24, 2023'
-  }
+    content:
+      "As someone who values both aesthetics and functionality, I'm impressed with this t-shirt. The fabric breathes well during workouts, and the design maintains its vibrancy even after multiple washes.",
+    date: "August 24, 2023",
+  },
 ];
 
 const ProductDetail = () => {
@@ -384,6 +395,7 @@ const ProductDetail = () => {
       totalPrice: currentPrice * quantity,
       image: mainImage,
     };
+    console.log("🚀 ~ handleAddToCart ~ cartDetail:", cartDetail)
   };
 
   const breadCrumbItems = [
@@ -510,7 +522,10 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <Reviews initialReviews={initialReviews} additionalReviews={additionalReviews}/>
+        <Reviews
+          initialReviews={initialReviews}
+          additionalReviews={additionalReviews}
+        />
         <div className={cx("product-card-container")}>
           <ProductSection
             isSlider={true}

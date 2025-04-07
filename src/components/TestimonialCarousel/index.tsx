@@ -4,7 +4,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
-import { ArrowLeftOutlined, ArrowRightOutlined, CheckCircleFilled } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  CheckCircleFilled,
+} from "@ant-design/icons";
 
 const cx = classNames.bind(styles);
 
@@ -65,8 +69,8 @@ const TestimonialsCarousel = ({ testimonials }: Props) => {
       <div className={cx("testimonials-header")}>
         <h2 className={cx("testimonials-heading")}>OUR HAPPY CUSTOMERS</h2>
         <div className={cx("navigate-button")}>
-        <ArrowLeftOutlined className={cx("nav-button")} onClick={goToPrev}/>
-        <ArrowRightOutlined className={cx("nav-button")} onClick={goToNext}/>
+          <ArrowLeftOutlined className={cx("nav-button")} onClick={goToPrev} />
+          <ArrowRightOutlined className={cx("nav-button")} onClick={goToNext} />
         </div>
       </div>
 
@@ -85,11 +89,13 @@ const TestimonialsCarousel = ({ testimonials }: Props) => {
               <div className={cx("customer-info")}>
                 <span className={cx("customer-name")}>{testimonial.name}</span>
                 {testimonial.verified && (
-                  <CheckCircleFilled style={{ color: "green" }}/>
+                  <CheckCircleFilled style={{ color: "green" }} />
                 )}
               </div>
 
-              <p className={cx("testimonial-text")} color="#52c41a">"{testimonial.text}"</p>
+              <p className={cx("testimonial-text")} color="#52c41a">
+                "{testimonial.text}"
+              </p>
             </div>
           ))}
         </Slider>

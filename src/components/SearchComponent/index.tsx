@@ -1,7 +1,7 @@
 import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 import { Input, Button } from "antd";
 import classNames from "classnames/bind";
-import { KeyboardEventHandler, ReactNode, useState } from "react";
+import { KeyboardEventHandler, useState } from "react";
 import styles from "./index.module.scss";
 
 const cx = classNames.bind(styles);

@@ -16,8 +16,9 @@ module.exports = {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": 0,
     "no-console": ["error", { allow: ["warn"] }],
+    "@typescript-eslint/no-explicit-any": "warn",
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         arrowParens: "always",
         semi: true,

@@ -7,7 +7,7 @@ const Home = lazy(() => import("@pages/Home"));
 const ListProduct = lazy(() => import("@pages/ListProduct"));
 const ProductDetail = lazy(() => import("@pages/ProductDetail"));
 const CartList = lazy(() => import("@pages/CartList"));
-const Login = lazy(() => import("@pages/Login"))
+const Login = lazy(() => import("@pages/Login"));
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {

@@ -35,8 +35,8 @@ interface Context {
   warningModalMessage: (message: Message) => void;
   successModalMessage: (message: Message) => void;
 }
-
 const ContextNoti = createContext<Context>({
+  // eslint-disable-next-line no-unused-vars
   successMessage: (_message) => {},
   errorMessage: (_message) => {},
   warningMessage: (_message) => {},

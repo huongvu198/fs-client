@@ -1,6 +1,6 @@
 // Reviews.tsx
-import React, { useState } from "react";
-import { Button, Select, Rate, Dropdown, Space } from "antd";
+import { useState } from "react";
+import { Button, Select, Rate, Dropdown } from "antd";
 import {
   MoreOutlined,
   FilterOutlined,
@@ -29,7 +29,7 @@ interface ReviewsProps {
 const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
     const [displayedReviews, setDisplayedReviews] = useState<ReviewData[]>(initialReviews);
     const [hasLoadedMore, setHasLoadedMore] = useState(false);
-    const [sortOption, setSortOption] = useState('latest');
+    const [, setSortOption] = useState('latest');
 
   const handleLoadMore = () => {
     if (!hasLoadedMore) {
@@ -40,7 +40,7 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
 
   const handleSortChange = (value: string) => {
     setSortOption(value);
-    let sortedReviews = [...displayedReviews];
+    const sortedReviews = [...displayedReviews];
 
     if (value === "latest") {
       sortedReviews.sort(

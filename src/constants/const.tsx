@@ -19,7 +19,7 @@ export const BAD_REQUEST = 400;
 
 export const WIDTH_SIDE_BAR_PC = 256;
 export const WIDTH_SIDE_BAR_SP = 80;
-
+export const API_BASE_URL = import.meta.env.VITE_BASE_API_URL;
 export const BREAKPOINT_SCREEN = {
   xs: 480,
   sm: 576,
@@ -87,3 +87,10 @@ export const DATA_SIDEBAR = [
     slug: "/newArrival",
   },
 ];
+
+
+export enum VerifyCodeEnum {
+  RESEND_CODE = 'RESEND_CODE',
+  CREATE_ACCOUNT = 'CREATE_ACCOUNT',
+  FORGOT_PASSWORD = 'FORGOT_PASSWORD',
+}

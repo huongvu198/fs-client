@@ -2,7 +2,6 @@ import React from "react";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
-import Footer from "@components/FooterComponent";
 import ButtonComponent from "@components/ButtonComponent";
 
 const cx = classNames.bind(styles);
@@ -103,7 +102,6 @@ const LoginRegistrationForm: React.FC = () => {
           </Col>
         </Row>
       </div>
-      <Footer />
     </>
   );
 };

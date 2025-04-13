@@ -7,6 +7,7 @@ import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
 import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
+import Footer from "@components/FooterComponent";
 
 const cx = classNames.bind(styles);
 
@@ -29,6 +30,7 @@ const ExampleLayout = () => {
     }
   }, [resize]);
   return (
+    <>
     <div>
       <Nav
         handleHiddenSideBar={handleHiddenSideBar}
@@ -43,6 +45,8 @@ const ExampleLayout = () => {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

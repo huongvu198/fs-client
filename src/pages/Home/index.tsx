@@ -1,5 +1,4 @@
 import BannerComponent from "@components/Banner";
-import Footer from "@components/FooterComponent";
 import ProductSection from "@components/ProductCardComponent";
 import StyleBannerComponent from "@components/StyleBannerComponent";
 import TestimonialsCarousel from "@components/TestimonialCarousel";
@@ -190,7 +189,6 @@ const Home = () => {
       />
       <StyleBannerComponent />
       <TestimonialsCarousel testimonials={testimonials} />
-      <Footer />
     </div>
   );
 };

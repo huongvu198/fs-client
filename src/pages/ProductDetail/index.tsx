@@ -7,7 +7,6 @@ import { Button, InputNumber } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import Reviews from "@components/ReviewComponent";
 import ProductSection from "@components/ProductCardComponent";
-import Footer from "@components/FooterComponent";
 
 const cx = classNames.bind(styles);
 interface ProductVariantSize {
@@ -536,7 +535,6 @@ const ProductDetail = () => {
           />
         </div>
       </div>
-      <Footer />
     </>
   );
 };

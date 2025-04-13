@@ -8,6 +8,8 @@ const ListProduct = lazy(() => import("@pages/ListProduct"));
 const ProductDetail = lazy(() => import("@pages/ProductDetail"));
 const CartList = lazy(() => import("@pages/CartList"));
 const Login = lazy(() => import("@pages/Login"));
+const Verify = lazy(() => import("@pages/VerifyEmail"));
+const Register = lazy(() => import("@pages/Register"));
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -32,6 +34,14 @@ const RouteComponent = () => {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/verify",
+          element: <Verify />,
+        },
+        {
+          path: "/register",
+          element: <Register />,
         },
       ],
     },

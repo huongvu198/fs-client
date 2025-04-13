@@ -4,7 +4,7 @@ import axios from "axios";
 import { getAccessToken, removeAccessToken } from "./accessToken";
 
 const request = axios.create({
-  baseURL: import.meta.env.BACKEND_API,
+  baseURL: import.meta.env.VITE_BASE_API_URL,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",

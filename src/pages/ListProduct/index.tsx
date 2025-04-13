@@ -1,4 +1,3 @@
-import Footer from "@components/FooterComponent";
 import BreadcrumbComponent from "@components/BreadCrumbComponent";
 import { useLocation } from "react-router-dom";
 import MenuComponent from "@components/MenuComponent";
@@ -191,7 +190,6 @@ const ListProduct = () => {
           </div>
         </section>
       </div>
-      <Footer />
     </>
   );
 };

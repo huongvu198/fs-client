@@ -10,21 +10,26 @@ interface IProps {
   fontSize?: number;
   children?: JSX.Element;
   isLoading?: boolean;
+  fullscreen?: boolean
 }
 
-const Spinner = ({ fontSize = 24, children, isLoading = true }: IProps) => {
+const Spinner = ({ fontSize = 24, children, isLoading = true, fullscreen }: IProps) => {
   const ref = useRef<HTMLDivElement>(null);
+
+  const spinProps = {
+    spinning: isLoading,
+    indicator: <LoadingOutlined style={{ fontSize: fontSize }} spin />,
+    ...(fullscreen ? { fullscreen: true } : {}),
+  };
 
   return (
     <div className={cx("spiner")} ref={ref}>
-      <Spin
-        spinning={isLoading}
-        indicator={<LoadingOutlined style={{ fontSize: fontSize }} spin />}
-      >
+      <Spin {...spinProps}>
         {children}
       </Spin>
     </div>
   );
 };
+
 
 export default Spinner;

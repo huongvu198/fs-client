@@ -11,7 +11,6 @@ import {
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import BreadcrumbComponent from "@components/BreadCrumbComponent";
-import Footer from "@components/FooterComponent";
 
 const cx = classNames.bind(styles);
 
@@ -217,7 +216,6 @@ const CartList = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

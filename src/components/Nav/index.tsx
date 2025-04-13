@@ -1,5 +1,4 @@
 import {
-  CloseOutlined,
   LoginOutlined,
   MenuOutlined,
   UserOutlined,

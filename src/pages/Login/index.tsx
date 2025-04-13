@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { Row, Col, Form, Input, Button, Checkbox } from "antd";
-import { QrcodeOutlined, KeyOutlined } from "@ant-design/icons";
+import React from "react";
+import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import Footer from "@components/FooterComponent";
@@ -73,11 +72,7 @@ const LoginRegistrationForm: React.FC = () => {
                 </div>
 
                 <Form.Item className={cx("login-submit-item")}>
-                  <ButtonComponent
-                    type="primary"
-                    htmlType="submit"
-                    block
-                  >
+                  <ButtonComponent type="primary" htmlType="submit" block>
                     ĐĂNG NHẬP
                   </ButtonComponent>
                 </Form.Item>
@@ -89,16 +84,19 @@ const LoginRegistrationForm: React.FC = () => {
             <div className={cx("login-form-container")}>
               <h2 className={cx("login-title")}>Khách hàng mới</h2>
               <p className={cx("login-description")}>
-                Nếu bạn chưa có tài khoản, hãy sử dụng tùy chọn
-                này để truy cập biểu mẫu đăng ký.
+                Nếu bạn chưa có tài khoản, hãy sử dụng tùy chọn này để truy cập
+                biểu mẫu đăng ký.
               </p>
               <p className={cx("login-description")}>
-                Bằng cách cung cấp các thông tin chi tiết của bạn, quá
-                trình mua hàng sẽ là một trải nghiệm thú vị và
-                nhanh chóng hơn!
+                Bằng cách cung cấp các thông tin chi tiết của bạn, quá trình mua
+                hàng sẽ là một trải nghiệm thú vị và nhanh chóng hơn!
               </p>
 
-              <ButtonComponent type="primary" className={cx("register-button")} block>
+              <ButtonComponent
+                type="primary"
+                className={cx("register-button")}
+                block
+              >
                 ĐĂNG KÝ
               </ButtonComponent>
             </div>

@@ -11,7 +11,7 @@ import { BREAKPOINT_SCREEN } from "@constants/const";
 const cx = classNames.bind(styles);
 
 const ExampleLayout = () => {
-  const [isOpenSideBar, setIsOpenSideBar] = useState(true);
+  const [, setIsOpenSideBar] = useState(true);
   const sidebarRef = useRef<any>(null);
   const resize = useWindowSize();
   const handleShowSideBar = () => {
@@ -35,7 +35,7 @@ const ExampleLayout = () => {
         handleShowSideBar={handleShowSideBar}
       />
       <div className={cx("example-layout")}>
-        <Sidebar ref={sidebarRef}/>
+        <Sidebar ref={sidebarRef} />
         <div className="body-layout">
           <Suspense fallback={<Spinner />}>
             <Outlet />

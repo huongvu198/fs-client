@@ -10,9 +10,9 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-    errorCode?:string;
-    message?:string;
-    statusCode?:number;
+  errorCode?: string;
+  message?: string;
+  statusCode?: number;
 }
 
 // Register API service
@@ -24,15 +24,12 @@ export const registerService = {
    */
   register: async (userData: RegisterRequest): Promise<RegisterResponse> => {
     try {
-      const response = await axios.post<RegisterResponse>(
-        `${API_BASE_URL}/auth/email/register`,
-        userData
-      );
-  
+      const response = await axios.post<RegisterResponse>(`${API_BASE_URL}/auth/email/register`, userData);
+
       if (response.data.statusCode && response.data.statusCode >= 400) {
         throw new Error(response.data.message || "Registration failed");
       }
-  
+
       return response.data;
     } catch (error: any) {
       if (error.response?.data?.message) {
@@ -40,7 +37,7 @@ export const registerService = {
       }
       throw new Error(error.message || "An error occurred during registration");
     }
-  }
+  },
 };
 
 export default registerService;

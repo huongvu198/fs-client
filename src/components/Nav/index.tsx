@@ -1,8 +1,4 @@
-import {
-  LoginOutlined,
-  MenuOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { LoginOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { removeAccessToken } from "@config/accessToken";
 import { getLocale, setLocale } from "@config/locale";
 import { Language, OPTION_LANGUAGE } from "@constants/const";
@@ -69,10 +65,7 @@ const notifications = [
 
 const cx = classNames.bind(styles);
 
-export default function Nav({
-  handleShowSideBar,
-}: Props) {
-  const navigate = useNavigate();
+export default function Nav({ handleShowSideBar }: Props) {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -86,13 +79,6 @@ export default function Nav({
         "https://s3-alpha-sig.figma.com/img/f04a/017d/b094f9a20c2328f54a31b153619784f3?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tYJyKcr6xdA9nfd6RDxQEkku5PtvQ44DC1rA7dwrW3GUl-EpC9McVqRsKjiVovY6m1etnJGPlnYUsjSQl6K7CfxNHuKgsP~vDCLIDwkVtoPcOZwS3u7dpuwq8RvZhyTRBl5jumVhqOaXtmr4B2RIA0zhqvkIt3RmW8GH7bbVr06U9KfEmRLiQSeOwX2JEjpdLlCY-~3IUer-kxqkJ3ZmHhgFv86mrEZV4C-NK~Ni0lOrKW0YDgHi3Qh4MiBRsudicoCN1p-HJbjvqrreGpZ59Ziazrwqmpv7-rgiW67DqXP9~VMlYUWPd77TN0bTH-IIKWj4N4uexf5eto-xVaWHZA__",
     },
   ]);
-
-  const handleChangeLanguage = (e: Language) => {
-    setLocale(e);
-    changeLanguage(e);
-    navigate(0);
-  };
-  const currentLanguage = getLocale() as Language;
 
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
@@ -132,12 +118,6 @@ export default function Nav({
               <Avatar src="" icon={<UserOutlined />} />
             </Space>
           </Dropdown>
-          <Select
-            defaultValue={currentLanguage}
-            style={{ width: 120 }}
-            onChange={handleChangeLanguage}
-            options={OPTION_LANGUAGE}
-          />
         </div>
       </div>
     </div>

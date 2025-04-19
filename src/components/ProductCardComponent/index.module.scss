@@ -4,12 +4,32 @@
   width: 17rem;
   margin: 0 auto;
   padding: 0.5rem;
+
+  @include respond("mobile") {
+    width: 100%;
+  }
+
+  @include respond("tablet") {
+    width: 14rem;
+  }
+
+  @include respond("laptop") {
+    width: 16rem;
+  }
+
+  @include respond("pc") {
+    width: 17rem;
+  }
 }
 
 .card-image {
-  width: 350px;
-  height: 298px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  object-position: top;
 }
 
 :global(.ant-card-body) {
@@ -23,7 +43,16 @@
 
 .product-card-name {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: block;
+
+  @include respond("mobile") {
+    font-size: 16px;
+  }
 }
 
 .rating-container {
@@ -39,6 +68,8 @@
 .rating-text {
   font-size: 13px;
   color: #888;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .product-card-reviews {
@@ -47,8 +78,12 @@
 }
 
 .product-card-price {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
+
+  @include respond("mobile") {
+    font-size: 20px;
+  }
 }
 
 .product-card-original-price {
@@ -56,7 +91,7 @@
 }
 
 .product-card-discount {
-    background-color: #FF33331A;
+  background-color: #ff33331a;
   color: red;
   padding: 6px 14px;
   border-radius: 62px;
@@ -64,8 +99,22 @@
 
 .section {
   padding: 0rem 15rem;
+
+  @include respond("pc") {
+    padding: 0 12rem;
+  }
+
+  @include respond("laptop") {
+    padding: 0 6rem;
+  }
+
+  @include respond("tablet") {
+    padding: 0 2rem;
+  }
+
   @include respond("mobile") {
     padding: 0 1rem;
+
     .slick-slide {
       display: flex;
       justify-content: center;
@@ -78,6 +127,7 @@
   justify-content: center;
   align-items: center;
   margin: 3rem 0 1rem 0;
+
   @include respond("mobile") {
     text-align: center;
   }
@@ -89,6 +139,10 @@
     "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif !important;
   font-size: 48px !important;
   margin: 0 !important;
+
+  @include respond("mobile") {
+    font-size: 32px !important;
+  }
 }
 
 .view-all-container {
@@ -106,15 +160,16 @@
   width: 200px;
   height: 52px;
   cursor: pointer;
+
   &:hover {
     border: 1px solid black !important;
-    background-color: #000000 !important; 
+    background-color: #000000 !important;
     color: white !important;
   }
 }
 
 :global(.slick-track) {
-    padding: 1rem 0;
+  padding: 1rem 0;
 }
 
 .slick-prev,
@@ -132,8 +187,74 @@
   right: -40px;
 }
 
-@include respond("mobile") {
-  .section {
-    padding: 0;
+// Thêm animation cho overlay
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 298px;
+  overflow: hidden;
+}
+
+.new-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: white;
+  padding: 4px 12px 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:global(.new) {
+    background: #f6931d;
+  }
+
+  &:global(.best-seller) {
+    background: #ac2f33;
+  }
+}
+
+.product-discount-tag {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  color: white;
+  padding: 4px 12px 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #f44336;
+  margin: 8px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  backdrop-filter: blur(2px);
 }

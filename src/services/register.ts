@@ -1,5 +1,5 @@
-import { API_BASE_URL } from "@constants/const";
-import axios from "axios";
+import { unauthAxios } from "@config/axiosConfig";
+import { endPoint } from "./endPoint";
 
 // Define types for API requests and responses
 export interface RegisterRequest {
@@ -24,7 +24,10 @@ export const registerService = {
    */
   register: async (userData: RegisterRequest): Promise<RegisterResponse> => {
     try {
-      const response = await axios.post<RegisterResponse>(`${API_BASE_URL}/auth/email/register`, userData);
+      const response = await unauthAxios.post<RegisterResponse>(
+        endPoint.AUTH.REGISTER,
+        userData
+      );
 
       if (response.data.statusCode && response.data.statusCode >= 400) {
         throw new Error(response.data.message || "Registration failed");

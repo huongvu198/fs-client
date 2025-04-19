@@ -2,9 +2,12 @@ import { FORBIDDEN, UNAUTHORIZED } from "@constants/const";
 import { cleanAndConvertToCamelCase, convertToCamelCase } from "@utils/index";
 import axios from "axios";
 import { getAccessToken, removeAccessToken } from "./accessToken";
+import { config } from "./appConfig";
 
-const request = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API_URL,
+const { baseURL } = config.server;
+
+export const authAxios = axios.create({
+  baseURL,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
@@ -12,32 +15,39 @@ const request = axios.create({
   },
 });
 
-request.interceptors.request.use(
+export const unauthAxios = axios.create({
+  baseURL,
+  timeout: 60000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
+authAxios.interceptors.request.use(
   (config) => {
     const accessToken = getAccessToken();
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    //use METHOD GET
+
     if (config.params) {
       config.params = cleanAndConvertToCamelCase(config.params);
     }
-    //use METHOD POST,PUT,PATCHPATCH
+
     if (config.data) {
       config.data = cleanAndConvertToCamelCase(config.data);
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-request.interceptors.request.use(
+authAxios.interceptors.response.use(
   (response) => {
     response.data = convertToCamelCase(response.data);
-    return response.data;
+    return response;
   },
   (error) => {
     switch (error?.response?.status) {
@@ -49,9 +59,31 @@ request.interceptors.request.use(
         window.location.href = "/forbidden";
         break;
     }
-
     return Promise.reject(error);
   }
 );
 
-export default request;
+unauthAxios.interceptors.request.use(
+  (config) => {
+    if (config.params) {
+      config.params = cleanAndConvertToCamelCase(config.params);
+    }
+
+    if (config.data) {
+      config.data = cleanAndConvertToCamelCase(config.data);
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+unauthAxios.interceptors.response.use(
+  (response) => {
+    response.data = convertToCamelCase(response.data);
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);

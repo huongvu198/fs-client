@@ -1,14 +1,16 @@
-@import '../../styles/responsive.scss';
+@import "../../styles/responsive.scss";
 
 .product-detail-page {
   width: 90%;
   margin: auto;
+  padding: 0 20px;
 }
 
 .product-detail-container {
   display: flex;
   gap: 40px;
   margin-top: 20px;
+  justify-content: center;
   @include respond("mobile") {
     flex-direction: column;
   }
@@ -39,12 +41,12 @@
 
 .product-thumnail {
   width: 100%;
-  height: 167px;
+  height: 150px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-  
+
   &:hover {
     border-color: #bdbdbd;
   }
@@ -65,6 +67,7 @@
   flex-basis: 600px;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
   img {
     width: 100%;
     object-fit: contain;
@@ -139,15 +142,26 @@
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #d9d9d9;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  border: 1px solid gray;
 
-  &:hover { 
+  &:hover {
     transform: scale(1.1);
   }
 
   &.selected {
-    border: 2px solid #000;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+    &::after {
+      content: "✓";
+      position: absolute;
+      color: #fff;
+      font-size: 16px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      font-weight: bold;
+    }
   }
 }
 
@@ -194,14 +208,24 @@
   border-color: #000;
   font-weight: 500;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: #333;
     border-color: #333;
   }
 }
 
 .product-card-container {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 40px 0;
+  background-color: #f5f5f5;
+
   @include respond("mobile") {
-      padding-bottom: 20px; 
+    padding-bottom: 20px;
   }
 }

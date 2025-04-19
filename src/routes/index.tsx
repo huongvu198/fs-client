@@ -1,3 +1,4 @@
+import { ProductDetailPath } from "@config/routerConfig";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -24,7 +25,7 @@ const RouteComponent = () => {
           element: <ListProduct />,
         },
         {
-          path: "/productDetail",
+          path: ProductDetailPath,
           element: <ProductDetail />,
         },
         {

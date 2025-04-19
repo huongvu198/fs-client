@@ -1,5 +1,5 @@
-import axios from "axios";
-import { API_BASE_URL } from "@constants/const";
+import { unauthAxios } from "@config/axiosConfig";
+import { endPoint } from "./endPoint";
 
 export interface VerifyEmailRequest {
   id: string;
@@ -14,10 +14,12 @@ export interface VerifyEmailResponse {
 }
 
 export const verifyService = {
-  verifyEmail: async (userData: VerifyEmailRequest): Promise<VerifyEmailResponse> => {
+  verifyEmail: async (
+    userData: VerifyEmailRequest
+  ): Promise<VerifyEmailResponse> => {
     try {
-      const response = await axios.post<VerifyEmailResponse>(
-        `${API_BASE_URL}/auth/email/verify`,
+      const response = await unauthAxios.post<VerifyEmailResponse>(
+        endPoint.AUTH.VERIFY,
         userData
       );
 

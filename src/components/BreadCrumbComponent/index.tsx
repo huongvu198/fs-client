@@ -2,6 +2,7 @@ import { Breadcrumb } from "antd";
 import type { BreadcrumbProps } from "antd/es/breadcrumb";
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
+import { RightOutlined } from "@ant-design/icons";
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +19,13 @@ const BreadcrumbComponent = ({ items }: CustomBreadcrumbProps) => {
     })),
   ];
 
-  return <Breadcrumb items={breadcrumbItems} separator="-" className={cx("bread-crumb-container")}/>;
+  return (
+    <Breadcrumb
+      items={breadcrumbItems}
+      separator={<RightOutlined />}
+      className={cx("bread-crumb-container")}
+    />
+  );
 };
 
 export default BreadcrumbComponent;

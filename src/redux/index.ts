@@ -1,20 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./counter";
-import registerReducer from './register';
-import verifyReducer from './verify';
+import registerReducer from "./register";
+import verifyReducer from "./verify";
+import productReducer from "./productSlice";
 
 const rootReducer = {
   register: registerReducer,
   counter: counterReducer,
-  verifyEmail: verifyReducer
+  verifyEmail: verifyReducer,
+  product: productReducer,
 };
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => 
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['some-action/with-non-serializable-data'],
+        ignoredActions: ["some-action/with-non-serializable-data"],
       },
     }),
 });

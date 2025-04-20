@@ -3,6 +3,7 @@ import styles from "./index.module.scss";
 import ButtonComponent from "@components/ButtonComponent";
 import { useEffect, useRef } from "react";
 import { animate } from "motion";
+import imageBanner from "../../assets/images/banner.png";
 
 const cx = classNames.bind(styles);
 
@@ -36,9 +37,7 @@ const BannerComponent = ({ title, subTitle, stats, imgSrc }: Props) => {
         <h1 className={cx("banner-title")}>{title}</h1>
         <p className={cx("banner-subtitle")}>{subTitle}</p>
         <div className={cx("button-container")}>
-          <ButtonComponent type="primary">
-            Shop Now
-          </ButtonComponent>
+          <ButtonComponent type="primary">Shop Now</ButtonComponent>
         </div>
 
         <div className={cx("stats-container")}>
@@ -57,7 +56,11 @@ const BannerComponent = ({ title, subTitle, stats, imgSrc }: Props) => {
       </div>
 
       <div className={cx("image-side")}>
-        <img src={imgSrc} alt="Fashion models" className={cx("banner-image")} />
+        <img
+          src={imageBanner}
+          alt="Fashion models"
+          className={cx("banner-image")}
+        />
         <div className={cx("star-decor1")}></div>
         <div className={cx("star-decor2")}></div>
       </div>

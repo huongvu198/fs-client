@@ -6,7 +6,8 @@ import { Provider } from "react-redux";
 import { store } from "./redux";
 import { NotiContext } from "contexts/notiContext";
 import Routers from "./routes";
-import "./locales"
+import "./locales";
+import { IntlProvider } from "react-intl";
 const App = () => {
   const {
     i18n: { changeLanguage },
@@ -26,16 +27,17 @@ const App = () => {
           token: {
             colorPrimary: "#000000",
           },
-          components: {
-          },
+          components: {},
         }}
       >
         <NotiContext api={api} contextHolder={contextHolder}>
-          <Routers />
+          <IntlProvider locale="vi-VN">
+            <Routers />
+          </IntlProvider>
         </NotiContext>
       </ConfigProvider>
     </Provider>
   );
-}
+};
 
 export default App;

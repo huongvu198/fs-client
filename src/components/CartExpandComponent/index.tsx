@@ -1,27 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer, Button, InputNumber, Divider, Badge } from "antd";
 import { ShoppingCartOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
+import { ICartResponse } from "interfaces/cart.interface";
+import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
 
 const cx = classNames.bind(styles);
 
-interface CartItem {
-  id: number;
-  name: string;
-  description: string;
-  color: string;
-  size: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
 interface CartExpandProps {
-  cartItems: CartItem[];
-  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  cartItems: ICartResponse;
+  setCartItems: React.Dispatch<React.SetStateAction<ICartResponse>>;
 }
 
 const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
@@ -37,25 +28,71 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
     setVisible(false);
   };
 
-  const handleQuantityChange = (id: number, value: number | null) => {
+  useEffect(() => {
+    const syncCartFromLocalStorage = () => {
+      if (visible && !hasAccessToken() && !hasLocalAccessToken()) {
+        const storedCart = localStorage.getItem("tempCart");
+        if (storedCart) {
+          try {
+            const parsed = JSON.parse(storedCart);
+            if (
+              JSON.stringify(parsed.items) !== JSON.stringify(cartItems.items)
+            ) {
+              setCartItems(parsed);
+            }
+          } catch (err) {
+            console.error("Giỏ hàng trong localStorage không hợp lệ", err);
+            setCartItems({ id: "", items: [] });
+          }
+        }
+      } else if (hasAccessToken() && hasLocalAccessToken()) {
+        const cartList = localStorage.getItem("cartList");
+        if (cartList) {
+          try {
+            const parsed = JSON.parse(cartList);
+            if (
+              JSON.stringify(parsed.items) !== JSON.stringify(cartItems.items)
+            ) {
+              setCartItems(parsed);
+            }
+          } catch (err) {
+            console.error("Giỏ hàng người dùng không hợp lệ", err);
+            setCartItems({ id: "", items: [] });
+          }
+        }
+      }
+    };
+
+    syncCartFromLocalStorage();
+
+    const interval = setInterval(syncCartFromLocalStorage, 1000);
+
+    return () => clearInterval(interval);
+  }, [visible, cartItems, setCartItems]);
+
+  const handleQuantityChange = (id: string, value: number | null) => {
     if (!value) return;
 
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    setCartItems((prev) => ({
+      ...prev,
+      items: prev.items.map((item) =>
         item.id === id ? { ...item, quantity: value } : item
-      )
-    );
+      ),
+    }));
   };
 
   const getTotalAmount = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+    return cartItems.items.reduce(
+      (total, item) => total + item.product.discountPrice * item.quantity,
       0
     );
   };
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("en-EN") + "$";
+    return price.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
   };
 
   const goToCart = () => {
@@ -70,7 +107,7 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
 
   return (
     <div className={cx("cart-container")}>
-      <Badge count={cartItems.length} size="small">
+      <Badge count={cartItems.items.length} size="small">
         <Button
           type="text"
           icon={<ShoppingCartOutlined />}
@@ -83,7 +120,7 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
       <Drawer
         title={
           <div className={cx("drawer-title")}>
-            Giỏ hàng <Badge count={cartItems.length} />
+            Giỏ hàng <Badge count={cartItems.items.length} />
           </div>
         }
         placement="right"
@@ -102,42 +139,45 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
             >
               XEM GIỎ HÀNG
             </ButtonComponent>
-            <ButtonComponent block onClick={goToLogin} className={cx("login-button")}>
+            <ButtonComponent
+              block
+              onClick={goToLogin}
+              className={cx("login-button")}
+            >
               ĐĂNG NHẬP
             </ButtonComponent>
           </div>
         }
       >
         <div className={cx("cart-content")}>
-          {cartItems.map((item) => (
+          {cartItems.items.map((item) => (
             <div key={item.id} className={cx("cart-item")}>
               <div className={cx("product-image")}>
-                <img src={item.image} alt={item.name} />
+                <img src={item.variant.image} alt={item.product.name} />
               </div>
               <div className={cx("product-details")}>
-                <h4>
-                  {item.name} - {item.description}
-                </h4>
+                <h4>{item.product.name}</h4>
                 <p className={cx("product-meta")}>
-                  Màu sắc: {item.color} &nbsp; Size: {item.size}
+                  Màu sắc: {item.variant.color} &nbsp; Size: {item.size.size}
                 </p>
                 <div className={cx("quantity-control")}>
                   <InputNumber
                     min={1}
-                    max={10}
+                    max={item.size.inventory}
                     value={item.quantity}
                     onChange={(value) => handleQuantityChange(item.id, value)}
                     controls
                     className={cx("quantity-input")}
                   />
                   <span className={cx("cart-price")}>
-                    {formatPrice(item.price)}
+                    {formatPrice(item.product.discountPrice)}
                   </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
         <Divider />
         <div className={cx("cart-total")}>
           <span>Tổng cộng:</span>

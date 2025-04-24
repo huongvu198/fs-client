@@ -19,6 +19,10 @@ import ProductSection from "@components/ProductCardComponent";
 import Reviews from "@components/ReviewComponent";
 import { FormattedNumber } from "react-intl";
 import { ICart } from "interfaces/cart.interface";
+import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
+import useNotification from "@hooks/useNotification";
+import { useReduxSelector } from "@hooks/useRedux";
+import { addToCartApi, resetCartState } from "@redux/cart";
 
 const cx = classNames.bind(styles);
 
@@ -131,22 +135,42 @@ const additionalReviews = [
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch<ApiDispatch>();
+  const { dataCart, loading, error, addToCartSuccess } = useReduxSelector(
+      (state) => state.cart
+    );
   const productData = useSelector(productById);
   const newArrivalsData = useSelector(newArrivals);
   const navigate = useNavigate();
-
   const [selectorColor, setSelectorColor] = useState<string>("");
   const [availableSize, setAvailableSize] = useState<any[]>([]);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [mainImage, setMainImage] = useState<string>("");
-
+  const { successMessage, errorMessage } = useNotification()
   useEffect(() => {
     if (!id) return;
     dispatch(getProductById(id));
     dispatch(getNewArrivals());
   }, [id, dispatch]);
 
+  useEffect(() => {
+    if (addToCartSuccess) {
+      successMessage({
+        description: `Đã thêm sản phẩm vào giỏ hàng!`,
+        title: "Giỏ hàng"
+      });
+      localStorage.setItem("cartList", JSON.stringify(dataCart))
+      dispatch(resetCartState());
+    }
+    if (error) {
+      errorMessage({
+        description: `Thêm giỏ hàng thất bại!`,
+        title: "Giỏ hàng"
+      });
+      dispatch(resetCartState());
+    }
+  }, [addToCartSuccess]);
+  
   useEffect(() => {
     if (!productData) return;
     if (productData) {
@@ -245,16 +269,45 @@ const ProductDetail = () => {
       variantId: selectedColorObj.id,
       sizeId: selectedSizeObj.id,
       quantity: quantity,
+      productName: productData.name,
+      size: selectedSizeObj.label,
+      colorName: selectedColorObj.color,
+      price: currentPrice,
+      image:mainImage
     };
-    console.log("🚀 ~ handleAddToCart ~ cartDetail:", cartDetail);
-  };
-
+    if (hasAccessToken() || hasLocalAccessToken()) {
+      dispatch(addToCartApi({
+        productId: productData.id,
+        variantId: selectedColorObj.id,
+        sizeId: selectedSizeObj.id,
+        quantity: quantity
+      }))
+    } else {
+      const tempCart: ICart[] = JSON.parse(localStorage.getItem("tempCart") || "[]");
+      // check exists cart
+      const existingItemIndex = tempCart.findIndex(
+        (item) =>
+          item.productId === cartDetail.productId &&
+          item.variantId === cartDetail.variantId &&
+          item.sizeId === cartDetail.sizeId
+      );
+      if (existingItemIndex !== -1) {
+        // if have item -> increase quantity
+        tempCart[existingItemIndex].quantity += cartDetail.quantity;
+      } else {
+        // if dont have, create new
+        tempCart.push(cartDetail);
+      }
+      localStorage.setItem("tempCart", JSON.stringify(tempCart));
+      successMessage({description: `Đã thêm sản phẩm vào giở hàng!`, title: "Giỏ hàng"})
+    }
+  };  
+  
   const breadCrumbItems = [
     productData.segment.name,
     productData.segment.category.name,
     productData.segment.category.subCategory.name,
   ];
-
   return (
     <>
       <div className={cx("product-detail-page")}>
@@ -389,6 +442,7 @@ const ProductDetail = () => {
                   className={cx("product-add-cart")}
                   onClick={handleAddToCart}
                   disabled={!selectedSize || !selectorColor}
+                  loading={loading}
                 >
                   Thêm vào giỏ
                 </Button>

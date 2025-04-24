@@ -1,4 +1,11 @@
-import { ProductDetailPath } from "@config/routerConfig";
+import {
+  ProductDetailPath,
+  ProfilePath,
+  UserAddressPath,
+  UserOrders,
+  UserPath,
+  UserVouchers,
+} from "@config/routerConfig";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -11,6 +18,12 @@ const CartList = lazy(() => import("@pages/CartList"));
 const Login = lazy(() => import("@pages/Login"));
 const Verify = lazy(() => import("@pages/VerifyEmail"));
 const Register = lazy(() => import("@pages/Register"));
+const UserPage = lazy(() => import("@pages/User"));
+const ProfilePage = lazy(() => import("@pages/User/Profile"));
+const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
+const AddressPage = lazy(() => import("@pages/User/Address"));
+const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
+
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -31,6 +44,28 @@ const RouteComponent = () => {
         {
           path: "/cartList",
           element: <CartList />,
+        },
+        {
+          path: UserPath,
+          element: <UserPage />,
+          children: [
+            {
+              path: ProfilePath,
+              element: <ProfilePage />,
+            },
+            {
+              path: UserOrders,
+              element: <OrdersHistoryPage />,
+            },
+            {
+              path: UserAddressPath,
+              element: <AddressPage />,
+            },
+            {
+              path: UserVouchers,
+              element: <UserVouchersPage />,
+            },
+          ],
         },
         {
           path: "/login",

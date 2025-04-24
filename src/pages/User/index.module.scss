@@ -1,0 +1,19 @@
+@import "../../styles/responsive.scss";
+
+.user-page {
+  width: 70%;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.user-page-container {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+:global(.ant-menu-light .ant-menu-item-selected) {
+  background-color: #e6f4ff !important;
+  color: #1677ff !important;
+}

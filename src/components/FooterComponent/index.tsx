@@ -15,9 +15,18 @@ import {
   Visa,
 } from "@components/Icon";
 import classNames from "classnames/bind";
+import { useLocation } from "react-router-dom";
+import {
+  ProfilePath,
+  UserOrders,
+  UserAddressPath,
+  UserPath,
+  UserVouchers,
+} from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 const Footer = () => {
+  const location = useLocation();
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,35 +34,47 @@ const Footer = () => {
     setEmail("");
   };
 
+  const hideNewsletterRoutes = [
+    UserPath,
+    ProfilePath,
+    UserOrders,
+    UserAddressPath,
+    UserVouchers,
+  ];
+  const shouldShowNewsletter = !hideNewsletterRoutes.includes(
+    location.pathname
+  );
+
   return (
     <footer className={cx("footer")}>
-      <div className={cx("news-letter")}>
-        <div className={cx("news-letter-content")}>
-          <h2 className={cx("news-letter-heading")}>
-            STAY UPTO DATE ABOUT
-            <br />
-            OUR LATEST OFFERS
-          </h2>
+      {shouldShowNewsletter && (
+        <div className={cx("news-letter")}>
+          <div className={cx("news-letter-content")}>
+            <h2 className={cx("news-letter-heading")}>
+              STAY UPTO DATE ABOUT
+              <br />
+              OUR LATEST OFFERS
+            </h2>
 
-          <form className={cx("news-letter-form")} onSubmit={handleSubmit}>
-            <div className={cx("input-container")}>
-              <MailOutlined className={cx("input-icon")} />
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={cx("email-input")}
-                required
-              />
-            </div>
-            <button type="submit" className={cx("subscribe-button")}>
-              Subscribe to Newsletter
-            </button>
-          </form>
+            <form className={cx("news-letter-form")} onSubmit={handleSubmit}>
+              <div className={cx("input-container")}>
+                <MailOutlined className={cx("input-icon")} />
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={cx("email-input")}
+                  required
+                />
+              </div>
+              <button type="submit" className={cx("subscribe-button")}>
+                Subscribe to Newsletter
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-
+      )}
       {/* Main footer content */}
       <div className={cx("footer-content")}>
         <div className={cx("footer-container")}>

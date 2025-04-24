@@ -1,11 +1,8 @@
 import { LoginOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { removeAccessToken } from "@config/accessToken";
-import { getLocale, setLocale } from "@config/locale";
-import { Language, OPTION_LANGUAGE } from "@constants/const";
-import { Avatar, Dropdown, Select, Space, type MenuProps } from "antd";
+import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { changeLanguage } from "i18next";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "./index.module.scss";
 import useNotification from "@hooks/useNotification";
 import SearchComponent from "@components/SearchComponent";
@@ -13,6 +10,7 @@ import CategoryWithDropdownComponent from "@components/CategoryWithDropdownCompo
 import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useState } from "react";
+import { UserOrders, UserPath } from "@config/routerConfig";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -28,24 +26,18 @@ const Logout = () => {
   return (
     <div onClick={handleLogout}>
       <LoginOutlined style={{ marginRight: "10px" }} />
-      <span>Logout</span>
+      <span>Đăng Xuất</span>
     </div>
   );
 };
 
 const items: MenuProps["items"] = [
   {
-    label: (
-      <a href="https://www.youtube.com/watch?v=5z0u0BfPJ8o&list=RDxJ7EF7XweiA&index=5">
-        Edit Profile
-      </a>
-    ),
+    label: <Link to={UserPath}>Tài khoản của tôi</Link>,
     key: "0",
   },
   {
-    label: (
-      <a href="https://www.youtube.com/watch?v=u1d7MWpBb8M">Change Password</a>
-    ),
+    label: <Link to={UserOrders}>Đơn mua</Link>,
     key: "1",
   },
   {

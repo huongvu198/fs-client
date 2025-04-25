@@ -7,14 +7,6 @@ import { Outlet } from "react-router-dom";
 const { Sider, Content } = Layout;
 
 const cx = classNames.bind(styles);
-const contentStyle: React.CSSProperties = {
-  textAlign: "center",
-  minHeight: 120,
-  lineHeight: "120px",
-  color: "#333", // Dark text color for better readability
-  backgroundColor: "#f4f5f7", // Lighter background to differentiate from sidebar
-  padding: "20px", // Add some padding around the content
-};
 
 const siderStyle: React.CSSProperties = {
   textAlign: "center",
@@ -40,7 +32,7 @@ const UserPage = () => {
               <UserMenu />
             </Sider>
             <Layout>
-              <Content style={contentStyle}>
+              <Content style={{ padding: "20px" }}>
                 <Outlet />
               </Content>
             </Layout>

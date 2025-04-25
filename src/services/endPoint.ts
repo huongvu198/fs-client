@@ -11,9 +11,10 @@ export const endPoint = {
   },
   USER: {
     GET_USER: "/auth/me",
+    UPDATE_PROFILE: "/users/me",
   },
   CART: {
     ADD_TO_CART: "/cart",
-    ADD_TO_CART_IMPORT: "/cart/import"
+    ADD_TO_CART_IMPORT: "/cart/import",
   },
 };

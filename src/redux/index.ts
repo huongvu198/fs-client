@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./counter";
-import registerReducer from "./register";
-import verifyReducer from "./verify";
+import registerReducer from "./registerSlice";
+import verifyReducer from "./verifySlice";
 import productReducer from "./productSlice";
-import loginReducer from "./login";
-import getUserReducer from "./user";
-import getCartReducer from "./cart";
+import loginReducer from "./loginSlice";
+import userReducer from "./userSlice";
+import getCartReducer from "./cartSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -13,8 +13,8 @@ const rootReducer = {
   verifyEmail: verifyReducer,
   product: productReducer,
   login: loginReducer,
-  getUser: getUserReducer,
-  cart: getCartReducer
+  user: userReducer,
+  cart: getCartReducer,
 };
 
 export const store = configureStore({

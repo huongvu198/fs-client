@@ -49,7 +49,7 @@ const RouteComponent = () => {
       ],
     },
     {
-      element: <AuthLayout />,
+      element: <PublicLayout />,
       children: [
         {
           path: UserPath,

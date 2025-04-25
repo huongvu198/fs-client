@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { VerifyCodeEnum } from "@constants/const";
 import useNotification from "@hooks/useNotification";
-import { verifyEmail } from "@redux/verify";
+import { verifyEmail } from "@redux/verifySlice";
 
 const cx = classNames.bind(styles);
 
@@ -76,11 +76,10 @@ const VerifyEmail: React.FC = () => {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 2000);
-  
+
       return () => clearTimeout(timer);
     }
   }, [verifysuccess]);
-  
 
   useEffect(() => {
     if (error) {

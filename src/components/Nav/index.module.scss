@@ -47,6 +47,9 @@
         font-size: 24px;
         cursor: pointer;
       }
+      .button-login {
+        border-radius: 50px !important;
+      }
     }
     @include respond("mobile") {
       gap: 0px;

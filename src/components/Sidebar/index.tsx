@@ -27,7 +27,6 @@ export interface SidebarRef {
 }
 
 const Sidebar = forwardRef<SidebarRef>((props, ref) => {
-  console.log(props);
   const [visible, setVisible] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     {

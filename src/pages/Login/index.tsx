@@ -1,17 +1,80 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
-
+import { useReduxSelector } from "@hooks/useRedux";
+import { loginUserApi, resetLoginState } from "@redux/login";
+import useNotification from "@hooks/useNotification";
+import { useNavigate } from "react-router-dom";
+import { hasAccessToken, hasLocalAccessToken, setAccessToken, setLocalRefreshToken, setLocalToken, setRefreshToken } from "@config/accessToken";
+import { addToCartImportApi } from "@redux/cart";
+import { useDispatch } from "react-redux";
+import { ApiDispatch } from "@reduxjs/toolkit";
 const cx = classNames.bind(styles);
 
 const LoginRegistrationForm: React.FC = () => {
   const [form] = Form.useForm();
+  const dispatch = useDispatch<ApiDispatch>();
+  const { data, loading, error, loginSuccess } = useReduxSelector(
+    (state) => state.login
+  );
+  const { dataCart, addToCartSuccess } = useReduxSelector((state) => state.cart);
+  const { errorMessage } = useNotification();
+  const navigate = useNavigate()
 
-  const onFinish = (values: any) => {
-    console.log("Form submitted:", values);
+  const getCartListFromLocal = () => {
+    const cartList = JSON.parse(localStorage.getItem("cartList") || "{}");
+    const getItems = cartList.items?.map((item: any) => ({
+      productId: item.product?.id,
+      variantId: item.variant?.id,
+      sizeId: item.size?.id,
+      quantity: item.quantity,
+    }));
+    return getItems;
+  }
+
+  const onLogin = (values: any) => {
+    const { email, password } = values;
+    dispatch(
+      loginUserApi({
+        email: email,
+        password: password
+      })
+    )
   };
+  
+  useEffect(() => {
+    if (loginSuccess) {
+      form.resetFields();
+      dispatch(resetLoginState());
+      setAccessToken(data.token)
+      setLocalToken(data.token)
+      setRefreshToken(data.refreshToken)
+      setLocalRefreshToken(data.refreshToken)
+      const cartRequest = getCartListFromLocal();
+      dispatch(addToCartImportApi(cartRequest))
+      navigate("/")
+      }
+    }, [loginSuccess, dispatch, form]);
+
+  useEffect(() => {
+    if (hasAccessToken() || hasLocalAccessToken()) {
+      navigate("/")
+    }
+  }, [hasAccessToken(), hasLocalAccessToken()])
+
+  useEffect(() => {
+    if(error) {
+      errorMessage({ description: error })
+    }
+  },[error])
+
+  useEffect(() => {
+    if(addToCartSuccess) {
+      localStorage.setItem("cartList", dataCart)
+    }
+  },[addToCartSuccess])
 
   return (
     <>
@@ -28,7 +91,7 @@ const LoginRegistrationForm: React.FC = () => {
               <Form
                 form={form}
                 name="login_form"
-                onFinish={onFinish}
+                onFinish={onLogin}
                 layout="vertical"
                 className={cx("login-form")}
               >
@@ -71,7 +134,7 @@ const LoginRegistrationForm: React.FC = () => {
                 </div>
 
                 <Form.Item className={cx("login-submit-item")}>
-                  <ButtonComponent type="primary" htmlType="submit" block>
+                  <ButtonComponent type="primary" htmlType="submit" block isLoading={loading}>
                     ĐĂNG NHẬP
                   </ButtonComponent>
                 </Form.Item>

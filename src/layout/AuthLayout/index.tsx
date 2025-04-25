@@ -1,27 +1,20 @@
-import Sidebar from "@components/Sidebar";
-import classNames from "classnames/bind";
+import { hasAccessToken } from "@config/accessToken";
+import { useEffect, useState, Suspense, useLayoutEffect, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import styles from "./index.module.scss";
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Sidebar from "@components/Sidebar";
 import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
 import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
-import { hasAccessToken } from "@config/accessToken";
-import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { getUserApi } from "@redux/user";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
 
-const cx = classNames.bind(styles);
-
-const PublicLayout = () => {
+const AuthLayout = () => {
   const [, setIsOpenSideBar] = useState(true);
   const sidebarRef = useRef<any>(null);
   const resize = useWindowSize();
   const navigate = useNavigate();
-  const dispatch = useRedux();
-  const { data, getUserSuccess } = useReduxSelector((state) => state.getUser);
+
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();
@@ -36,32 +29,25 @@ const PublicLayout = () => {
       setIsOpenSideBar(false);
     }
   }, [resize]);
+
   useEffect(() => {
     const token = hasAccessToken();
-    const publicPaths = ["/login", "/register", "/verify"];
-
-    if (token) {
-      
-      if (!getUserSuccess) {
-        dispatch(getUserApi());
-      }
-
-      if (publicPaths.includes(location.pathname)) {
-        navigate("/", { replace: true });
-      }
+    if (!token) {
+      navigate("/login");
     }
-  }, [location, navigate, dispatch, getUserSuccess]);
+  }, [navigate]);
+
   return (
     <>
       <div>
-        <ScrollOnTop/>
+        <ScrollOnTop />
         <Nav
           handleHiddenSideBar={handleHiddenSideBar}
           handleShowSideBar={handleShowSideBar}
         />
-        <div className={cx("example-layout")}>
+        <div>
           <Sidebar ref={sidebarRef} />
-          <div className="body-layout">
+          <div>
             <Suspense fallback={<Spinner />}>
               <Outlet />
             </Suspense>
@@ -73,4 +59,4 @@ const PublicLayout = () => {
   );
 };
 
-export default PublicLayout;
+export default AuthLayout;

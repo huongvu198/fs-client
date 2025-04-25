@@ -6,6 +6,7 @@ import {
   UserPath,
   UserVouchers,
 } from "@config/routerConfig";
+import AuthLayout from "@layout/AuthLayout";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -45,6 +46,11 @@ const RouteComponent = () => {
           path: "/cartList",
           element: <CartList />,
         },
+      ],
+    },
+    {
+      element: <AuthLayout />,
+      children: [
         {
           path: UserPath,
           element: <UserPage />,

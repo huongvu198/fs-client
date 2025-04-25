@@ -1,53 +1,27 @@
 import { LoginOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { removeAccessToken } from "@config/accessToken";
+import {
+  hasAccessToken,
+  removeAccessToken,
+  removeLocalRefreshToken,
+  removeLocalToken,
+  removeRefreshToken,
+} from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
-import useNotification from "@hooks/useNotification";
 import SearchComponent from "@components/SearchComponent";
 import CategoryWithDropdownComponent from "@components/CategoryWithDropdownComponent";
 import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useState } from "react";
 import { UserOrders, UserPath } from "@config/routerConfig";
+import ButtonComponent from "@components/ButtonComponent";
+import { ICartResponse } from "interfaces/cart.interface";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
 }
-
-const Logout = () => {
-  const { errorMessage } = useNotification();
-  const handleLogout = () => {
-    removeAccessToken();
-    errorMessage({ description: "Đã logout!!!" });
-  };
-
-  return (
-    <div onClick={handleLogout}>
-      <LoginOutlined style={{ marginRight: "10px" }} />
-      <span>Đăng Xuất</span>
-    </div>
-  );
-};
-
-const items: MenuProps["items"] = [
-  {
-    label: <Link to={UserPath}>Tài khoản của tôi</Link>,
-    key: "0",
-  },
-  {
-    label: <Link to={UserOrders}>Đơn mua</Link>,
-    key: "1",
-  },
-  {
-    type: "divider",
-  },
-  {
-    label: <Logout />,
-    key: "3",
-  },
-];
 
 const notifications = [
   { id: 1, message: "Bạn có đơn hàng mới!" },
@@ -58,22 +32,50 @@ const notifications = [
 const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
-  const [cartItems, setCartItems] = useState([
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<ICartResponse>({
+    id: "",
+    items: [],
+  });
+  const Logout = () => {
+    const handleLogout = () => {
+      removeAccessToken();
+      removeRefreshToken();
+      removeLocalToken();
+      removeLocalRefreshToken();
+      navigate("/");
+    };
+
+    return (
+      <div onClick={handleLogout}>
+        <LoginOutlined style={{ marginRight: "10px" }} />
+        <span>Logout</span>
+      </div>
+    );
+  };
+  const items: MenuProps["items"] = [
     {
-      id: 1,
-      name: "Elegant Silk Blouse",
-      description: "Áo sơ mi lụa",
-      color: "Hồng cánh sen",
-      size: "M",
-      price: 145,
-      quantity: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/f04a/017d/b094f9a20c2328f54a31b153619784f3?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tYJyKcr6xdA9nfd6RDxQEkku5PtvQ44DC1rA7dwrW3GUl-EpC9McVqRsKjiVovY6m1etnJGPlnYUsjSQl6K7CfxNHuKgsP~vDCLIDwkVtoPcOZwS3u7dpuwq8RvZhyTRBl5jumVhqOaXtmr4B2RIA0zhqvkIt3RmW8GH7bbVr06U9KfEmRLiQSeOwX2JEjpdLlCY-~3IUer-kxqkJ3ZmHhgFv86mrEZV4C-NK~Ni0lOrKW0YDgHi3Qh4MiBRsudicoCN1p-HJbjvqrreGpZ59Ziazrwqmpv7-rgiW67DqXP9~VMlYUWPd77TN0bTH-IIKWj4N4uexf5eto-xVaWHZA__",
+      label: <Link to={UserPath}>Tài khoản của tôi</Link>,
+      key: "0",
     },
-  ]);
+    {
+      label: <Link to={UserOrders}>Đơn mua</Link>,
+      key: "1",
+    },
+    {
+      type: "divider",
+    },
+    {
+      label: <Logout />,
+      key: "3",
+    },
+  ];
 
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
+  };
+  const handleLogin = () => {
+    navigate("login");
   };
 
   return (
@@ -101,15 +103,25 @@ export default function Nav({ handleShowSideBar }: Props) {
           <Space className={cx("notification-component")}>
             <Notification notifications={notifications} />
           </Space>
-          <Dropdown
-            className="drop-down-info"
-            menu={{ items }}
-            trigger={["click"]}
-          >
-            <Space>
-              <Avatar src="" icon={<UserOutlined />} />
-            </Space>
-          </Dropdown>
+          {hasAccessToken() ? (
+            <Dropdown
+              className="drop-down-info"
+              menu={{ items }}
+              trigger={["click"]}
+            >
+              <Space>
+                <Avatar src="" icon={<UserOutlined />} />
+              </Space>
+            </Dropdown>
+          ) : (
+            <ButtonComponent
+              className={cx("button-login")}
+              type="primary"
+              onClick={handleLogin}
+            >
+              Đăng Nhập
+            </ButtonComponent>
+          )}
         </div>
       </div>
     </div>

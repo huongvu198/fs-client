@@ -11,9 +11,18 @@
   gap: 40px;
   margin-top: 20px;
   justify-content: center;
-}
 
-:global(.ant-menu-light .ant-menu-item-selected) {
-  background-color: #e6f4ff !important;
-  color: #1677ff !important;
+  :global(.ant-layout-content) {
+    padding-top: 0 !important;
+    text-align: left;
+  }
+
+  :global(.ant-layout) {
+    background-color: #ffffff;
+  }
+
+  :global(.ant-menu-light .ant-menu-item-selected) {
+    background-color: #e6f4ff !important;
+    color: #1677ff !important;
+  }
 }

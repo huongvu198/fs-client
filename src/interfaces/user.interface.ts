@@ -37,3 +37,48 @@ export interface UserResponse {
   message?: string;
   statusCode?: number | undefined;
 }
+
+export interface Address {
+  id: string;
+  fullName: string;
+  phone: string;
+  street: string;
+  ward: string;
+  district: string;
+  city: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface User {
+  id: number;
+  fullName: string;
+  email: string;
+}
+
+export interface UserAddress {
+  user: User;
+  addresses: Address[];
+}
+
+export interface UpdateAddressPayload {
+  fullName?: string;
+  phone?: string;
+  street?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
+  country?: string;
+  isDefault?: boolean;
+}
+
+export interface CreateAddressPayload {
+  fullName: string;
+  phone: string;
+  street: string;
+  ward: string;
+  district: string;
+  city: string;
+  country: string;
+  isDefault?: boolean;
+}

@@ -6,7 +6,6 @@ import {
   UserPath,
   UserVouchers,
 } from "@config/routerConfig";
-import AuthLayout from "@layout/AuthLayout";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -22,7 +21,7 @@ const Register = lazy(() => import("@pages/Register"));
 const UserPage = lazy(() => import("@pages/User"));
 const ProfilePage = lazy(() => import("@pages/User/Profile"));
 const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
-const AddressPage = lazy(() => import("@pages/User/Address"));
+const UserAddressPage = lazy(() => import("@pages/User/Address"));
 const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
 
 const RouteComponent = () => {
@@ -65,7 +64,7 @@ const RouteComponent = () => {
             },
             {
               path: UserAddressPath,
-              element: <AddressPage />,
+              element: <UserAddressPage />,
             },
             {
               path: UserVouchers,

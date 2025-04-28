@@ -3,6 +3,7 @@ import styles from "./index.module.scss";
 import { Layout } from "antd";
 import UserMenu from "@components/MenuComponent/profile";
 import { Outlet } from "react-router-dom";
+import { Suspense } from "react";
 
 const { Sider, Content } = Layout;
 
@@ -31,9 +32,11 @@ const UserPage = () => {
             <Sider width="full" style={siderStyle}>
               <UserMenu />
             </Sider>
-            <Layout>
+            <Layout style={{ background: "white" }}>
               <Content style={{ padding: "20px" }}>
-                <Outlet />
+                <Suspense fallback={<div>Đang tải...</div>}>
+                  <Outlet />
+                </Suspense>
               </Content>
             </Layout>
           </Layout>

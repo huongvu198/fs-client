@@ -1,4 +1,5 @@
 import { Pagination } from "interfaces/app.interface";
+import parsePhoneNumberFromString from "libphonenumber-js";
 
 export const parsePaginationHeaders = (
   headers: Record<string, string | number>
@@ -35,3 +36,9 @@ export const mapVariants = <T>(
 ): T[] => {
   return variants.flatMap(mapFn);
 };
+
+export function formatPhoneInternal(phone: string) {
+  const phoneNumber = parsePhoneNumberFromString(phone, "VN");
+  if (!phoneNumber) return phone;
+  return phoneNumber.format("E.164");
+}

@@ -78,7 +78,6 @@ export const userService = {
     addressData: UpdateAddressPayload
   ) => {
     try {
-      console.log("addressData", addressData);
       const response = await authAxios.patch(
         endPoint.USER_ADDRESS.UPDATE_USER_ADDRESS.replace(":id", addressId),
         addressData

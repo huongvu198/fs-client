@@ -5,3 +5,6 @@ export const ProfilePath = "/user/profile";
 export const UserAddressPath = "/user/address";
 export const UserOrders = "/user/orders";
 export const UserVouchers = "/user/vouchers";
+export const RegisterPath = "/register";
+export const LoginPath = "/login";
+export const VerifyPath = "/verify";

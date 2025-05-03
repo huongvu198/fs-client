@@ -1,10 +1,13 @@
 import {
+  LoginPath,
   ProductDetailPath,
   ProfilePath,
+  RegisterPath,
   UserAddressPath,
   UserOrders,
   UserPath,
   UserVouchers,
+  VerifyPath,
 } from "@config/routerConfig";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
@@ -45,43 +48,43 @@ const RouteComponent = () => {
           path: "/cartList",
           element: <CartList />,
         },
-      ],
-    },
-    {
-      element: <PublicLayout />,
-      children: [
         {
           path: UserPath,
           element: <UserPage />,
           children: [
             {
-              path: ProfilePath,
-              element: <ProfilePage />,
-            },
-            {
               path: UserOrders,
               element: <OrdersHistoryPage />,
+            },
+            {
+              path: UserVouchers,
+              element: <UserVouchersPage />,
             },
             {
               path: UserAddressPath,
               element: <UserAddressPage />,
             },
             {
-              path: UserVouchers,
-              element: <UserVouchersPage />,
+              path: ProfilePath,
+              element: <ProfilePage />,
             },
           ],
         },
+      ],
+    },
+    {
+      element: <PublicLayout />,
+      children: [
         {
-          path: "/login",
+          path: LoginPath,
           element: <Login />,
         },
         {
-          path: "/verify",
+          path: VerifyPath,
           element: <Verify />,
         },
         {
-          path: "/register",
+          path: RegisterPath,
           element: <Register />,
         },
       ],

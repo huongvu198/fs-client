@@ -15,7 +15,7 @@ import CategoryWithDropdownComponent from "@components/CategoryWithDropdownCompo
 import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useState } from "react";
-import { UserOrders, UserPath } from "@config/routerConfig";
+import { UserOrders, ProfilePath } from "@config/routerConfig";
 import ButtonComponent from "@components/ButtonComponent";
 import { ICartResponse } from "interfaces/cart.interface";
 interface Props {
@@ -55,7 +55,7 @@ export default function Nav({ handleShowSideBar }: Props) {
   };
   const items: MenuProps["items"] = [
     {
-      label: <Link to={UserPath}>Tài khoản của tôi</Link>,
+      label: <Link to={ProfilePath}>Tài khoản của tôi</Link>,
       key: "0",
     },
     {

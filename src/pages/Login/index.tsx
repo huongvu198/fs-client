@@ -18,6 +18,7 @@ import {
 import { addToCartImportApi } from "@redux/cartSlice";
 import { useDispatch } from "react-redux";
 import { ApiDispatch } from "@reduxjs/toolkit";
+import { RegisterPath } from "@config/routerConfig";
 const cx = classNames.bind(styles);
 
 const LoginRegistrationForm: React.FC = () => {
@@ -172,6 +173,7 @@ const LoginRegistrationForm: React.FC = () => {
                 type="primary"
                 className={cx("register-button")}
                 block
+                onClick={() => navigate(RegisterPath)}
               >
                 ĐĂNG KÝ
               </ButtonComponent>

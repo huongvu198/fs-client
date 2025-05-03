@@ -1,7 +1,7 @@
 @import "../../styles/responsive.scss";
 
 .user-page {
-  width: 70%;
+  width: 90%;
   margin: auto;
   padding: 0 20px;
 }
@@ -13,7 +13,7 @@
   justify-content: center;
 
   :global(.ant-layout-content) {
-    padding-top: 0 !important;
+    // padding-top: 0 !important;
     text-align: left;
   }
 

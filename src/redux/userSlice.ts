@@ -11,6 +11,7 @@ import { userService } from "@services/user";
 interface UserState {
   data: UserResponse | null;
   loading: boolean;
+  loadingAction: boolean;
   error: string | null;
   getUserSuccess: boolean;
   updateUserSuccess: boolean;
@@ -35,6 +36,7 @@ const initialState: UserState = {
   createAddressSuccess: false,
   deleteAddressSuccess: false,
   userAddress: null,
+  loadingAction: false,
 };
 
 // Create async thunk for get user
@@ -69,7 +71,6 @@ export const getUserAddress = createAsyncThunk<
   void,
   { rejectValue: string }
 >("user/getUserAddress", async (_, { rejectWithValue }) => {
-  console.log("Run");
   try {
     const response = await userService.getUserAddress();
     return response;
@@ -97,7 +98,6 @@ export const updateAddress = createAsyncThunk<
   { rejectValue: string } // Kiểu giá trị trả về nếu thất bại
 >("user/updateAddress", async ({ id, data }, { rejectWithValue }) => {
   try {
-    console.log("data", data);
     const response = await userService.updateAddress(id, data);
     return response;
   } catch (error: any) {
@@ -145,6 +145,8 @@ const userSlice = createSlice({
       state.updateAddressSuccess = false;
       state.createAddressSuccess = false;
       state.deleteAddressSuccess = false;
+      state.loading = false;
+      state.loadingAction = false;
     },
     clearUserData: () => initialState,
   },
@@ -170,21 +172,21 @@ const userSlice = createSlice({
         state.error = action.payload || "Get user failed";
       })
       .addCase(updateProfileApi.pending, (state) => {
-        state.loading = true;
+        state.loadingAction = true;
         state.error = null;
         state.updateUserSuccess = false;
       })
       .addCase(
         updateProfileApi.fulfilled,
         (state, action: PayloadAction<UserResponse>) => {
-          state.loading = false;
+          state.loadingAction = false;
           state.data = action.payload;
           state.updateUserSuccess = true;
           state.error = null;
         }
       )
       .addCase(updateProfileApi.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingAction = false;
         state.updateUserSuccess = false;
         state.error = action.payload || "Cập nhật thông tin thất bại";
       })
@@ -215,71 +217,71 @@ const userSlice = createSlice({
       .addCase(
         setDefaultAddress.fulfilled,
         (state, action: PayloadAction<UserAddress>) => {
-          state.loading = false;
+          state.loadingAction = false;
           state.userAddress = action.payload;
           state.error = null;
           state.setAddressDefaultSuccess = true;
         }
       )
       .addCase(setDefaultAddress.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingAction = false;
         state.error = action.payload || "Thiết lập địa chỉ mặc định thất bại";
         state.setAddressDefaultSuccess = false;
       })
       .addCase(updateAddress.pending, (state) => {
-        state.loading = true;
+        state.loadingAction = true;
         state.error = null;
         state.updateAddressSuccess = false;
       })
       .addCase(
         updateAddress.fulfilled,
         (state, action: PayloadAction<UserAddress>) => {
-          state.loading = false;
+          state.loadingAction = false;
           state.userAddress = action.payload;
           state.error = null;
           state.updateAddressSuccess = true;
         }
       )
       .addCase(updateAddress.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingAction = false;
         state.error = action.payload || "Cập nhật địa chỉ thất bại";
         state.updateAddressSuccess = false;
       })
       .addCase(createAddress.pending, (state) => {
-        state.loading = true;
+        state.loadingAction = true;
         state.error = null;
         state.createAddressSuccess = false;
       })
       .addCase(
         createAddress.fulfilled,
         (state, action: PayloadAction<UserAddress>) => {
-          state.loading = false;
+          state.loadingAction = false;
           state.userAddress = action.payload;
           state.error = null;
           state.createAddressSuccess = true;
         }
       )
       .addCase(createAddress.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingAction = false;
         state.error = action.payload || "Thêm địa chỉ thất bại";
         state.createAddressSuccess = false;
       })
       .addCase(deleteAddress.pending, (state) => {
-        state.loading = true;
+        state.loadingAction = true;
         state.error = null;
         state.deleteAddressSuccess = false;
       })
       .addCase(
         deleteAddress.fulfilled,
         (state, action: PayloadAction<UserAddress>) => {
-          state.loading = false;
+          state.loadingAction = false;
           state.userAddress = action.payload;
           state.error = null;
           state.deleteAddressSuccess = true;
         }
       )
       .addCase(deleteAddress.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingAction = false;
         state.error = action.payload || "Xóa địa chỉ thất bại";
         state.deleteAddressSuccess = false;
       });

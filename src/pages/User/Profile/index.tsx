@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Upload, message, Card, Spin } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import type { UploadChangeParam } from "antd/es/upload";
-import type { RcFile } from "antd/es/upload/interface";
-import styles from "./index.module.scss";
+import {
+  Form,
+  Input,
+  Button,
+  Upload,
+  message,
+  Card,
+  Skeleton,
+  Image,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import type { RcFile, UploadFile } from "antd/es/upload/interface";
 import { useDispatch } from "react-redux";
 import { getUserApi, resetUserState, updateProfileApi } from "@redux/userSlice";
 import { ApiDispatch } from "@redux/index";
@@ -12,23 +19,37 @@ import useNotification from "@hooks/useNotification";
 
 const { Item } = Form;
 
-const ProfilePage: React.FC = () => {
+const getBase64 = (file: RcFile): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
+const ProfilePage = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<ApiDispatch>();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const {
     data: user,
     updateUserSuccess,
     error,
     loading,
+    loadingAction,
   } = useReduxSelector((state) => state.user);
+
   const { successMessage, errorMessage } = useNotification();
 
   useEffect(() => {
     if (!user) {
       dispatch(getUserApi());
     }
-  }, [user, dispatch]);
+  }, []);
 
   useEffect(() => {
     if (!updateUserSuccess && !error) return;
@@ -44,7 +65,6 @@ const ProfilePage: React.FC = () => {
         description: error!,
       });
     }
-    // reset flag để không lặp lại
     dispatch(resetUserState());
   }, [updateUserSuccess, error, successMessage, errorMessage, dispatch]);
 
@@ -62,130 +82,123 @@ const ProfilePage: React.FC = () => {
     return isJpgOrPng && isLt1M;
   };
 
-  const handleUploadChange = (info: UploadChangeParam) => {
-    if (info.file.status === "done" || info.file.status === "uploading") {
-      const reader = new FileReader();
-      reader.onload = () => setImageUrl(reader.result as string);
-      reader.readAsDataURL(info.file.originFileObj as RcFile);
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as RcFile);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange = async ({
+    fileList: newFileList,
+  }: {
+    fileList: UploadFile[];
+  }) => {
+    setFileList(newFileList);
+
+    const latestFile = newFileList[newFileList.length - 1];
+    if (latestFile?.originFileObj) {
+      const base64 = await getBase64(latestFile.originFileObj as RcFile);
+      setImageUrl(base64);
     }
   };
 
   const onFinish = (values: any) => {
     const formatted = {
       ...values,
+      avatar: imageUrl,
     };
     dispatch(updateProfileApi(formatted));
   };
 
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
+
   return (
-    <Card title="Hồ sơ của tôi">
-      <Spin spinning={loading} tip="Đang tải..." className={styles.spinWrapper}>
-        <div className={styles.formContainer}>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            className={styles.form}
-            initialValues={{
-              fullName: user?.fullName,
-              email: user?.email,
-            }}
-          >
-            <Item
-              label="Họ và tên"
-              name="fullName"
-              rules={[{ required: true, message: "Họ tên là bắt buộc" }]}
+    <>
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 4 }} />
+      ) : (
+        <Card title="Hồ sơ của tôi" className="profile-card">
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ flex: "1 0 70%", textAlign: "left" }}>
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={onFinish}
+                style={{ flex: 1 }}
+                initialValues={{
+                  fullName: user?.fullName,
+                  email: user?.email,
+                }}
+              >
+                <Item
+                  label="Họ và tên"
+                  name="fullName"
+                  rules={[{ required: true, message: "Họ tên là bắt buộc" }]}
+                >
+                  <Input placeholder="Nhập họ tên" />
+                </Item>
+
+                <Item label="Email" name="email">
+                  <Input disabled />
+                </Item>
+
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loadingAction}
+                >
+                  Lưu
+                </Button>
+              </Form>
+            </div>
+            <div
+              style={{
+                flex: "0 0 30%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <Input placeholder="Nhập họ tên" />
-            </Item>
+              <Upload
+                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                listType="picture-circle"
+                fileList={fileList}
+                beforeUpload={beforeUpload}
+                onPreview={handlePreview}
+                onChange={handleChange}
+              >
+                {fileList.length >= 1 ? null : uploadButton}
+              </Upload>
 
-            <Item label="Email" name="email">
-              <Input disabled />
-            </Item>
-
-            <Button type="primary" htmlType="submit">
-              Lưu
-            </Button>
-          </Form>
-
-          <div className={styles.avatarSection}>
-            <img
-              src={
-                imageUrl ||
-                "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/08/anh-con-meo-cute-7.jpg"
-              }
-              alt="avatar"
-              className={styles.avatar}
-            />
-            <Upload
-              showUploadList={false}
-              beforeUpload={beforeUpload}
-              onChange={handleUploadChange}
-            >
-              <Button icon={<UploadOutlined />}>Chọn Ảnh</Button>
-            </Upload>
-            <p>Dung lượng file tối đa 1 MB</p>
-            <p>Định dạng: .JPEG, .PNG</p>
+              {previewImage && (
+                <Image
+                  wrapperStyle={{ display: "none" }}
+                  preview={{
+                    visible: previewOpen,
+                    onVisibleChange: (visible) => setPreviewOpen(visible),
+                    afterOpenChange: (visible) =>
+                      !visible && setPreviewImage(""),
+                  }}
+                  src={previewImage}
+                />
+              )}
+              <p style={{ fontSize: 12 }}>Dung lượng file tối đa 1 MB</p>
+              <p style={{ fontSize: 12 }}>Định dạng: .JPEG, .PNG</p>
+            </div>
           </div>
-        </div>
-      </Spin>
-    </Card>
+        </Card>
+      )}
+    </>
   );
 };
 
 export default ProfilePage;
-
-{
-  /* <div className={styles.profileWrapper}>
-      <h2>Hồ sơ của tôi</h2>
-
-      <div className={styles.formContainer}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          className={styles.form}
-          initialValues={{
-            fullName: user?.fullName,
-            email: user?.email,
-          }}
-        >
-          <Item
-            label="Họ và tên"
-            name="fullName"
-            rules={[{ required: true, message: "Họ tên là bắt buộc" }]}
-          >
-            <Input placeholder="Nhập họ tên" />
-          </Item>
-
-          <Item label="Email" name="email">
-            <Input disabled />
-          </Item>
-
-          <Button type="primary" htmlType="submit">
-            Lưu
-          </Button>
-        </Form>
-
-        <div className={styles.avatarSection}>
-          <img
-            src={
-              imageUrl ||
-              "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/08/anh-con-meo-cute-7.jpg"
-            }
-            alt="avatar"
-            className={styles.avatar}
-          />
-          <Upload
-            showUploadList={false}
-            beforeUpload={beforeUpload}
-            onChange={handleUploadChange}
-          >
-            <Button icon={<UploadOutlined />}>Chọn Ảnh</Button>
-          </Upload>
-          <p>Dung lượng file tối đa 1 MB</p>
-          <p>Định dạng: .JPEG, .PNG</p>
-        </div>
-      </div>
-    </div> */
-}

@@ -1,6 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
-import { Layout } from "antd";
+import { Layout, Skeleton } from "antd";
 import UserMenu from "@components/MenuComponent/profile";
 import { Outlet } from "react-router-dom";
 import { Suspense } from "react";
@@ -34,7 +34,9 @@ const UserPage = () => {
             </Sider>
             <Layout style={{ background: "white" }}>
               <Content style={{ padding: "20px" }}>
-                <Suspense fallback={<div>Đang tải...</div>}>
+                <Suspense
+                  fallback={<Skeleton active paragraph={{ rows: 4 }} />}
+                >
                   <Outlet />
                 </Suspense>
               </Content>

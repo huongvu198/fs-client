@@ -22,6 +22,9 @@ import {
   UserAddressPath,
   UserPath,
   UserVouchers,
+  RegisterPath,
+  LoginPath,
+  VerifyPath,
 } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
@@ -40,6 +43,9 @@ const Footer = () => {
     UserOrders,
     UserAddressPath,
     UserVouchers,
+    LoginPath,
+    RegisterPath,
+    VerifyPath,
   ];
   const shouldShowNewsletter = !hideNewsletterRoutes.includes(
     location.pathname

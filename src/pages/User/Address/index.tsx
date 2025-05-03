@@ -17,7 +17,6 @@ import UserAddressModal from "@components/UserProfile/Popup";
 const UserAddressPage: React.FC = () => {
   const dispatch = useDispatch<ApiDispatch>();
   const { errorMessage, successMessage } = useNotification();
-
   const { userAddress, setAddressDefaultSuccess, error } = useReduxSelector(
     (state) => state.user
   );

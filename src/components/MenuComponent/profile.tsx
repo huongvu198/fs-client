@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  EnvironmentOutlined,
   GiftOutlined,
   ShoppingOutlined,
   UserOutlined,
@@ -18,13 +19,14 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 const items: MenuItem[] = [
   {
-    key: UserPath,
+    key: ProfilePath,
     label: "Tài khoản của tôi",
     icon: <UserOutlined />,
-    children: [
-      { key: ProfilePath, label: "Hồ Sơ" },
-      { key: UserAddressPath, label: "Địa chỉ" },
-    ],
+  },
+  {
+    key: UserAddressPath,
+    label: "Địa chỉ nhận hàng",
+    icon: <EnvironmentOutlined />,
   },
   {
     key: UserOrders,

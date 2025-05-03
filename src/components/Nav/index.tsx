@@ -1,17 +1,23 @@
 import { LoginOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { hasAccessToken, removeAccessToken, removeLocalRefreshToken, removeLocalToken, removeRefreshToken } from "@config/accessToken";
+import {
+  hasAccessToken,
+  removeAccessToken,
+  removeLocalRefreshToken,
+  removeLocalToken,
+  removeRefreshToken,
+} from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import SearchComponent from "@components/SearchComponent";
 import CategoryWithDropdownComponent from "@components/CategoryWithDropdownComponent";
 import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useState } from "react";
+import { UserOrders, ProfilePath } from "@config/routerConfig";
 import ButtonComponent from "@components/ButtonComponent";
 import { ICartResponse } from "interfaces/cart.interface";
-
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -26,7 +32,7 @@ const notifications = [
 const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<ICartResponse>({
     id: "",
     items: [],
@@ -37,9 +43,9 @@ export default function Nav({ handleShowSideBar }: Props) {
       removeRefreshToken();
       removeLocalToken();
       removeLocalRefreshToken();
-      navigate("/")
+      navigate("/");
     };
-  
+
     return (
       <div onClick={handleLogout}>
         <LoginOutlined style={{ marginRight: "10px" }} />
@@ -49,17 +55,11 @@ export default function Nav({ handleShowSideBar }: Props) {
   };
   const items: MenuProps["items"] = [
     {
-      label: (
-        <a href="https://www.youtube.com/watch?v=5z0u0BfPJ8o&list=RDxJ7EF7XweiA&index=5">
-          Edit Profile
-        </a>
-      ),
+      label: <Link to={ProfilePath}>Tài khoản của tôi</Link>,
       key: "0",
     },
     {
-      label: (
-        <a href="https://www.youtube.com/watch?v=u1d7MWpBb8M">Change Password</a>
-      ),
+      label: <Link to={UserOrders}>Đơn mua</Link>,
       key: "1",
     },
     {
@@ -71,14 +71,12 @@ export default function Nav({ handleShowSideBar }: Props) {
     },
   ];
 
-
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
   };
-  const handleLogin= () => {
-    navigate('login')
-  }
-  
+  const handleLogin = () => {
+    navigate("login");
+  };
 
   return (
     <div className={cx(styles["nav-wrapper"])}>
@@ -106,17 +104,23 @@ export default function Nav({ handleShowSideBar }: Props) {
             <Notification notifications={notifications} />
           </Space>
           {hasAccessToken() ? (
-          <Dropdown
-            className="drop-down-info"
-            menu={{ items }}
-            trigger={["click"]}
-          >
-            <Space>
-              <Avatar src="" icon={<UserOutlined />} />
-            </Space>
-          </Dropdown>
+            <Dropdown
+              className="drop-down-info"
+              menu={{ items }}
+              trigger={["click"]}
+            >
+              <Space>
+                <Avatar src="" icon={<UserOutlined />} />
+              </Space>
+            </Dropdown>
           ) : (
-            <ButtonComponent className={cx("button-login")} type="primary" onClick={handleLogin}>Đăng Nhập</ButtonComponent>
+            <ButtonComponent
+              className={cx("button-login")}
+              type="primary"
+              onClick={handleLogin}
+            >
+              Đăng Nhập
+            </ButtonComponent>
           )}
         </div>
       </div>

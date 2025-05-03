@@ -36,7 +36,7 @@ const ProductCardComponent = ({
   return (
     <Card
       hoverable
-      className={cx("card-container")}
+      className={cx("card-container", "product-card")}
       cover={
         <div className={cx("image-container")}>
           <img

@@ -22,6 +22,12 @@
   }
 }
 
+.product-card {
+  :global(.ant-card-body) {
+    padding: 10px 0 !important;
+  }
+}
+
 .card-image {
   position: absolute;
   top: 0;
@@ -30,10 +36,6 @@
   height: 100%;
   object-fit: cover;
   object-position: top;
-}
-
-:global(.ant-card-body) {
-  padding: 10px 0 !important;
 }
 
 .product-card-content {

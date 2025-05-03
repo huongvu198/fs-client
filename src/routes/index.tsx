@@ -1,5 +1,14 @@
-import { ProductDetailPath } from "@config/routerConfig";
-import AuthLayout from "@layout/AuthLayout";
+import {
+  LoginPath,
+  ProductDetailPath,
+  ProfilePath,
+  RegisterPath,
+  UserAddressPath,
+  UserOrders,
+  UserPath,
+  UserVouchers,
+  VerifyPath,
+} from "@config/routerConfig";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -12,6 +21,12 @@ const CartList = lazy(() => import("@pages/CartList"));
 const Login = lazy(() => import("@pages/Login"));
 const Verify = lazy(() => import("@pages/VerifyEmail"));
 const Register = lazy(() => import("@pages/Register"));
+const UserPage = lazy(() => import("@pages/User"));
+const ProfilePage = lazy(() => import("@pages/User/Profile"));
+const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
+const UserAddressPage = lazy(() => import("@pages/User/Address"));
+const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
+
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -33,21 +48,43 @@ const RouteComponent = () => {
           path: "/cartList",
           element: <CartList />,
         },
+        {
+          path: UserPath,
+          element: <UserPage />,
+          children: [
+            {
+              path: UserOrders,
+              element: <OrdersHistoryPage />,
+            },
+            {
+              path: UserVouchers,
+              element: <UserVouchersPage />,
+            },
+            {
+              path: UserAddressPath,
+              element: <UserAddressPage />,
+            },
+            {
+              path: ProfilePath,
+              element: <ProfilePage />,
+            },
+          ],
+        },
       ],
     },
     {
-      element: <AuthLayout />,
+      element: <PublicLayout />,
       children: [
         {
-          path: "/login",
+          path: LoginPath,
           element: <Login />,
         },
         {
-          path: "/verify",
+          path: VerifyPath,
           element: <Verify />,
         },
         {
-          path: "/register",
+          path: RegisterPath,
           element: <Register />,
         },
       ],

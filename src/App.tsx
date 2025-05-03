@@ -8,6 +8,7 @@ import { NotiContext } from "contexts/notiContext";
 import Routers from "./routes";
 import "./locales";
 import { IntlProvider } from "react-intl";
+
 const App = () => {
   const {
     i18n: { changeLanguage },

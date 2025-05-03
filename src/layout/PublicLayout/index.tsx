@@ -10,8 +10,9 @@ import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
 import { hasAccessToken } from "@config/accessToken";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { getUserApi } from "@redux/user";
+import { getUserApi } from "@redux/userSlice";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
+import { LoginPath, RegisterPath, VerifyPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 
@@ -21,7 +22,7 @@ const PublicLayout = () => {
   const resize = useWindowSize();
   const navigate = useNavigate();
   const dispatch = useRedux();
-  const { data, getUserSuccess } = useReduxSelector((state) => state.getUser);
+  const { getUserSuccess } = useReduxSelector((state) => state.user);
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();
@@ -38,10 +39,9 @@ const PublicLayout = () => {
   }, [resize]);
   useEffect(() => {
     const token = hasAccessToken();
-    const publicPaths = ["/login", "/register", "/verify"];
+    const publicPaths = [RegisterPath, LoginPath, VerifyPath];
 
     if (token) {
-      
       if (!getUserSuccess) {
         dispatch(getUserApi());
       }
@@ -54,7 +54,7 @@ const PublicLayout = () => {
   return (
     <>
       <div>
-        <ScrollOnTop/>
+        <ScrollOnTop />
         <Nav
           handleHiddenSideBar={handleHiddenSideBar}
           handleShowSideBar={handleShowSideBar}

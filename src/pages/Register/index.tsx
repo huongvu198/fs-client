@@ -15,6 +15,8 @@ import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { registerUserApi, resetRegisterState } from "@redux/registerSlice";
 import useNotification from "@hooks/useNotification";
 import Spinner from "@components/Spinner";
+import { useNavigate } from "react-router-dom";
+import { LoginPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 
@@ -25,12 +27,12 @@ interface RegisterFormProps {
 const RegisterForm: React.FC<RegisterFormProps> = () => {
   const [form] = Form.useForm();
   const dispatch = useRedux();
+  const nagigate = useNavigate();
   const { loading, error, registerSuccess } = useReduxSelector(
     (state) => state.register
   );
   const { errorMessage, successMessage } = useNotification();
   const handleSubmit = (values: any) => {
-    console.log("Form values:", values);
     const { email, firstName, lastName, password } = values;
     dispatch(
       registerUserApi({
@@ -47,8 +49,10 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
       form.resetFields();
       dispatch(resetRegisterState());
       successMessage({
-        description: "Register success, please check email to navigate verify!",
+        title: "Đăng ký thành công",
+        description: "Đăng ký tài khoản thành công và vui lòng đăng nhập",
       });
+      nagigate(LoginPath);
     }
   }, [registerSuccess, dispatch, form]);
 
@@ -98,7 +102,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your last name",
+                    message: "Nhập họ",
                     validateTrigger: "onSubmit",
                   },
                 ]}
@@ -107,7 +111,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                   prefix={
                     <BankOutlined className={cx("register-input-icon")} />
                   }
-                  placeholder="Enter your last name"
+                  placeholder="Nhập tên"
                   className={cx("register-input")}
                 />
               </Form.Item>
@@ -124,7 +128,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
               >
                 <Input
                   prefix={<MailOutlined className={styles.inputIcon} />}
-                  placeholder="Email Address"
+                  placeholder="Địa chỉ email"
                   className={cx("register-input")}
                 />
               </Form.Item>
@@ -142,7 +146,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                   prefix={
                     <LockOutlined className={cx("register-input-icon")} />
                   }
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   iconRender={(visible) =>
                     visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                   }
@@ -157,7 +161,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please confirm your password",
+                    message: "Nhập lại mật khẩu",
                     validateTrigger: "onSubmit",
                   },
                   ({ getFieldValue }) => ({
@@ -193,7 +197,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 htmlType="submit"
                 className={cx("register-submit-button")}
               >
-                Đăng kí
+                Đăng ký
               </ButtonComponent>
             </Form.Item>
           </Form>

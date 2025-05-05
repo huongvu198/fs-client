@@ -66,10 +66,10 @@ export const MENU_TYPE = {
 
 export const DATA_SIDEBAR = [
   {
-    key: "shop",
-    label: "Shop",
-    slug: "/shop",
-    hasDropdown: true,
+    key: "famale",
+    label: "Nữ",
+    slug: "/female",
+    hasDropdown: false,
     subItems: [
       { key: "pant", label: "Pant", slug: "/pant" },
       { key: "shirt", label: "Shirt", slug: "/shirt" },
@@ -77,14 +77,19 @@ export const DATA_SIDEBAR = [
     ],
   },
   {
-    key: "onsale",
-    label: "On Sale",
-    slug: "/onsale",
+    key: "male",
+    label: "Nam",
+    slug: "/male",
   },
+  // {
+  //   key: "about",
+  //   label: "Về chúng tôi",
+  //   slug: "/about",
+  // },
   {
-    key: "newarrival",
-    label: "New Arrival",
-    slug: "/newArrival",
+    key: "news",
+    label: "Tin tức",
+    slug: "/news",
   },
 ];
 

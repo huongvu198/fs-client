@@ -30,115 +30,113 @@ const cx = classNames.bind(styles);
 const initialReviews = [
   {
     id: "1",
-    author: "Samantha D.",
+    author: "Nguyễn Thị Lan",
     rating: 4.5,
     verified: true,
     content:
-      "I absolutely love this t-shirt! The design is unique and the fabric feels so comfortable. As a fellow designer, I appreciate the attention to detail. It's become my favorite go-to shirt.",
-    date: "August 14, 2023",
+      "Tôi thực sự yêu chiếc áo phông này! Thiết kế rất độc đáo và vải rất thoải mái. Là một nhà thiết kế, tôi đánh giá cao sự chú ý đến chi tiết. Đây đã trở thành chiếc áo yêu thích của tôi.",
+    date: "14 tháng 8, 2025",
   },
   {
     id: "2",
-    author: "Alex M.",
+    author: "Trần Minh Tú",
     rating: 5,
     verified: true,
     content:
-      "This shirt exceeded my expectations! The colors are vibrant and the print quality is top-notch. Being a UI/UX designer myself, I'm quite picky about aesthetics, and this t-shirt definitely gets a thumbs up from me.",
-    date: "August 15, 2023",
+      "Chiếc áo này đã vượt quá mong đợi của tôi! Màu sắc rất sống động và chất lượng in ấn tuyệt vời. Là một nhà thiết kế UI/UX, tôi rất kỹ tính về thẩm mỹ, và chiếc áo này chắc chắn xứng đáng nhận sự đồng ý của tôi.",
+    date: "15 tháng 8, 2025",
   },
   {
     id: "3",
-    author: "Ethan R.",
+    author: "Lê Văn Hòa",
     rating: 3.5,
     verified: true,
     content:
-      "This t-shirt is a must-have for anyone who appreciates good design. The minimalistic yet stylish pattern caught my eye, and the fit is perfect. I can see the designer\'s touch in every aspect of this shirt.",
-    date: "August 16, 2023",
+      "Chiếc áo phông này là món đồ không thể thiếu đối với ai yêu thích thiết kế tốt. Họa tiết tối giản nhưng phong cách đã thu hút sự chú ý của tôi, và form dáng rất vừa vặn. Tôi có thể thấy dấu ấn của nhà thiết kế trong từng chi tiết của chiếc áo này.",
+    date: "16 tháng 8, 2025",
   },
   {
     id: "4",
-    author: "Olivia P.",
+    author: "Phan Thị Thu",
     rating: 5,
     verified: true,
     content:
-      "As a UI/UX enthusiast, I value simplicity and functionality. This t-shirt not only represents those principles but also feels great to wear. It\'s evident that the designer poured their creativity into making this t-shirt stand out.",
-    date: "August 17, 2023",
+      "Là một người yêu thích UI/UX, tôi rất coi trọng sự đơn giản và tính chức năng. Chiếc áo này không chỉ thể hiện những nguyên tắc đó mà còn cảm giác rất thoải mái khi mặc. Có thể thấy rằng nhà thiết kế đã dành rất nhiều sáng tạo để làm chiếc áo này nổi bật.",
+    date: "17 tháng 8, 2025",
   },
   {
     id: "5",
-    author: "Liam K.",
+    author: "Vũ Quang Huy",
     rating: 4,
     verified: true,
     content:
-      "This t-shirt is a fusion of comfort and creativity. The fabric is soft, and the design speaks volumes about the designer\'s skill. It\'s like wearing a piece of art that reflects my passion for both design and fashion.",
-    date: "August 18, 2023",
+      "Chiếc áo phông này là sự kết hợp giữa sự thoải mái và sự sáng tạo. Vải rất mềm mại và thiết kế nói lên tài năng của nhà thiết kế. Nó giống như mặc một tác phẩm nghệ thuật phản ánh đam mê của tôi đối với thiết kế và thời trang.",
+    date: "18 tháng 8, 2025",
     highlighted: true,
   },
   {
     id: "6",
-    author: "Ava H.",
+    author: "Nguyễn Thị Mai",
     rating: 4.5,
     verified: true,
     content:
-      "I\'m not just wearing a t-shirt; I\'m wearing a piece of design philosophy. The intricate details and thoughtful layout of the design make this shirt a conversation starter.",
-    date: "August 19, 2023",
+      "Tôi không chỉ mặc một chiếc áo phông; tôi đang mặc một tác phẩm của triết lý thiết kế. Những chi tiết tinh xảo và bố cục thiết kế đầy suy nghĩ khiến chiếc áo này trở thành một chủ đề trò chuyện.",
+    date: "19 tháng 8, 2025",
   },
 ];
 
 const additionalReviews = [
   {
     id: "7",
-    author: "Noah J.",
+    author: "Hoàng Đức Nam",
     rating: 5,
     verified: true,
     content:
-      "The attention to detail on this shirt is remarkable. The fabric quality is exceptional, and the design is both trendy and timeless. Definitely worth every penny!",
-    date: "August 20, 2023",
+      "Sự chú ý đến chi tiết trên chiếc áo này thật tuyệt vời. Chất liệu vải xuất sắc và thiết kế vừa hợp thời trang vừa trường tồn. Chắc chắn xứng đáng với từng đồng bỏ ra!",
+    date: "20 tháng 8, 2025",
   },
   {
     id: "8",
-    author: "Emma T.",
+    author: "Trương Thanh Tâm",
     rating: 4,
     verified: true,
     content:
-      "I've received so many compliments wearing this t-shirt. The design is unique and the fabric is incredibly soft. It's become my go-to shirt for both casual and semi-formal occasions.",
-    date: "August 21, 2023",
+      "Tôi đã nhận được rất nhiều lời khen khi mặc chiếc áo này. Thiết kế rất độc đáo và vải rất mềm mại. Nó đã trở thành chiếc áo yêu thích của tôi cho cả dịp thường ngày và bán chính thức.",
+    date: "21 tháng 8, 2025",
   },
   {
     id: "9",
-    author: "Jackson B.",
+    author: "Đặng Tiến Mạnh",
     rating: 3.5,
     verified: false,
     content:
-      "Overall good quality and design. The fit is slightly larger than expected, but the material feels premium. The print has held up well after several washes.",
-    date: "August 22, 2023",
+      "Chất lượng và thiết kế nhìn chung khá tốt. Form áo hơi rộng hơn mong đợi, nhưng chất liệu vải cảm giác cao cấp. Mực in vẫn giữ được sau vài lần giặt.",
+    date: "22 tháng 8, 2025",
   },
   {
     id: "10",
-    author: "Sophia C.",
+    author: "Nguyễn Thị Kim Anh",
     rating: 5,
     verified: true,
     content:
-      "This t-shirt perfectly balances style and comfort. The design is subtle yet distinctive, making it versatile for various occasions. I'm already planning to buy it in other colors!",
-    date: "August 23, 2023",
+      "Chiếc áo này hoàn hảo khi cân bằng giữa phong cách và sự thoải mái. Thiết kế tinh tế nhưng nổi bật, khiến nó trở nên linh hoạt cho nhiều dịp khác nhau. Tôi đã lên kế hoạch mua thêm các màu khác!",
+    date: "23 tháng 8, 2025",
   },
   {
     id: "11",
-    author: "Lucas P.",
+    author: "Lê Quang Minh",
     rating: 4.5,
     verified: true,
     content:
-      "As someone who values both aesthetics and functionality, I'm impressed with this t-shirt. The fabric breathes well during workouts, and the design maintains its vibrancy even after multiple washes.",
-    date: "August 24, 2023",
+      "Là người coi trọng cả thẩm mỹ và tính năng, tôi rất ấn tượng với chiếc áo này. Vải thấm hút mồ hôi tốt khi tập luyện, và thiết kế giữ được độ sáng màu ngay cả sau nhiều lần giặt.",
+    date: "24 tháng 8, 2025",
   },
 ];
 
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch<ApiDispatch>();
-  const {  loading } = useReduxSelector(
-    (state) => state.cart
-  );
+  const { loading } = useReduxSelector((state) => state.cart);
   const productData = useSelector(productById);
   const newArrivalsData = useSelector(newArrivals);
   const navigate = useNavigate();
@@ -246,9 +244,9 @@ const ProductDetail = () => {
     const selectedSizeObj = availableSize.find(
       (size) => size.id === selectedSize
     );
-  
+
     if (!selectedColorObj || !selectedSizeObj) return;
-  
+
     const cartDetail: ICartResponse = {
       id: "",
       items: [
@@ -276,7 +274,7 @@ const ProductDetail = () => {
         },
       ],
     };
-  
+
     if (hasAccessToken() || hasLocalAccessToken()) {
       try {
         const resultAction = await dispatch(
@@ -287,13 +285,16 @@ const ProductDetail = () => {
             quantity: quantity,
           })
         );
-  
+
         if (addToCartApi.fulfilled.match(resultAction)) {
           successMessage({
             description: `Đã thêm sản phẩm vào giỏ hàng!`,
             title: "Giỏ hàng",
           });
-          localStorage.setItem("cartList", JSON.stringify(resultAction.payload)); 
+          localStorage.setItem(
+            "cartList",
+            JSON.stringify(resultAction.payload)
+          );
         } else {
           throw new Error();
         }
@@ -311,20 +312,21 @@ const ProductDetail = () => {
             items: [],
           })
       );
-  
+
       const existingItemIndex = tempCart.items.findIndex(
         (item) =>
           item.product.id === cartDetail.items[0].product.id &&
           item.variant.id === cartDetail.items[0].variant.id &&
           item.size.id === cartDetail.items[0].size.id
       );
-  
+
       if (existingItemIndex !== -1) {
-        tempCart.items[existingItemIndex].quantity += cartDetail.items[0].quantity;
+        tempCart.items[existingItemIndex].quantity +=
+          cartDetail.items[0].quantity;
       } else {
         tempCart.items.push(cartDetail.items[0]);
       }
-  
+
       localStorage.setItem("tempCart", JSON.stringify(tempCart));
       setCart(tempCart);
       successMessage({
@@ -333,7 +335,6 @@ const ProductDetail = () => {
       });
     }
   };
-  
 
   const breadCrumbItems = [
     productData.segment.name,
@@ -406,7 +407,8 @@ const ProductDetail = () => {
 
             <div className={cx("product-options")}>
               <div className={cx("product-color-selector")}>
-                <h3>Chọn màu xắc: {selectorColor}</h3>
+                {/* <h3>Chọn màu xắc: {selectorColor}</h3> */}
+                <h3>Chọn màu xắc </h3>
                 <div className={cx("product-color-options")}>
                   {colorOptions
                     .filter((color) => color.isActive)
@@ -456,6 +458,7 @@ const ProductDetail = () => {
                     value={quantity}
                     onChange={handleQuantityChange}
                     className={cx("product-quantity-input")}
+                    controls={false}
                   />
                   <Button
                     icon={<PlusOutlined />}

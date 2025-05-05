@@ -20,6 +20,7 @@ import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
 import { useCartContext } from "contexts/cartContext"; // Assuming you have a cartContext
 import { CartRequest } from "interfaces/cart.interface";
+import { RegisterPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 
@@ -29,19 +30,17 @@ const LoginRegistrationForm: React.FC = () => {
   const { data, loading, error, loginSuccess } = useReduxSelector(
     (state) => state.login
   );
-  const { dataCart } = useReduxSelector(
-    (state) => state.cart
-  );
+  const { dataCart } = useReduxSelector((state) => state.cart);
   const { errorMessage } = useNotification();
   const navigate = useNavigate();
-  const { setCart } = useCartContext();  
+  const { setCart } = useCartContext();
 
   // Hàm format lại request giỏ hàng từ localStorage
-  const formatCartRequest =  (): CartRequest[] => {
+  const formatCartRequest = (): CartRequest[] => {
     const tempCart = localStorage.getItem("tempCart");
     if (!tempCart) return [];
     const cart = JSON.parse(tempCart);
-    
+
     return cart.items.map((item: any) => ({
       productId: item.product?.id || "",
       variantId: item.variant?.id || "",
@@ -68,25 +67,24 @@ const LoginRegistrationForm: React.FC = () => {
       setLocalToken(data.token);
       setRefreshToken(data.refreshToken);
       setLocalRefreshToken(data.refreshToken);
-  
+
       const cartRequest = formatCartRequest();
       if (cartRequest.length > 0) {
         // Đợi addToCartImportApi hoàn thành
         await dispatch(addToCartImportApi(cartRequest));
       }
-  
+
       // Sau khi thêm cart xong thì mới gọi getCartByUserApi
       await dispatch(getCartByUserApi());
-  
+
       navigate("/");
       localStorage.removeItem("tempCart");
     };
-  
+
     if (loginSuccess) {
       handleLoginSuccess();
     }
   }, [loginSuccess, dispatch, form, data]);
-  
 
   useEffect(() => {
     if (hasAccessToken() || hasLocalAccessToken()) {
@@ -131,26 +129,41 @@ const LoginRegistrationForm: React.FC = () => {
                   className={cx("login-form-item")}
                   rules={[{ required: true, message: "Vui lòng nhập email!" }]}
                 >
-                  <Input placeholder="Email/SĐT" className={cx("login-form-input")} />
+                  <Input
+                    placeholder="Email/SĐT"
+                    className={cx("login-form-input")}
+                  />
                 </Form.Item>
 
                 <Form.Item
                   name="password"
                   className={cx("login-form-item")}
-                  rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu!" },
+                  ]}
                 >
-                  <Input.Password placeholder="Mật khẩu" className={cx("login-form-input")} />
+                  <Input.Password
+                    placeholder="Mật khẩu"
+                    className={cx("login-form-input")}
+                  />
                 </Form.Item>
 
                 <div className={cx("login-form-remember")}>
                   <Form.Item name="remember" valuePropName="checked" noStyle>
                     <Checkbox>Ghi nhớ đăng nhập</Checkbox>
                   </Form.Item>
-                  <a href="#" className={cx("forgot-link")}>Quên mật khẩu?</a>
+                  <a href="#" className={cx("forgot-link")}>
+                    Quên mật khẩu?
+                  </a>
                 </div>
 
                 <Form.Item className={cx("login-submit-item")}>
-                  <ButtonComponent type="primary" htmlType="submit" block isLoading={loading}>
+                  <ButtonComponent
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    isLoading={loading}
+                  >
                     ĐĂNG NHẬP
                   </ButtonComponent>
                 </Form.Item>
@@ -165,7 +178,11 @@ const LoginRegistrationForm: React.FC = () => {
                 Nếu bạn chưa có tài khoản, hãy sử dụng tùy chọn này để truy cập
                 biểu mẫu đăng ký.
               </p>
-              <ButtonComponent type="primary" className={cx("register-button")} block>
+              <ButtonComponent
+                type="primary"
+                className={cx("register-button")}
+                onClick={() => navigate(RegisterPath)}
+              >
                 ĐĂNG KÝ
               </ButtonComponent>
             </div>

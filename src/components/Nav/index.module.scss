@@ -9,11 +9,21 @@
   box-shadow: 0px -1px 0px 0px #f0f0f0 inset;
   border-bottom: 1px solid #f0f0f0;
   :global(.nav-component) {
+    // display: flex;
+    // align-items: center;
+    // justify-content: flex-start;
+    // gap: 30px;
+    // width: 95%;
+    // margin: auto;
+
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 30px;
-    width: 95%;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto; // căn giữa theo chiều ngang
+    padding: 0 15px; // đảm bảo có padding hai bên
     :global(.logo) {
       display: flex;
       flex-grow: 1;
@@ -29,6 +39,21 @@
       :global(.btn-expaned-sp) {
         display: block;
         @media (min-width: 992px) {
+          display: none;
+        }
+      }
+      :global(.brand-name) {
+        margin-left: 10px;
+        font-size: 22px;
+        font-weight: 600;
+        font-family:
+          "Pacifico", cursive; // Hoặc chọn font khác nếu bạn dùng Google Fonts
+        color: #ea7098; // Màu hồng đậm hiện đại
+        cursor: pointer;
+        user-select: none;
+        letter-spacing: 1px;
+
+        @media (max-width: 768px) {
           display: none;
         }
       }

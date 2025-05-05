@@ -197,6 +197,11 @@
     :global(.ant-input-number-handle-wrap) {
       display: none;
     }
+    :global(.ant-input-number-input) {
+      text-align: center;
+      border: none;
+      outline: none;
+    }
   }
 }
 

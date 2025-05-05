@@ -27,9 +27,10 @@ interface ReviewsProps {
 }
 
 const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
-    const [displayedReviews, setDisplayedReviews] = useState<ReviewData[]>(initialReviews);
-    const [hasLoadedMore, setHasLoadedMore] = useState(false);
-    const [, setSortOption] = useState('latest');
+  const [displayedReviews, setDisplayedReviews] =
+    useState<ReviewData[]>(initialReviews);
+  const [hasLoadedMore, setHasLoadedMore] = useState(false);
+  const [, setSortOption] = useState("latest");
 
   const handleLoadMore = () => {
     if (!hasLoadedMore) {
@@ -70,7 +71,7 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
     <div className={cx("reviews-container")}>
       <div className={cx("reviews-header")}>
         <h2 className={cx("reviews-title")}>
-          All Reviews <span className={cx("review-count")}>(451)</span>
+          Tất cả đánh giá <span className={cx("review-count")}>(451)</span>
         </h2>
         <div className={cx("reviews-controls")}>
           <Button icon={<FilterOutlined />} className={cx("filter-button")} />
@@ -80,12 +81,12 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
             className={cx("sort-select")}
             suffixIcon={null}
           >
-            <Option value="latest">Latest</Option>
-            <Option value="highest">Highest Rated</Option>
-            <Option value="lowest">Lowest Rated</Option>
+            <Option value="latest">Mới nhất</Option>
+            <Option value="highest">Đánh giá cao nhất</Option>
+            <Option value="lowest">Đánh giá thấp nhất</Option>
           </Select>
           <Button type="primary" className={cx("write-review-button")}>
-            Write a Review
+            Viết đánh giá
           </Button>
         </div>
       </div>

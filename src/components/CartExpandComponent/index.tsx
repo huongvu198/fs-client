@@ -69,7 +69,8 @@ const CartExpand = () => {
   useEffect(() => {
     if (dataCart) {
       setCart(() => {
-        const localKey = hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
+        const localKey =
+          hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
         localStorage.setItem(localKey, JSON.stringify(dataCart));
 
         return dataCart;
@@ -111,13 +112,15 @@ const CartExpand = () => {
             >
               XEM GIỎ HÀNG
             </ButtonComponent>
-            <ButtonComponent
-              block
-              onClick={goToLogin}
-              className={cx("login-button")}
-            >
-              ĐĂNG NHẬP
-            </ButtonComponent>
+            {!hasAccessToken() && (
+              <ButtonComponent
+                block
+                onClick={goToLogin}
+                className={cx("login-button")}
+              >
+                ĐĂNG NHẬP
+              </ButtonComponent>
+            )}
           </div>
         }
       >
@@ -151,12 +154,14 @@ const CartExpand = () => {
         </div>
 
         <Divider />
-        <div className={cx("cart-total")}>
-          <span>Tổng cộng:</span>
-          <span className={cx("cart-total-price")}>
-            {formatPrice(getTotalAmount())}
-          </span>
-        </div>
+        {cart && (
+          <div className={cx("cart-total")}>
+            <span>Tổng cộng:</span>
+            <span className={cx("cart-total-price")}>
+              {formatPrice(getTotalAmount())}
+            </span>
+          </div>
+        )}
       </Drawer>
     </div>
   );

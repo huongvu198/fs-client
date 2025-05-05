@@ -34,7 +34,7 @@ const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<ICartResponse | null>(null);
+  const [, setCartItems] = useState<ICartResponse | null>(null);
   const { setCart } = useCartContext(); 
   const Logout = () => {
     const handleLogout = () => {
@@ -149,7 +149,7 @@ export default function Nav({ handleShowSideBar }: Props) {
               htmlType="button"
               className={cx("button-login")}
               type="primary"
-              onClick={(e) => handleLogin()}
+              onClick={() => handleLogin()}
             >
               Đăng Nhập
             </ButtonComponent>

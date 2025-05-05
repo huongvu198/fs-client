@@ -6,7 +6,7 @@ import styles from "./index.module.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ButtonComponent from "@components/ButtonComponent";
-import { Product } from "interfaces/product.interface";
+import { IProductResponse, Product } from "interfaces/product.interface";
 import { FormattedNumber } from "react-intl";
 import { NavigateFunction } from "react-router-dom";
 import { ProductDetailPath } from "@config/routerConfig";
@@ -19,7 +19,7 @@ interface ProductProps {
   isSlider?: boolean;
   justifyContent: string;
   title?: string;
-  products: Product[];
+  products: IProductResponse[];
   tag?: string;
   navigate: NavigateFunction;
 }

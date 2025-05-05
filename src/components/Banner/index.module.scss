@@ -6,16 +6,14 @@
   display: flex;
   background-color: #f2f0f1;
   max-width: 100%;
-  max-height: $min-height-user-layout-pc;
+  max-height: 700px;
   margin: 0 auto;
+  padding-top: 80px;
 }
 
 .banner-content-side {
   flex: 1;
   padding: 0rem 0rem 0rem 5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   position: relative;
   height: $min-height-user-layout-pc;
 }
@@ -118,7 +116,7 @@
 }
 
 .star-decor1 {
-  top: 15%;
+  top: 14%;
   right: 15%;
   background-color: #000;
 }

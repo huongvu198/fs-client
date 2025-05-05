@@ -12,7 +12,7 @@ export interface IProduct {
 
 export interface IVariant {
   color: string;
-  image: string;
+  image?: string;
   isActive: boolean;
   sizes: ISize[];
 }

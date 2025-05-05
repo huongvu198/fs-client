@@ -14,6 +14,8 @@ export const endPoint = {
   },
   CART: {
     ADD_TO_CART: "/cart",
-    ADD_TO_CART_IMPORT: "/cart/import"
+    ADD_TO_CART_IMPORT: "/cart/import",
+    DELETE_CART_ITEM: "/cart/item/{itemId}",
+    GET_CART_BY_USER: "/cart"
   },
 };

@@ -12,6 +12,8 @@ const CartList = lazy(() => import("@pages/CartList"));
 const Login = lazy(() => import("@pages/Login"));
 const Verify = lazy(() => import("@pages/VerifyEmail"));
 const Register = lazy(() => import("@pages/Register"));
+const ShippingDetails = lazy(() => import("@pages/ShippingDetail"));
+const PaymentMethod = lazy(() => import("@pages/PaymentMethod"));
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -30,17 +32,12 @@ const RouteComponent = () => {
           element: <ProductDetail />,
         },
         {
-          path: "/cartList",
-          element: <CartList />,
-        },
-      ],
-    },
-    {
-      element: <AuthLayout />,
-      children: [
-        {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/cartList",
+          element: <CartList />,
         },
         {
           path: "/verify",
@@ -49,6 +46,19 @@ const RouteComponent = () => {
         {
           path: "/register",
           element: <Register />,
+        },
+      ],
+    },
+    {
+      element: <AuthLayout />,
+      children: [
+        {
+          path: "/shippingDetails",
+          element: <ShippingDetails />,
+        },
+        {
+          path: "/paymentMethod",
+          element: <PaymentMethod />,
         },
       ],
     },

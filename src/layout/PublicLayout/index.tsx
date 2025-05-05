@@ -10,7 +10,7 @@ import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
 import { hasAccessToken } from "@config/accessToken";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { getUserApi } from "@redux/user";
+import { getUserApi } from "@redux/userSlice";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
 
 const cx = classNames.bind(styles);
@@ -37,6 +37,7 @@ const PublicLayout = () => {
     }
   }, [resize]);
   useEffect(() => {
+    
     const token = hasAccessToken();
     const publicPaths = ["/login", "/register", "/verify"];
 
@@ -51,6 +52,7 @@ const PublicLayout = () => {
       }
     }
   }, [location, navigate, dispatch, getUserSuccess]);
+
   return (
     <>
       <div>

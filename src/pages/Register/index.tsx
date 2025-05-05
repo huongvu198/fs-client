@@ -12,7 +12,7 @@ import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { registerUserApi, resetRegisterState } from "@redux/register";
+import { registerUserApi, resetRegisterState } from "@redux/registerSlice";
 import useNotification from "@hooks/useNotification";
 import Spinner from "@components/Spinner";
 

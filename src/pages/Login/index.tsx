@@ -4,13 +4,23 @@ import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useReduxSelector } from "@hooks/useRedux";
-import { loginUserApi, resetLoginState } from "@redux/login";
 import useNotification from "@hooks/useNotification";
 import { useNavigate } from "react-router-dom";
-import { hasAccessToken, hasLocalAccessToken, setAccessToken, setLocalRefreshToken, setLocalToken, setRefreshToken } from "@config/accessToken";
-import { addToCartImportApi } from "@redux/cart";
+import {
+  hasAccessToken,
+  hasLocalAccessToken,
+  setAccessToken,
+  setLocalRefreshToken,
+  setLocalToken,
+  setRefreshToken,
+} from "@config/accessToken";
 import { useDispatch } from "react-redux";
 import { ApiDispatch } from "@reduxjs/toolkit";
+import { loginUserApi, resetLoginState } from "@redux/loginSlice";
+import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
+import { useCartContext } from "contexts/cartContext"; // Assuming you have a cartContext
+import { CartRequest } from "interfaces/cart.interface";
+
 const cx = classNames.bind(styles);
 
 const LoginRegistrationForm: React.FC = () => {
@@ -19,62 +29,83 @@ const LoginRegistrationForm: React.FC = () => {
   const { data, loading, error, loginSuccess } = useReduxSelector(
     (state) => state.login
   );
-  const { dataCart, addToCartSuccess } = useReduxSelector((state) => state.cart);
+  const { dataCart } = useReduxSelector(
+    (state) => state.cart
+  );
   const { errorMessage } = useNotification();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { setCart } = useCartContext();  
 
-  const getCartListFromLocal = () => {
-    const cartList = JSON.parse(localStorage.getItem("cartList") || "{}");
-    const getItems = cartList.items?.map((item: any) => ({
-      productId: item.product?.id,
-      variantId: item.variant?.id,
-      sizeId: item.size?.id,
-      quantity: item.quantity,
+  // Hàm format lại request giỏ hàng từ localStorage
+  const formatCartRequest =  (): CartRequest[] => {
+    const tempCart = localStorage.getItem("tempCart");
+    if (!tempCart) return [];
+    const cart = JSON.parse(tempCart);
+    
+    return cart.items.map((item: any) => ({
+      productId: item.product?.id || "",
+      variantId: item.variant?.id || "",
+      sizeId: item.size?.id || "",
+      quantity: item.quantity || 0,
     }));
-    return getItems;
-  }
+  };
 
   const onLogin = (values: any) => {
     const { email, password } = values;
     dispatch(
       loginUserApi({
         email: email,
-        password: password
+        password: password,
       })
-    )
+    );
   };
-  
+
   useEffect(() => {
-    if (loginSuccess) {
+    const handleLoginSuccess = async () => {
       form.resetFields();
       dispatch(resetLoginState());
-      setAccessToken(data.token)
-      setLocalToken(data.token)
-      setRefreshToken(data.refreshToken)
-      setLocalRefreshToken(data.refreshToken)
-      const cartRequest = getCartListFromLocal();
-      dispatch(addToCartImportApi(cartRequest))
-      navigate("/")
+      setAccessToken(data.token);
+      setLocalToken(data.token);
+      setRefreshToken(data.refreshToken);
+      setLocalRefreshToken(data.refreshToken);
+  
+      const cartRequest = formatCartRequest();
+      if (cartRequest.length > 0) {
+        // Đợi addToCartImportApi hoàn thành
+        await dispatch(addToCartImportApi(cartRequest));
       }
-    }, [loginSuccess, dispatch, form]);
+  
+      // Sau khi thêm cart xong thì mới gọi getCartByUserApi
+      await dispatch(getCartByUserApi());
+  
+      navigate("/");
+      localStorage.removeItem("tempCart");
+    };
+  
+    if (loginSuccess) {
+      handleLoginSuccess();
+    }
+  }, [loginSuccess, dispatch, form, data]);
+  
 
   useEffect(() => {
     if (hasAccessToken() || hasLocalAccessToken()) {
-      navigate("/")
+      navigate("/");
     }
-  }, [hasAccessToken(), hasLocalAccessToken()])
+  }, [hasAccessToken(), hasLocalAccessToken()]);
 
   useEffect(() => {
-    if(error) {
-      errorMessage({ description: error })
+    if (error) {
+      errorMessage({ description: error });
     }
-  },[error])
+  }, [error]);
 
+  // Khi lấy giỏ hàng thành công, update context
   useEffect(() => {
-    if(addToCartSuccess) {
-      localStorage.setItem("cartList", dataCart)
+    if (dataCart) {
+      setCart(dataCart); // Cập nhật cart vào context
     }
-  },[addToCartSuccess])
+  }, [dataCart, setCart]);
 
   return (
     <>
@@ -98,39 +129,24 @@ const LoginRegistrationForm: React.FC = () => {
                 <Form.Item
                   name="email"
                   className={cx("login-form-item")}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập email hoặc số điện thoại!",
-                    },
-                  ]}
+                  rules={[{ required: true, message: "Vui lòng nhập email!" }]}
                 >
-                  <Input
-                    placeholder="Email/SĐT"
-                    className={cx("login-form-input")}
-                  />
+                  <Input placeholder="Email/SĐT" className={cx("login-form-input")} />
                 </Form.Item>
 
                 <Form.Item
                   name="password"
                   className={cx("login-form-item")}
-                  rules={[
-                    { required: true, message: "Vui lòng nhập mật khẩu!" },
-                  ]}
+                  rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
                 >
-                  <Input.Password
-                    placeholder="Mật khẩu"
-                    className={cx("login-form-input")}
-                  />
+                  <Input.Password placeholder="Mật khẩu" className={cx("login-form-input")} />
                 </Form.Item>
 
                 <div className={cx("login-form-remember")}>
                   <Form.Item name="remember" valuePropName="checked" noStyle>
                     <Checkbox>Ghi nhớ đăng nhập</Checkbox>
                   </Form.Item>
-                  <a href="#" className={cx("forgot-link")}>
-                    Quên mật khẩu?
-                  </a>
+                  <a href="#" className={cx("forgot-link")}>Quên mật khẩu?</a>
                 </div>
 
                 <Form.Item className={cx("login-submit-item")}>
@@ -149,16 +165,7 @@ const LoginRegistrationForm: React.FC = () => {
                 Nếu bạn chưa có tài khoản, hãy sử dụng tùy chọn này để truy cập
                 biểu mẫu đăng ký.
               </p>
-              <p className={cx("login-description")}>
-                Bằng cách cung cấp các thông tin chi tiết của bạn, quá trình mua
-                hàng sẽ là một trải nghiệm thú vị và nhanh chóng hơn!
-              </p>
-
-              <ButtonComponent
-                type="primary"
-                className={cx("register-button")}
-                block
-              >
+              <ButtonComponent type="primary" className={cx("register-button")} block>
                 ĐĂNG KÝ
               </ButtonComponent>
             </div>

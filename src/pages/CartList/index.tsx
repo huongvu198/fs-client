@@ -1,4 +1,3 @@
-// ShoppingCart.tsx
 import React, { useState, useEffect } from "react";
 import { Button, Input } from "antd";
 import {
@@ -11,57 +10,25 @@ import {
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import BreadcrumbComponent from "@components/BreadCrumbComponent";
+import { ICartResponse } from "interfaces/cart.interface";
+import { hasAccessToken } from "@config/accessToken";
+import { useDispatch } from "react-redux";
+import { useCartContext } from "contexts/cartContext";
+import { addToCartApi, deleteCartItemApi } from "@redux/cartSlice";
+import useNotification from "@hooks/useNotification";
 
 const cx = classNames.bind(styles);
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-  size: string;
-  color: string;
-}
-
 const breadCrumbItems = ["Cart"];
-const initialCartItems: CartItem[] = [
-  {
-    id: "1",
-    name: "Gradient Graphic T-shirt",
-    price: 145,
-    quantity: 1,
-    image:
-      "https://s3-alpha-sig.figma.com/img/f04a/017d/b094f9a20c2328f54a31b153619784f3?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=tYJyKcr6xdA9nfd6RDxQEkku5PtvQ44DC1rA7dwrW3GUl-EpC9McVqRsKjiVovY6m1etnJGPlnYUsjSQl6K7CfxNHuKgsP~vDCLIDwkVtoPcOZwS3u7dpuwq8RvZhyTRBl5jumVhqOaXtmr4B2RIA0zhqvkIt3RmW8GH7bbVr06U9KfEmRLiQSeOwX2JEjpdLlCY-~3IUer-kxqkJ3ZmHhgFv86mrEZV4C-NK~Ni0lOrKW0YDgHi3Qh4MiBRsudicoCN1p-HJbjvqrreGpZ59Ziazrwqmpv7-rgiW67DqXP9~VMlYUWPd77TN0bTH-IIKWj4N4uexf5eto-xVaWHZA__",
-    size: "L",
-    color: "White",
-  },
-  {
-    id: "2",
-    name: "Checkered Shirt",
-    price: 180,
-    quantity: 1,
-    image:
-      "https://s3-alpha-sig.figma.com/img/bbf4/11c2/5fc84f87eeac1062fbe47f49c192d4f2?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=cV0aTKe7ROcB7pIRD8--K7T37tbmfUyCeJHNSOamHdsDVLlLQwAdV1bna2u-lwnAJFJjY6Y6mcMq1m1dmM7Kx3dhyqRziiUqrsnFy0heyU3f-YTvLxpMknKWwPQhhNCJYZG8TPhzu95EjI7qe03FiD0xMdXMJ4WO19Nhf8JDG4D5xunC3eaGB7SRCqtjeqh2rCPfjvV~-28Wed6UOciZF6ceDhmaZxDhTfwqT1jripn0La9dBkQ~cWQV2BHA1M5U-bUAbwpAPHrvnjzd8BFjI3rhu~vNvGMsRnYB4XAI-5nfdBPgofN-vsbhlVUxw8wo5w91~HzxTfWlGZkS4xR30Q__",
-    size: "M",
-    color: "Red",
-  },
-  {
-    id: "3",
-    name: "Skinny Fit Jeans",
-    price: 240,
-    quantity: 1,
-    image:
-      "https://s3-alpha-sig.figma.com/img/769b/9d60/ff941dde9bc0e54431b8d8fe3182f5e9?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Nohd88fSNjXWI-rC6yIZbg0TjW5pASd7mVYH~IrJLOdQhkNVMnCXKYRaYUMq3uCq0AABDVxnBbR3muegY4ZEZmF-~cxCsVFfkSiCpKLelhfIfe~gOuVNZabxB96Pk7cDQhzqRbNt9AExvtIdnBp3YZr9~1Y-S5Ynbf1PkwQBpl7s8N9rL424M4x5Oh0dbbyjraRVJwXoRXJ4j2rHmkt~8Qctltag-We1Pk15ASG8aiEG8J7YZIOVN3McSF7u8Dx12I8ZLLhTeICtu0mAysUTGfFF5KMV7K33H7rHUchWPXjbvR~opc78JSj0h1FhR8XqCs4tSWrIyH2B8GNRQEGx7g__",
-    size: "XL",
-    color: "Blue",
-  },
-];
+const initialCartItems: ICartResponse = { id: "", items: [] };
 
 const CartList = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+  const [cartItems, setCartItems] = useState<ICartResponse>(initialCartItems);
   const [promoCode, setPromoCode] = useState<string>("");
   const [discount, setDiscount] = useState<number>(20);
+  const dispatch = useDispatch();
+  const { setCart } = useCartContext();
+  const { successMessage } = useNotification();
   const deliveryFee = 15;
 
   const [subtotal, setSubtotal] = useState<number>(0);
@@ -69,8 +36,8 @@ const CartList = () => {
   const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    const calcSubtotal = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+    const calcSubtotal = cartItems.items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
       0
     );
     const calcDiscountAmount = (calcSubtotal * discount) / 100;
@@ -81,18 +48,75 @@ const CartList = () => {
     setTotal(calcTotal);
   }, [cartItems, discount]);
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
+  const handleQuantityChange = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  
+    const item = cartItems.items.find((i) => i.id === id);
+    if (!item) return;
+  
+    const hasToken = hasAccessToken();
+  
+    if (!hasToken) {
+      // Không có token => Chỉ update local và Context
+      setCart((prevCart) => {
+        if (!prevCart) return null;
+        const updatedCart = {
+          ...prevCart,
+          items: prevCart.items.map((item) =>
+            item.id === id ? { ...item, quantity: newQuantity } : item
+          ),
+        };
+        localStorage.setItem("tempCart", JSON.stringify(updatedCart));
+        setCartItems(updatedCart);
+        return updatedCart;
+      });
+    } else {
+      // Có token => Gọi API addToCart
+      try {
+        const payload = {
+          productId: item.product.id,
+          sizeId: item.size.id,
+          variantId: item.variant.id,
+          quantity: newQuantity,
+        };
+  
+        const updatedCart = await dispatch(addToCartApi(payload)).unwrap();
+        setCart(updatedCart);       // cập nhật context
+        setCartItems(updatedCart);  // cập nhật UI
+      } catch (error) {
+        console.error("Lỗi khi cập nhật số lượng sản phẩm", error);
+      }
+    }
   };
+  
 
-  const handleRemoveItem = (id: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const handleRemoveItem = async (id: string) => {
+    const hasToken = hasAccessToken();
+
+    if (!hasToken) {
+      // Không có token => Xóa local và cập nhật Context + State
+      setCart((prevCart) => {
+        if (!prevCart) return null;
+        const updatedCart = {
+          ...prevCart,
+          items: prevCart.items.filter((item) => item.id !== id),
+        };
+
+        localStorage.setItem("tempCart", JSON.stringify(updatedCart));
+        setCartItems(updatedCart); // <- Cập nhật state
+        return updatedCart;
+      });
+    } else {
+      // Có token => Gọi API xóa
+      try {
+        const updatedCart = await dispatch(deleteCartItemApi({ id })).unwrap();
+        setCart(updatedCart);
+        setCartItems(updatedCart); // <- Cập nhật state
+        successMessage({ title: "Giỏ hàng", description: "Xóa thành công!" });
+      } catch (error) {
+        console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", error);
+      }
+    }
   };
 
   const handlePromoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +129,24 @@ const CartList = () => {
     }
   };
 
+  useEffect(() => {
+    const loadCart = () => {
+      const localStorageKey = hasAccessToken() ? "cartList" : "tempCart";
+      const localCart = localStorage.getItem(localStorageKey);
+
+      if (localCart) {
+        try {
+          const parsedCart: ICartResponse = JSON.parse(localCart);
+          setCartItems(parsedCart);
+        } catch (error) {
+          console.error("Failed to parse cart from localStorage", error);
+        }
+      }
+    };
+
+    loadCart();
+  }, []);
+
   return (
     <>
       <div className={cx("cart-container")}>
@@ -114,17 +156,24 @@ const CartList = () => {
 
         <div className={cx("cart-content")}>
           <div className={cx("cart-items")}>
-            {cartItems.map((item) => (
+            {cartItems.items.map((item) => (
               <div key={item.id} className={cx("cart-item")}>
                 <div className={cx("product-image")}>
-                  <img src={item.image} alt={item.name} />
+                  <img src={item.variant.image} alt={item.product.name} />
                 </div>
 
                 <div className={cx("product-details")}>
-                  <h3 className={cx("product-name")}>{item.name}</h3>
-                  <p className={cx("product-size")}>Size: {item.size}</p>
-                  <p className={cx("product-color")}>Color: {item.color}</p>
-                  <p className={cx("product-price")}>${item.price}</p>
+                  <h3 className={cx("product-name")}>{item.product.name}</h3>
+                  <p className={cx("product-size")}>Size: {item.size.size}</p>
+                  <p className={cx("product-color")}>
+                    Color: {item.variant.color}
+                  </p>
+                  <p className={cx("product-price")}>${item.product.price}</p>
+                  {item.product.discountPrice && (
+                    <p className={cx("product-discount")}>
+                      Discount Price: ${item.product.discountPrice}
+                    </p>
+                  )}
                 </div>
 
                 <Button
@@ -157,7 +206,7 @@ const CartList = () => {
               </div>
             ))}
 
-            {cartItems.length === 0 && (
+            {cartItems.items.length === 0 && (
               <div className={cx("empty-cart")}>
                 <p>Your cart is empty</p>
               </div>
@@ -209,7 +258,7 @@ const CartList = () => {
               size="large"
               block
               className={cx("checkout-button")}
-              disabled={cartItems.length === 0}
+              disabled={cartItems.items.length === 0}
             >
               Go to Checkout <ArrowRightOutlined />
             </Button>

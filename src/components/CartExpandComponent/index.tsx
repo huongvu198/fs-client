@@ -2,23 +2,22 @@ import { useEffect, useState } from "react";
 import { Drawer, Button, InputNumber, Divider, Badge } from "antd";
 import { ShoppingCartOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import styles from "./index.module.scss";
 import classNames from "classnames/bind";
+import styles from "./index.module.scss";
 import ButtonComponent from "@components/ButtonComponent";
-import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
+import { useCartContext } from "contexts/cartContext";
+import { useReduxSelector } from "@hooks/useRedux";
+import useNotification from "@hooks/useNotification";
 
 const cx = classNames.bind(styles);
 
-interface CartExpandProps {
-  cartItems: ICartResponse;
-  setCartItems: React.Dispatch<React.SetStateAction<ICartResponse>>;
-}
-
-const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
+const CartExpand = () => {
   const [visible, setVisible] = useState(false);
-
   const navigate = useNavigate();
+  const { setCart, cart } = useCartContext();
+  const dataCart = useReduxSelector((state) => state.cart.dataCart);
+  const { successMessage } = useNotification();
 
   const showDrawer = () => {
     setVisible(true);
@@ -28,61 +27,23 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
     setVisible(false);
   };
 
-  useEffect(() => {
-    const syncCartFromLocalStorage = () => {
-      if (visible && !hasAccessToken() && !hasLocalAccessToken()) {
-        const storedCart = localStorage.getItem("tempCart");
-        if (storedCart) {
-          try {
-            const parsed = JSON.parse(storedCart);
-            if (
-              JSON.stringify(parsed.items) !== JSON.stringify(cartItems.items)
-            ) {
-              setCartItems(parsed);
-            }
-          } catch (err) {
-            console.error("Giỏ hàng trong localStorage không hợp lệ", err);
-            setCartItems({ id: "", items: [] });
-          }
-        }
-      } else if (hasAccessToken() && hasLocalAccessToken()) {
-        const cartList = localStorage.getItem("cartList");
-        if (cartList) {
-          try {
-            const parsed = JSON.parse(cartList);
-            if (
-              JSON.stringify(parsed.items) !== JSON.stringify(cartItems.items)
-            ) {
-              setCartItems(parsed);
-            }
-          } catch (err) {
-            console.error("Giỏ hàng người dùng không hợp lệ", err);
-            setCartItems({ id: "", items: [] });
-          }
-        }
-      }
-    };
-
-    syncCartFromLocalStorage();
-
-    const interval = setInterval(syncCartFromLocalStorage, 1000);
-
-    return () => clearInterval(interval);
-  }, [visible, cartItems, setCartItems]);
-
   const handleQuantityChange = (id: string, value: number | null) => {
-    if (!value) return;
+    if (!value || !cart) return;
 
-    setCartItems((prev) => ({
-      ...prev,
-      items: prev.items.map((item) =>
-        item.id === id ? { ...item, quantity: value } : item
-      ),
-    }));
+    setCart((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        items: prev.items.map((item) =>
+          item.id === id ? { ...item, quantity: value } : item
+        ),
+      };
+    });
   };
 
   const getTotalAmount = () => {
-    return cartItems.items.reduce(
+    if (!cart) return 0;
+    return cart.items.reduce(
       (total, item) => total + item.product.discountPrice * item.quantity,
       0
     );
@@ -105,9 +66,20 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
     navigate("/login");
   };
 
+  useEffect(() => {
+    if (dataCart) {
+      setCart(() => {
+        const localKey = hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
+        localStorage.setItem(localKey, JSON.stringify(dataCart));
+
+        return dataCart;
+      });
+    }
+  }, [dataCart, setCart, successMessage]);
+
   return (
     <div className={cx("cart-container")}>
-      <Badge count={cartItems.items.length} size="small">
+      <Badge size="small" count={cart?.items.length}>
         <Button
           type="text"
           icon={<ShoppingCartOutlined />}
@@ -120,11 +92,11 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
       <Drawer
         title={
           <div className={cx("drawer-title")}>
-            Giỏ hàng <Badge count={cartItems.items.length} />
+            Giỏ hàng <Badge count={cart?.items.length} />
           </div>
         }
         placement="right"
-        closable={true}
+        closable
         onClose={onClose}
         open={visible}
         closeIcon={<CloseOutlined />}
@@ -150,7 +122,7 @@ const CartExpand = ({ cartItems, setCartItems }: CartExpandProps) => {
         }
       >
         <div className={cx("cart-content")}>
-          {cartItems.items.map((item) => (
+          {cart?.items.map((item) => (
             <div key={item.id} className={cx("cart-item")}>
               <div className={cx("product-image")}>
                 <img src={item.variant.image} alt={item.product.name} />

@@ -11,15 +11,22 @@ export interface ICart {
   image?: string;
 }
 
+export interface CartRequest {
+  productId: string;
+  variantId: string;
+  sizeId: string;
+  quantity: number;
+}
+
 export interface ICartResponse {
-  id: string;
+  id?: string;
   items: ItemsCart[];
   errorCode?: string;
   message?: string;
   statusCode?: number;
 }
 
-interface ItemsCart {
+export interface ItemsCart {
   id: string;
   quantity: number;
   status: string;

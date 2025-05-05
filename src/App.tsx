@@ -8,7 +8,7 @@ import { NotiContext } from "contexts/notiContext";
 import Routers from "./routes";
 import "./locales";
 import { IntlProvider } from "react-intl";
-
+import { CartProvider } from "contexts/cartContext";
 const App = () => {
   const {
     i18n: { changeLanguage },
@@ -31,11 +31,13 @@ const App = () => {
           components: {},
         }}
       >
-        <NotiContext api={api} contextHolder={contextHolder}>
-          <IntlProvider locale="vi-VN">
-            <Routers />
-          </IntlProvider>
-        </NotiContext>
+        <CartProvider>
+          <NotiContext api={api} contextHolder={contextHolder}>
+            <IntlProvider locale="vi-VN">
+              <Routers />
+            </IntlProvider>
+          </NotiContext>
+        </CartProvider>
       </ConfigProvider>
     </Provider>
   );

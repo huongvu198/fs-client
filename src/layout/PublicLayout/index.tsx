@@ -1,7 +1,9 @@
 import Sidebar from "@components/Sidebar";
 import classNames from "classnames/bind";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
@@ -12,7 +14,6 @@ import { hasAccessToken } from "@config/accessToken";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { getUserApi } from "@redux/userSlice";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
-import { LoginPath, RegisterPath, VerifyPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 
@@ -22,7 +23,7 @@ const PublicLayout = () => {
   const resize = useWindowSize();
   const navigate = useNavigate();
   const dispatch = useRedux();
-  const { getUserSuccess } = useReduxSelector((state) => state.user);
+  const { data, getUserSuccess } = useReduxSelector((state) => state.getUser);
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();
@@ -38,10 +39,12 @@ const PublicLayout = () => {
     }
   }, [resize]);
   useEffect(() => {
+    
     const token = hasAccessToken();
-    const publicPaths = [RegisterPath, LoginPath, VerifyPath];
+    const publicPaths = ["/login", "/register", "/verify"];
 
     if (token) {
+      
       if (!getUserSuccess) {
         dispatch(getUserApi());
       }
@@ -51,10 +54,11 @@ const PublicLayout = () => {
       }
     }
   }, [location, navigate, dispatch, getUserSuccess]);
+
   return (
     <>
       <div>
-        <ScrollOnTop />
+        <ScrollOnTop/>
         <Nav
           handleHiddenSideBar={handleHiddenSideBar}
           handleShowSideBar={handleShowSideBar}

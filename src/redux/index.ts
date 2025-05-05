@@ -2,12 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./counter";
 import registerReducer from "./registerSlice";
 import verifyReducer from "./verifySlice";
+import registerReducer from "./registerSlice";
+import verifyReducer from "./verifySlice";
 import productReducer from "./productSlice";
 import loginReducer from "./loginSlice";
-import userReducer from "./userSlice";
+import getUserReducer from "./userSlice";
 import getCartReducer from "./cartSlice";
-import orderReducer from "./orderSlice";
-import voucherReducer from "./voucherSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -15,10 +15,8 @@ const rootReducer = {
   verifyEmail: verifyReducer,
   product: productReducer,
   login: loginReducer,
-  user: userReducer,
-  cart: getCartReducer,
-  order: orderReducer,
-  voucher: voucherReducer,
+  getUser: getUserReducer,
+  cart: getCartReducer
 };
 
 export const store = configureStore({

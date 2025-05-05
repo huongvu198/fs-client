@@ -1,21 +1,27 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CartRequest, cartService } from "@services/cart";
-import { ICartResponse } from "interfaces/cart.interface";
+import {
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+  isAnyOf,
+} from "@reduxjs/toolkit";
+import { cartService, ICartId } from "@services/cart";
+import { CartRequest, ICartResponse } from "interfaces/cart.interface";
 
 interface CartState {
   loading: boolean;
   error: string | null;
   dataCart: ICartResponse | null;
-  addToCartSuccess: boolean;
+  success: boolean;
 }
 
 const initialState: CartState = {
   dataCart: null,
   loading: false,
   error: null,
-  addToCartSuccess: false,
+  success: false,
 };
 
+// 1. Các API
 export const addToCartApi = createAsyncThunk<
   ICartResponse,
   CartRequest,
@@ -28,9 +34,10 @@ export const addToCartApi = createAsyncThunk<
     return rejectWithValue(error.message);
   }
 });
+
 export const addToCartImportApi = createAsyncThunk<
   ICartResponse,
-  CartRequest,
+  CartRequest[],
   { rejectValue: string }
 >("cart/addToCartImportApi", async (cartRequest, { rejectWithValue }) => {
   try {
@@ -41,53 +48,84 @@ export const addToCartImportApi = createAsyncThunk<
   }
 });
 
-// Create add to cart slice
+export const deleteCartItemApi = createAsyncThunk<
+  ICartResponse,
+  ICartId,
+  { rejectValue: string }
+>("cart/deleteCartItemApi", async (cartId, { rejectWithValue }) => {
+  try {
+    const response = await cartService.deleteCartItems(cartId);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const getCartByUserApi = createAsyncThunk<
+  ICartResponse,
+  void,
+  { rejectValue: string }
+>("cart/getCartByUserApi", async (_, { rejectWithValue }) => {
+  try {
+    const response = await cartService.getCartByUser();
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+// 2. Slice
 const cartSlice = createSlice({
-    name: "cart",
-    initialState,
-    reducers: {
-      resetCartState: (state) => {
-        state.error = null;
-        state.addToCartSuccess = false;
-      },
-      clearCartData: () => initialState,
-    },
-    extraReducers: (builder) => {
-      builder
-        .addCase(addToCartApi.pending, (state) => {
+  name: "cart",
+  initialState,
+  reducers: {
+    clearCartData: () => initialState,
+  },
+  extraReducers: (builder) => {
+    builder
+      // 2.1 Pending chung
+      .addMatcher(
+        isAnyOf(
+          addToCartApi.pending,
+          addToCartImportApi.pending,
+          deleteCartItemApi.pending,
+          getCartByUserApi.pending
+        ),
+        (state) => {
           state.loading = true;
           state.error = null;
-          state.addToCartSuccess = false;
-        })
-        .addCase(addToCartApi.fulfilled, (state, action: PayloadAction<ICartResponse>) => {
+        }
+      )
+      // 2.2 Fulfilled chung
+      .addMatcher(
+        isAnyOf(
+          addToCartApi.fulfilled,
+          addToCartImportApi.fulfilled,
+          deleteCartItemApi.fulfilled,
+          getCartByUserApi.fulfilled
+        ),
+        (state, action: PayloadAction<ICartResponse>) => {
           state.loading = false;
           state.dataCart = action.payload;
-          state.addToCartSuccess = true;
           state.error = null;
-        })
-        .addCase(addToCartApi.rejected, (state, action) => {
+          state.success = true;
+        }
+      )
+      // 2.3 Rejected chung
+      .addMatcher(
+        isAnyOf(
+          addToCartApi.rejected,
+          addToCartImportApi.rejected,
+          deleteCartItemApi.rejected,
+          getCartByUserApi.rejected
+        ),
+        (state, action) => {
           state.loading = false;
-          state.addToCartSuccess = false;
-          state.error = action.payload || "Add To Cart failed";
-        })
-        .addCase(addToCartImportApi.pending, (state) => {
-          state.loading = true;
-          state.error = null;
-          state.addToCartSuccess = false;
-        })
-        .addCase(addToCartImportApi.fulfilled, (state, action: PayloadAction<ICartResponse>) => {
-          state.loading = false;
-          state.dataCart = action.payload;
-          state.addToCartSuccess = true;
-          state.error = null;
-        })
-        .addCase(addToCartImportApi.rejected, (state, action) => {
-          state.loading = false;
-          state.addToCartSuccess = false;
-          state.error = action.payload || "Add To Cart failed";
-        });
-    },
-  });
-  
-  export const { resetCartState, clearCartData } = cartSlice.actions;
-  export default cartSlice.reducer;
+          state.error = action.payload || "Có lỗi xảy ra";
+        }
+      );
+  },
+});
+
+export const { clearCartData } = cartSlice.actions;
+export default cartSlice.reducer;

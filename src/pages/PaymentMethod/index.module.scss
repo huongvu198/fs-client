@@ -1,0 +1,114 @@
+@import "../../styles/variables.scss";
+.layout {
+  width: 80%;
+  margin: auto;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 48px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.mainContent {
+  flex: 2;
+}
+
+.sidebar {
+  flex: 1;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: $text-color;
+  margin-bottom: 24px;
+}
+
+.formSection {
+  margin-bottom: 30px;
+}
+
+.paymentOption {
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: $transition;
+  
+    &:hover {
+      border-color: darken($border-color, 10%);
+    }
+  }
+  
+  .selected {
+    border-color: #000; 
+  }
+  
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primaryButton {
+  background-color: $color-primary;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: $border-radius;
+  cursor: pointer;
+  font-weight: 500;
+  transition: $transition;
+  min-width: 120px;
+  text-align: center;
+
+  &:hover {
+    background-color: darken($color-primary, 10%);
+  }
+}
+
+.secondaryButton {
+  background-color: $secondary-color;
+  color: $text-color;
+  border: none;
+  padding: 10px 24px;
+  border-radius: $border-radius;
+  cursor: pointer;
+  font-weight: 500;
+  transition: $transition;
+  min-width: 120px;
+  text-align: center;
+
+  &:hover {
+    background-color: darken($secondary-color, 5%);
+  }
+}
+
+:global(.ant-radio-wrapper) {
+  width: 100%;
+  margin-right: 0;
+}
+
+:global(.ant-radio-checked .ant-radio-inner) {
+  border-color: $color-primary;
+
+  &::after {
+    background-color: $color-primary;
+  }
+}
+
+:global(.ant-form-item) {
+  margin-bottom: 16px;
+}

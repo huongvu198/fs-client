@@ -9,6 +9,7 @@ import {
   UserVouchers,
   VerifyPath,
 } from "@config/routerConfig";
+import AuthLayout from "@layout/AuthLayout";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -21,6 +22,8 @@ const CartList = lazy(() => import("@pages/CartList"));
 const Login = lazy(() => import("@pages/Login"));
 const Verify = lazy(() => import("@pages/VerifyEmail"));
 const Register = lazy(() => import("@pages/Register"));
+const ShippingDetails = lazy(() => import("@pages/ShippingDetail"));
+const PaymentMethod = lazy(() => import("@pages/PaymentMethod"));
 const UserPage = lazy(() => import("@pages/User"));
 const ProfilePage = lazy(() => import("@pages/User/Profile"));
 const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
@@ -86,6 +89,19 @@ const RouteComponent = () => {
         {
           path: RegisterPath,
           element: <Register />,
+        },
+      ],
+    },
+    {
+      element: <AuthLayout />,
+      children: [
+        {
+          path: "/shippingDetails",
+          element: <ShippingDetails />,
+        },
+        {
+          path: "/paymentMethod",
+          element: <PaymentMethod />,
         },
       ],
     },

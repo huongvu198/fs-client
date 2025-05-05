@@ -18,11 +18,12 @@ import { calculateDiscountedPrice } from "shared/common";
 import ProductSection from "@components/ProductCardComponent";
 import Reviews from "@components/ReviewComponent";
 import { FormattedNumber } from "react-intl";
-import { ICart } from "interfaces/cart.interface";
+import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
 import useNotification from "@hooks/useNotification";
 import { useReduxSelector } from "@hooks/useRedux";
-import { addToCartApi, resetCartState } from "@redux/cartSlice";
+import { addToCartApi } from "@redux/cartSlice";
+import { useCartContext } from "contexts/cartContext";
 
 const cx = classNames.bind(styles);
 
@@ -135,7 +136,7 @@ const additionalReviews = [
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch<ApiDispatch>();
-  const { dataCart, loading, error, addToCartSuccess } = useReduxSelector(
+  const {  loading } = useReduxSelector(
     (state) => state.cart
   );
   const productData = useSelector(productById);
@@ -147,29 +148,12 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [mainImage, setMainImage] = useState<string>("");
   const { successMessage, errorMessage } = useNotification();
+  const { setCart } = useCartContext();
   useEffect(() => {
     if (!id) return;
     dispatch(getProductById(id));
     dispatch(getNewArrivals());
   }, [id, dispatch]);
-
-  useEffect(() => {
-    if (addToCartSuccess) {
-      successMessage({
-        description: `Đã thêm sản phẩm vào giỏ hàng!`,
-        title: "Giỏ hàng",
-      });
-      localStorage.setItem("cartList", JSON.stringify(dataCart));
-      dispatch(resetCartState());
-    }
-    if (error) {
-      errorMessage({
-        description: `Thêm giỏ hàng thất bại!`,
-        title: "Giỏ hàng",
-      });
-      dispatch(resetCartState());
-    }
-  }, [addToCartSuccess]);
 
   useEffect(() => {
     if (!productData) return;
@@ -255,60 +239,101 @@ const ProductDetail = () => {
     return sizeData?.inventory || 1;
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const selectedColorObj = colorOptions.find(
       (color) => color.id === selectorColor
     );
     const selectedSizeObj = availableSize.find(
       (size) => size.id === selectedSize
     );
-
-    if (!selectedColorObj) return;
-    const cartDetail: ICart = {
-      productId: productData.id,
-      variantId: selectedColorObj.id,
-      sizeId: selectedSizeObj.id,
-      quantity: quantity,
-      productName: productData.name,
-      size: selectedSizeObj.label,
-      colorName: selectedColorObj.color,
-      price: currentPrice,
-      image: mainImage,
-    };
-    if (hasAccessToken() || hasLocalAccessToken()) {
-      dispatch(
-        addToCartApi({
-          productId: productData.id,
-          variantId: selectedColorObj.id,
-          sizeId: selectedSizeObj.id,
+  
+    if (!selectedColorObj || !selectedSizeObj) return;
+  
+    const cartDetail: ICartResponse = {
+      id: "",
+      items: [
+        {
+          id: id || "",
           quantity: quantity,
-        })
-      );
-    } else {
-      const tempCart: ICart[] = JSON.parse(
-        localStorage.getItem("tempCart") || "[]"
-      );
-      // check exists cart
-      const existingItemIndex = tempCart.findIndex(
-        (item) =>
-          item.productId === cartDetail.productId &&
-          item.variantId === cartDetail.variantId &&
-          item.sizeId === cartDetail.sizeId
-      );
-      if (existingItemIndex !== -1) {
-        // if have item -> increase quantity
-        tempCart[existingItemIndex].quantity += cartDetail.quantity;
-      } else {
-        // if dont have, create new
-        tempCart.push(cartDetail);
+          status: "active",
+          product: {
+            id: productData.id,
+            name: productData.name,
+            price: productData.price,
+            discount: productData.discount ?? 0,
+            discountPrice: currentPrice,
+          },
+          variant: {
+            id: selectedColorObj.id,
+            color: selectedColorObj.color,
+            image: mainImage,
+          },
+          size: {
+            id: selectedSizeObj.id,
+            size: selectedSizeObj.label,
+            inventory: selectedSizeObj.inventory ?? 0,
+          },
+        },
+      ],
+    };
+  
+    if (hasAccessToken() || hasLocalAccessToken()) {
+      try {
+        const resultAction = await dispatch(
+          addToCartApi({
+            productId: productData.id,
+            variantId: selectedColorObj.id,
+            sizeId: selectedSizeObj.id,
+            quantity: quantity,
+          })
+        );
+  
+        if (addToCartApi.fulfilled.match(resultAction)) {
+          successMessage({
+            description: `Đã thêm sản phẩm vào giỏ hàng!`,
+            title: "Giỏ hàng",
+          });
+          localStorage.setItem("cartList", JSON.stringify(resultAction.payload)); 
+        } else {
+          throw new Error();
+        }
+      } catch (error) {
+        errorMessage({
+          description: `Thêm giỏ hàng thất bại!`,
+          title: "Giỏ hàng",
+        });
       }
+    } else {
+      const tempCart: ICartResponse = JSON.parse(
+        localStorage.getItem("tempCart") ||
+          JSON.stringify({
+            id: "",
+            items: [],
+          })
+      );
+  
+      const existingItemIndex = tempCart.items.findIndex(
+        (item) =>
+          item.product.id === cartDetail.items[0].product.id &&
+          item.variant.id === cartDetail.items[0].variant.id &&
+          item.size.id === cartDetail.items[0].size.id
+      );
+  
+      if (existingItemIndex !== -1) {
+        tempCart.items[existingItemIndex].quantity += cartDetail.items[0].quantity;
+      } else {
+        tempCart.items.push(cartDetail.items[0]);
+      }
+  
       localStorage.setItem("tempCart", JSON.stringify(tempCart));
+      setCart(tempCart);
       successMessage({
-        description: `Đã thêm sản phẩm vào giở hàng!`,
+        description: `Đã thêm sản phẩm vào giỏ hàng!`,
         title: "Giỏ hàng",
       });
     }
   };
+  
 
   const breadCrumbItems = [
     productData.segment.name,

@@ -7,17 +7,26 @@ import {
   removeRefreshToken,
 } from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
+import {
+  hasAccessToken,
+  removeAccessToken,
+  removeLocalRefreshToken,
+  removeLocalToken,
+  removeRefreshToken,
+} from "@config/accessToken";
+import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import SearchComponent from "@components/SearchComponent";
 import CategoryWithDropdownComponent from "@components/CategoryWithDropdownComponent";
 import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
-import { useState } from "react";
-import { UserOrders, ProfilePath } from "@config/routerConfig";
+import { useEffect, useState } from "react";
 import ButtonComponent from "@components/ButtonComponent";
 import { ICartResponse } from "interfaces/cart.interface";
+import { useCartContext } from "contexts/cartContext";
+
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -33,19 +42,19 @@ const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<ICartResponse>({
-    id: "",
-    items: [],
-  });
+  const [cartItems, setCartItems] = useState<ICartResponse | null>(null);
+  const { setCart } = useCartContext(); 
   const Logout = () => {
     const handleLogout = () => {
       removeAccessToken();
       removeRefreshToken();
       removeLocalToken();
       removeLocalRefreshToken();
+      localStorage.removeItem("tempCart"); 
+      localStorage.removeItem("cartList");
+      setCart({ id: "", items: [] });
       navigate("/");
     };
-
     return (
       <div onClick={handleLogout}>
         <LoginOutlined style={{ marginRight: "10px" }} />
@@ -53,13 +62,22 @@ export default function Nav({ handleShowSideBar }: Props) {
       </div>
     );
   };
+
   const items: MenuProps["items"] = [
     {
-      label: <Link to={ProfilePath}>Tài khoản của tôi</Link>,
+      label: (
+        <a href="https://www.youtube.com/watch?v=5z0u0BfPJ8o&list=RDxJ7EF7XweiA&index=5">
+          Edit Profile
+        </a>
+      ),
       key: "0",
     },
     {
-      label: <Link to={UserOrders}>Đơn mua</Link>,
+      label: (
+        <a href="https://www.youtube.com/watch?v=u1d7MWpBb8M">
+          Change Password
+        </a>
+      ),
       key: "1",
     },
     {
@@ -74,9 +92,28 @@ export default function Nav({ handleShowSideBar }: Props) {
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
   };
-  const handleLogin = () => {
-    navigate("login");
+
+  const handleLogin = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
+    navigate("/login");
   };
+
+  useEffect(() => {
+    const loadCart = () => {
+      const localStorageKey = hasAccessToken() ? "cartList" : "tempCart";
+      const localCart = localStorage.getItem(localStorageKey);
+      if (localCart) {
+        try {
+          const parsedCart: ICartResponse = JSON.parse(localCart);
+          setCartItems(parsedCart);
+        } catch (error) {
+          console.error("Failed to parse cart from localStorage", error);
+        }
+      }
+    };
+
+    loadCart();
+  }, []);
 
   return (
     <div className={cx(styles["nav-wrapper"])}>
@@ -86,7 +123,10 @@ export default function Nav({ handleShowSideBar }: Props) {
             className="btn-expaned-sp"
             onClick={handleShowSideBar}
           />
-          <img src="https://cdn0424.cdn4s.com/media/bai%20viet/logo-social.png" />
+          <img
+            src="https://cdn0424.cdn4s.com/media/bai%20viet/logo-social.png"
+            alt="logo"
+          />
         </div>
         <CategoryWithDropdownComponent />
         {/* Search */}
@@ -97,7 +137,7 @@ export default function Nav({ handleShowSideBar }: Props) {
         <div className={cx("right-group-btn")}>
           {/* Cart */}
           <Space>
-            <CartExpand cartItems={cartItems} setCartItems={setCartItems} />
+            <CartExpand />
           </Space>
           {/* Notification */}
           <Space className={cx("notification-component")}>
@@ -115,9 +155,10 @@ export default function Nav({ handleShowSideBar }: Props) {
             </Dropdown>
           ) : (
             <ButtonComponent
+              htmlType="button"
               className={cx("button-login")}
               type="primary"
-              onClick={handleLogin}
+              onClick={(e) => handleLogin()}
             >
               Đăng Nhập
             </ButtonComponent>

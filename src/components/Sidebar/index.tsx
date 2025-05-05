@@ -175,12 +175,6 @@ const Sidebar = forwardRef<SidebarRef>((props, ref) => {
         width={300}
         className={cx("navigation-drawer")}
       >
-        <div className={cx("login-button")}>
-          <Button type="primary" block>
-            Đăng nhập
-          </Button>
-        </div>
-
         <div className={cx("menu-container")}>{renderMenu()}</div>
 
         <div className={cx("tab-bar")}>

@@ -6,6 +6,9 @@ import productReducer from "./productSlice";
 import loginReducer from "./loginSlice";
 import getUserReducer from "./userSlice";
 import getCartReducer from "./cartSlice";
+import orderReducer from "./orderSlice";
+import voucherReducer from "./voucherSlice";
+import userReducer from "./userSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -14,7 +17,10 @@ const rootReducer = {
   product: productReducer,
   login: loginReducer,
   getUser: getUserReducer,
-  cart: getCartReducer
+  cart: getCartReducer,
+  user: userReducer,
+  order: orderReducer,
+  voucher: voucherReducer,
 };
 
 export const store = configureStore({

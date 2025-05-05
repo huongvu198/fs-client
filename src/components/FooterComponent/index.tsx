@@ -1,11 +1,9 @@
-import { useState } from "react";
 import styles from "./index.module.scss";
 import {
   TwitterOutlined,
   FacebookFilled,
   InstagramFilled,
   GithubFilled,
-  MailOutlined,
 } from "@ant-design/icons";
 import {
   ApplePay,
@@ -15,78 +13,17 @@ import {
   Visa,
 } from "@components/Icon";
 import classNames from "classnames/bind";
-import { useLocation } from "react-router-dom";
-import {
-  ProfilePath,
-  UserOrders,
-  UserAddressPath,
-  UserPath,
-  UserVouchers,
-  RegisterPath,
-  LoginPath,
-  VerifyPath,
-} from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 const Footer = () => {
-  const location = useLocation();
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setEmail("");
-  };
-
-  const hideNewsletterRoutes = [
-    UserPath,
-    ProfilePath,
-    UserOrders,
-    UserAddressPath,
-    UserVouchers,
-    LoginPath,
-    RegisterPath,
-    VerifyPath,
-  ];
-  const shouldShowNewsletter = !hideNewsletterRoutes.includes(
-    location.pathname
-  );
-
   return (
     <footer className={cx("footer")}>
-      {shouldShowNewsletter && (
-        <div className={cx("news-letter")}>
-          <div className={cx("news-letter-content")}>
-            <h2 className={cx("news-letter-heading")}>
-              STAY UPTO DATE ABOUT
-              <br />
-              OUR LATEST OFFERS
-            </h2>
-
-            <form className={cx("news-letter-form")} onSubmit={handleSubmit}>
-              <div className={cx("input-container")}>
-                <MailOutlined className={cx("input-icon")} />
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={cx("email-input")}
-                  required
-                />
-              </div>
-              <button type="submit" className={cx("subscribe-button")}>
-                Subscribe to Newsletter
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
       {/* Main footer content */}
       <div className={cx("footer-content")}>
         <div className={cx("footer-container")}>
           {/* Brand information */}
           <div className={cx("brand-section")}>
-            <h2 className={cx("brand-name")}>SHOP.CO</h2>
+            <h2 className={cx("brand-name")}>PINKY CLOTHING</h2>
             <p className={cx("brand-description")}>
               We have clothes that suits your style and which you're proud to
               wear. From women to men.
@@ -188,7 +125,7 @@ const Footer = () => {
           <div className={cx("footer-container-payment")}>
             <div className={cx("footer-bottom-content")}>
               <p className={cx("copyright")}>
-                Shop.co © 2000-2023, All Rights Reserved
+                PinkyClothing © 2025, All Rights Reserved
               </p>
 
               <div className={cx("payment-methods")}>

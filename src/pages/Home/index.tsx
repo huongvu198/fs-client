@@ -1,7 +1,7 @@
 import BannerComponent from "@components/Banner";
 import ProductSection from "@components/ProductCardComponent";
 import StyleBannerComponent from "@components/StyleBannerComponent";
-import TestimonialsCarousel from "@components/TestimonialCarousel";
+// import TestimonialsCarousel from "@components/TestimonialCarousel";
 import { ApiDispatch } from "@redux/index";
 import {
   bestSellers,
@@ -27,36 +27,36 @@ const bannerProps = {
     "https://s3-alpha-sig.figma.com/img/b26f/ea69/ccfd8aa5825862cdb9604a4fb4930464?Expires=1743379200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Lim80RmWzpvPYiZcu~9~3V~wSgGzBFH-Ssd2Qf-U691cxKG6VyUDsf6aDXKL4-rITE~lPAWhsBzqc~JGW6VDCEltolfSu0~Rw62SquZ8Yy75rM13Uj9t8Hn4DfXemzzz3wVCxDsu8vVqEWMKc-sU3B6AFRrBZtX1YwT3cuILmy8uivP6D~5AA0bTlFcDlS7i4Pz~IE0R597IBx0OfMWEgVEJ1YVQvthRa2KXvK~pMOSH2M0Jv1LXYwhnz8rvcuLmEfHmMFSrAL-19MDmUTOQrY6xY~ZvC1SCB8F2Noj0ep5Hmvna1Jk-Y494y5XYOWzA4fLpOcWGX7HZ1rXyTj62Lw__",
 };
 
-const testimonials = [
-  {
-    id: "1",
-    name: "Sarah M.",
-    verified: true,
-    rating: 5,
-    text: "I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.",
-  },
-  {
-    id: "2",
-    name: "Alex K.",
-    verified: true,
-    rating: 5,
-    text: "Finding clothes that align with my personal style used to be a challenge until I discovered Shop.co. The range of options they offer is truly remarkable, catering to a variety of tastes and occasions.",
-  },
-  {
-    id: "3",
-    name: "James L.",
-    verified: true,
-    rating: 5,
-    text: "As someone who's always on the lookout for unique fashion pieces, I'm thrilled to have stumbled upon Shop.co. The selection of clothes is not only diverse but also on-point with the latest trends.",
-  },
-  {
-    id: "4",
-    name: "Monet B.",
-    verified: true,
-    rating: 5,
-    text: "The quality of clothing I've received from Shop.co has consistently impressed me. Their attention to detail and commitment to using premium materials sets them apart from other retailers.",
-  },
-];
+// const testimonials = [
+//   {
+//     id: "1",
+//     name: "Sarah M.",
+//     verified: true,
+//     rating: 5,
+//     text: "I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.",
+//   },
+//   {
+//     id: "2",
+//     name: "Alex K.",
+//     verified: true,
+//     rating: 5,
+//     text: "Finding clothes that align with my personal style used to be a challenge until I discovered Shop.co. The range of options they offer is truly remarkable, catering to a variety of tastes and occasions.",
+//   },
+//   {
+//     id: "3",
+//     name: "James L.",
+//     verified: true,
+//     rating: 5,
+//     text: "As someone who's always on the lookout for unique fashion pieces, I'm thrilled to have stumbled upon Shop.co. The selection of clothes is not only diverse but also on-point with the latest trends.",
+//   },
+//   {
+//     id: "4",
+//     name: "Monet B.",
+//     verified: true,
+//     rating: 5,
+//     text: "The quality of clothing I've received from Shop.co has consistently impressed me. Their attention to detail and commitment to using premium materials sets them apart from other retailers.",
+//   },
+// ];
 
 const Home = () => {
   const [stats, setStats] = useState(bannerProps.stats);
@@ -109,7 +109,7 @@ const Home = () => {
         tag="Best Seller"
       />
       <StyleBannerComponent />
-      <TestimonialsCarousel testimonials={testimonials} />
+      {/* <TestimonialsCarousel testimonials={testimonials} /> */}
     </div>
   );
 };

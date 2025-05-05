@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { useCartContext } from "contexts/cartContext";
 import { addToCartApi, deleteCartItemApi } from "@redux/cartSlice";
 import useNotification from "@hooks/useNotification";
+import { FormattedNumber } from "react-intl";
 
 const cx = classNames.bind(styles);
 
@@ -29,7 +30,7 @@ const CartList = () => {
   const dispatch = useDispatch();
   const { setCart } = useCartContext();
   const { successMessage } = useNotification();
-  const deliveryFee = 15;
+  // const deliveryFee = 15;
 
   const [subtotal, setSubtotal] = useState<number>(0);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
@@ -41,7 +42,7 @@ const CartList = () => {
       0
     );
     const calcDiscountAmount = (calcSubtotal * discount) / 100;
-    const calcTotal = calcSubtotal - calcDiscountAmount + deliveryFee;
+    const calcTotal = calcSubtotal - calcDiscountAmount;
 
     setSubtotal(calcSubtotal);
     setDiscountAmount(calcDiscountAmount);
@@ -50,12 +51,12 @@ const CartList = () => {
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-  
+
     const item = cartItems.items.find((i) => i.id === id);
     if (!item) return;
-  
+
     const hasToken = hasAccessToken();
-  
+
     if (!hasToken) {
       // Không có token => Chỉ update local và Context
       setCart((prevCart) => {
@@ -79,16 +80,15 @@ const CartList = () => {
           variantId: item.variant.id,
           quantity: newQuantity,
         };
-  
+
         const updatedCart = await dispatch(addToCartApi(payload)).unwrap();
-        setCart(updatedCart);       // cập nhật context
-        setCartItems(updatedCart);  // cập nhật UI
+        setCart(updatedCart); // cập nhật context
+        setCartItems(updatedCart); // cập nhật UI
       } catch (error) {
         console.error("Lỗi khi cập nhật số lượng sản phẩm", error);
       }
     }
   };
-  
 
   const handleRemoveItem = async (id: string) => {
     const hasToken = hasAccessToken();
@@ -168,10 +168,21 @@ const CartList = () => {
                   <p className={cx("product-color")}>
                     Color: {item.variant.color}
                   </p>
-                  <p className={cx("product-price")}>${item.product.price}</p>
+                  <p className={cx("product-price")}>
+                    <FormattedNumber
+                      value={item.product.price}
+                      currency="VND"
+                      style="currency"
+                    />
+                  </p>
                   {item.product.discountPrice && (
                     <p className={cx("product-discount")}>
-                      Discount Price: ${item.product.discountPrice}
+                      Discount Price:{" "}
+                      <FormattedNumber
+                        value={item.product.discountPrice}
+                        currency="VND"
+                        style="currency"
+                      />
                     </p>
                   )}
                 </div>
@@ -218,22 +229,47 @@ const CartList = () => {
 
             <div className={cx("summary-row")}>
               <span>Subtotal</span>
-              <span>${subtotal}</span>
+              <span>
+                <FormattedNumber
+                  value={subtotal}
+                  currency="VND"
+                  style="currency"
+                />
+              </span>
             </div>
 
             <div className={cx("summary-row")}>
-              <span>Discount (-{discount}%)</span>
-              <span className={cx("discount-amount")}>-${discountAmount}</span>
+              <span>Discount (-{discount}%) </span>
+              <span className={cx("discount-amount")}>
+                -
+                <FormattedNumber
+                  value={discountAmount}
+                  currency="VND"
+                  style="currency"
+                />
+              </span>
             </div>
 
-            <div className={cx("summary-row")}>
+            {/* <div className={cx("summary-row")}>
               <span>Delivery Fee</span>
-              <span>${deliveryFee}</span>
-            </div>
+              <span>$
+              <FormattedNumber
+                  value={deliveryFee}
+                  currency="VND"
+                  style="currency"
+                />
+              </span>
+            </div> */}
 
             <div className={`${cx("summary-row")} ${cx("total-row")}`}>
               <span>Total</span>
-              <span>${total}</span>
+              <span>
+                <FormattedNumber
+                  value={total}
+                  currency="VND"
+                  style="currency"
+                />
+              </span>
             </div>
 
             <div className={cx("promoCode-container")}>

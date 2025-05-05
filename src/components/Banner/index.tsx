@@ -18,7 +18,7 @@ interface Props {
   imgSrc: string;
 }
 
-const BannerComponent = ({ title, subTitle, stats, imgSrc }: Props) => {
+const BannerComponent = ({ title, subTitle, stats }: Props) => {
   const numberRefs = useRef<(HTMLDivElement | null)[]>([]);
   useEffect(() => {
     stats.forEach((_, index) => {

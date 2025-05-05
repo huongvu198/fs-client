@@ -7,6 +7,14 @@ import {
   removeRefreshToken,
 } from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
+import {
+  hasAccessToken,
+  removeAccessToken,
+  removeLocalRefreshToken,
+  removeLocalToken,
+  removeRefreshToken,
+} from "@config/accessToken";
+import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
 import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";

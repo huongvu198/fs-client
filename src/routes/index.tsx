@@ -1,4 +1,14 @@
-import { ProductDetailPath } from "@config/routerConfig";
+import {
+  LoginPath,
+  ProductDetailPath,
+  ProfilePath,
+  RegisterPath,
+  UserAddressPath,
+  UserOrders,
+  UserPath,
+  UserVouchers,
+  VerifyPath,
+} from "@config/routerConfig";
 import AuthLayout from "@layout/AuthLayout";
 import PublicLayout from "@layout/PublicLayout";
 import { lazy } from "react";
@@ -14,6 +24,12 @@ const Verify = lazy(() => import("@pages/VerifyEmail"));
 const Register = lazy(() => import("@pages/Register"));
 const ShippingDetails = lazy(() => import("@pages/ShippingDetail"));
 const PaymentMethod = lazy(() => import("@pages/PaymentMethod"));
+const UserPage = lazy(() => import("@pages/User"));
+const ProfilePage = lazy(() => import("@pages/User/Profile"));
+const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
+const UserAddressPage = lazy(() => import("@pages/User/Address"));
+const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
+
 const RouteComponent = () => {
   const router = createBrowserRouter([
     {
@@ -32,19 +48,46 @@ const RouteComponent = () => {
           element: <ProductDetail />,
         },
         {
-          path: "/login",
-          element: <Login />,
-        },
-        {
           path: "/cartList",
           element: <CartList />,
         },
         {
-          path: "/verify",
+          path: UserPath,
+          element: <UserPage />,
+          children: [
+            {
+              path: UserOrders,
+              element: <OrdersHistoryPage />,
+            },
+            {
+              path: UserVouchers,
+              element: <UserVouchersPage />,
+            },
+            {
+              path: UserAddressPath,
+              element: <UserAddressPage />,
+            },
+            {
+              path: ProfilePath,
+              element: <ProfilePage />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      element: <PublicLayout />,
+      children: [
+        {
+          path: LoginPath,
+          element: <Login />,
+        },
+        {
+          path: VerifyPath,
           element: <Verify />,
         },
         {
-          path: "/register",
+          path: RegisterPath,
           element: <Register />,
         },
       ],

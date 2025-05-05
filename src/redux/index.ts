@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./counter";
 import registerReducer from "./registerSlice";
 import verifyReducer from "./verifySlice";
+import registerReducer from "./registerSlice";
+import verifyReducer from "./verifySlice";
 import productReducer from "./productSlice";
 import loginReducer from "./loginSlice";
 import getUserReducer from "./userSlice";

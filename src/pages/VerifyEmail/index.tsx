@@ -76,11 +76,10 @@ const VerifyEmail: React.FC = () => {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 2000);
-  
+
       return () => clearTimeout(timer);
     }
   }, [verifysuccess]);
-  
 
   useEffect(() => {
     if (error) {

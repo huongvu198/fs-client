@@ -54,6 +54,7 @@ export const NotiContext = ({ api, contextHolder, children }: Props) => {
       message: title || t("noti.title.success"),
       description: description,
       duration: 2,
+      showProgress: true,
       style: {
         backgroundColor: "#f6ffed",
         border: "1px solid #b7eb8f",
@@ -68,6 +69,7 @@ export const NotiContext = ({ api, contextHolder, children }: Props) => {
       message: title || t("noti.title.error"),
       description: description,
       duration: 2,
+      showProgress: true,
       style: {
         backgroundColor: "#fff2f0",
         border: "1px solid #ffccc7",
@@ -82,6 +84,7 @@ export const NotiContext = ({ api, contextHolder, children }: Props) => {
       message: title || t("noti.title.warning"),
       description: description,
       duration: 2,
+      showProgress: true,
       style: {
         backgroundColor: "#fffbe6",
         border: "1px solid #ffe58f",

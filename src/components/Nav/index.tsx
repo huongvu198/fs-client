@@ -7,14 +7,6 @@ import {
   removeRefreshToken,
 } from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
-import {
-  hasAccessToken,
-  removeAccessToken,
-  removeLocalRefreshToken,
-  removeLocalToken,
-  removeRefreshToken,
-} from "@config/accessToken";
-import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
 import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
@@ -92,7 +84,6 @@ export default function Nav({ handleShowSideBar }: Props) {
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
   };
-
   const handleLogin = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
     navigate("/login");

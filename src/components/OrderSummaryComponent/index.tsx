@@ -69,14 +69,13 @@ const fakeCartResponse: ICartResponse = {
   
   
 const OrderSummary: React.FC<OrderSummaryProps> = ({
-  cart,
   subtotal,
   shipping,
   taxes,
   total,
 }) => {
   const [voucherExpanded, setVoucherExpanded] = React.useState(false);
-  const [voucherCode, setVoucherCode] = React.useState("");
+  const [voucherCode,] = React.useState("");
 
   const formatCurrency = (amount: number | string) => {
     if (typeof amount === "string") return amount;

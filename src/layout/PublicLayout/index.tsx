@@ -1,9 +1,7 @@
 import Sidebar from "@components/Sidebar";
 import classNames from "classnames/bind";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Outlet, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
@@ -23,7 +21,7 @@ const PublicLayout = () => {
   const resize = useWindowSize();
   const navigate = useNavigate();
   const dispatch = useRedux();
-  const { data, getUserSuccess } = useReduxSelector((state) => state.getUser);
+  const { getUserSuccess } = useReduxSelector((state) => state.getUser);
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();

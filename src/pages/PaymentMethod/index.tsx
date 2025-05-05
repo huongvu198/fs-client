@@ -9,7 +9,7 @@ const PaymentMethod: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedPayment, setSelectedPayment] = useState<string>('cod');
 
-  const [cart, setCart] = useState<ICartResponse>({
+  const [cart] = useState<ICartResponse>({
     id: 'cart_fake_001',
     items: [
       {
@@ -62,7 +62,7 @@ const PaymentMethod: React.FC = () => {
   });
 
   const [subtotal, setSubtotal] = useState(0);
-  const [shipping, setShipping] = useState(10);
+  const [shipping] = useState(10);
   const [taxes, setTaxes] = useState(0);
   const [total, setTotal] = useState(0);
 

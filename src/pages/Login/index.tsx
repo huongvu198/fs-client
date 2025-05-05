@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import React, { useEffect } from "react";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";

@@ -63,9 +63,14 @@ const LoginRegistrationForm: React.FC = () => {
     const handleLoginSuccess = async () => {
       form.resetFields();
       dispatch(resetLoginState());
-      setAccessToken(data.token);
+      const timestampAccessToken = data.tokenExpires;
+      const timestampRefreshToken = data.refreshExpires;
+      const dateAccessToken = new Date(timestampAccessToken * 1000);
+      const dateRefreshToken = new Date(timestampRefreshToken * 1000);
+
+      setAccessToken(data.token, dateAccessToken);
       setLocalToken(data.token);
-      setRefreshToken(data.refreshToken);
+      setRefreshToken(data.refreshToken, dateRefreshToken);
       setLocalRefreshToken(data.refreshToken);
 
       const cartRequest = formatCartRequest();
@@ -181,7 +186,7 @@ const LoginRegistrationForm: React.FC = () => {
               <ButtonComponent
                 type="primary"
                 className={cx("register-button")}
-                onClick={() => navigate(RegisterPath)}
+                block
               >
                 ĐĂNG KÝ
               </ButtonComponent>

@@ -3,6 +3,7 @@ export const endPoint = {
     REGISTER: "/auth/email/register",
     VERIFY: "/auth/email/verify",
     LOGIN: "/auth/email/login",
+    REFRESH_TOKEN: "/auth/refresh"
   },
   PRODUCT: {
     NEW_ARRIVAL: "/products-public/new-arrivals",

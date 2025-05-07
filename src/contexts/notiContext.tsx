@@ -5,11 +5,11 @@ import {
 } from "@ant-design/icons";
 import { Modal } from "antd";
 import { NotificationInstance } from "antd/es/notification/interface";
-import { createContext, JSX, ReactElement } from "react";
+import { createContext, ReactElement, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  children: JSX.Element;
+  children: ReactNode;
   api: NotificationInstance;
   contextHolder: ReactElement;
 }

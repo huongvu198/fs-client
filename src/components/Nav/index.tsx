@@ -8,11 +8,11 @@ import {
 } from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import SearchComponent from "@components/SearchComponent";
 import CategoryWithDropdownComponent from "@components/CategoryWithDropdownComponent";
-// import Notification from "@components/NotificationComponent";
+import Notification from "@components/NotificationComponent";
 import CartExpand from "@components/CartExpandComponent";
 import { useEffect, useState } from "react";
 import ButtonComponent from "@components/ButtonComponent";
@@ -21,32 +21,37 @@ import { useCartContext } from "contexts/cartContext";
 import { ProfilePath, UserOrders } from "@config/routerConfig";
 import logo from "@assets/images/logo.png";
 
+import { useAuthContext } from "contexts/authContext";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
 }
 
-// const notifications = [
-//   { id: 1, message: "Bạn có đơn hàng mới!" },
-//   { id: 2, message: "Khuyến mãi đặc biệt hôm nay!" },
-//   { id: 3, message: "Sản phẩm yêu thích của bạn đã có hàng!" },
-// ];
+const notifications = [
+  { id: 1, message: "Bạn có đơn hàng mới!" },
+  { id: 2, message: "Khuyến mãi đặc biệt hôm nay!" },
+  { id: 3, message: "Sản phẩm yêu thích của bạn đã có hàng!" },
+];
 
 const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<ICartResponse | null>(null);
-  const { setCart } = useCartContext();
+  const [, setCartItems] = useState<ICartResponse | null>(null);
+  const { setCart } = useCartContext(); 
+  const { isAuthenticated, logout } = useAuthContext();
+  console.log("🚀 ~ Nav ~ isAuthenticated:", isAuthenticated)
+
   const Logout = () => {
     const handleLogout = () => {
       removeAccessToken();
       removeRefreshToken();
       removeLocalToken();
       removeLocalRefreshToken();
-      localStorage.removeItem("tempCart");
+      localStorage.removeItem("tempCart"); 
       localStorage.removeItem("cartList");
       setCart({ id: "", items: [] });
+      logout();
       navigate("/");
     };
     return (
@@ -59,11 +64,19 @@ export default function Nav({ handleShowSideBar }: Props) {
 
   const items: MenuProps["items"] = [
     {
-      label: <Link to={ProfilePath}>Tài khoản của tôi</Link>,
+      label: (
+        <a href="https://www.youtube.com/watch?v=5z0u0BfPJ8o&list=RDxJ7EF7XweiA&index=5">
+          Edit Profile
+        </a>
+      ),
       key: "0",
     },
     {
-      label: <Link to={UserOrders}>Đơn mua</Link>,
+      label: (
+        <a href="https://www.youtube.com/watch?v=u1d7MWpBb8M">
+          Change Password
+        </a>
+      ),
       key: "1",
     },
     {
@@ -78,6 +91,7 @@ export default function Nav({ handleShowSideBar }: Props) {
   const handleSearch = (value: string) => {
     console.log("Search: ", value);
   };
+
   const handleLogin = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
     navigate("/login");
@@ -109,13 +123,9 @@ export default function Nav({ handleShowSideBar }: Props) {
             onClick={handleShowSideBar}
           />
           <img
-            src={logo}
-            style={{ transform: "scale(1.5)", cursor: "pointer" }}
-            onClick={() => navigate("/")}
+            src="https://cdn0424.cdn4s.com/media/bai%20viet/logo-social.png"
+            alt="logo"
           />
-          <span className="brand-name" onClick={() => navigate("/")}>
-            Pinky
-          </span>
         </div>
         <CategoryWithDropdownComponent />
         {/* Search */}
@@ -129,10 +139,10 @@ export default function Nav({ handleShowSideBar }: Props) {
             <CartExpand />
           </Space>
           {/* Notification */}
-          {/* <Space className={cx("notification-component")}>
+          <Space className={cx("notification-component")}>
             <Notification notifications={notifications} />
-          </Space> */}
-          {hasAccessToken() ? (
+          </Space>
+          {isAuthenticated ? (
             <Dropdown
               className="drop-down-info"
               menu={{ items }}
@@ -147,7 +157,7 @@ export default function Nav({ handleShowSideBar }: Props) {
               htmlType="button"
               className={cx("button-login")}
               type="primary"
-              onClick={() => handleLogin()}
+              onClick={() =>handleLogin()}
             >
               Đăng Nhập
             </ButtonComponent>

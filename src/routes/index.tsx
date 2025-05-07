@@ -30,7 +30,6 @@ const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
 const UserAddressPage = lazy(() => import("@pages/User/Address"));
 const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
 
-const RouteComponent = () => {
   const router = createBrowserRouter([
     {
       element: <PublicLayout />,
@@ -106,9 +105,9 @@ const RouteComponent = () => {
       ],
     },
   ]);
+
+const Routers = () => {
   return <RouterProvider router={router} />;
 };
-
-const Routers = () => <RouteComponent />;
 
 export default Routers;

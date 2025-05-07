@@ -1,7 +1,7 @@
 import { FORBIDDEN, UNAUTHORIZED } from "@constants/const";
 import { cleanAndConvertToCamelCase, convertToCamelCase } from "@utils/index";
 import axios from "axios";
-import { getAccessToken, removeAccessToken } from "./accessToken";
+import { getAccessToken, getLocalRefreshToken, getRefreshToken, removeAccessToken } from "./accessToken";
 import { config } from "./appConfig";
 
 const { baseURL } = config.server;
@@ -24,11 +24,40 @@ export const unauthAxios = axios.create({
   },
 });
 
+export const refreshAuthAxios = axios.create({
+  baseURL,
+  timeout: 60000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
 authAxios.interceptors.request.use(
   (config) => {
     const accessToken = getAccessToken();
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    if (config.params) {
+      config.params = cleanAndConvertToCamelCase(config.params);
+    }
+
+    if (config.data) {
+      config.data = cleanAndConvertToCamelCase(config.data);
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+refreshAuthAxios.interceptors.request.use(
+  (config) => {
+    const refreshToken = getRefreshToken() || getLocalRefreshToken();
+    if (refreshToken) {
+      config.headers["Authorization"] = `Bearer ${refreshToken}`;
     }
 
     if (config.params) {

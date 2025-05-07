@@ -1,4 +1,4 @@
-import { unauthAxios } from "@config/axiosConfig";
+import { refreshAuthAxios, unauthAxios } from "@config/axiosConfig";
 import { endPoint } from "./endPoint";
 
 export interface LoginRequest {
@@ -10,6 +10,7 @@ export interface LoginResponse {
     refreshToken?: string;
     token?: string;
     tokenExpires?: number;
+    refreshExpires?:number;
     errorCode?: string;
     message?: string;
     statusCode?: number;
@@ -37,6 +38,25 @@ export const loginService = {
               throw new Error(error.message || "An error occurred during login");
         }
     },
+    getRefreshToken: async (): Promise<LoginResponse> => {
+        try {
+            const response = await refreshAuthAxios.post<LoginResponse>(
+                endPoint.AUTH.REFRESH_TOKEN,
+                {}
+            );
+    
+            if (!response.data || !response.data.refreshToken) {
+                throw new Error("No refresh token received from server");
+            }
+    
+            return response.data;
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+            throw new Error(error.message || "An error occurred while refreshing token");
+        }
+    }
 }
 
 export default loginService;

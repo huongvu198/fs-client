@@ -20,10 +20,10 @@ import Reviews from "@components/ReviewComponent";
 import { FormattedNumber } from "react-intl";
 import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
-import useNotification from "@hooks/useNotification";
 import { useReduxSelector } from "@hooks/useRedux";
 import { addToCartApi } from "@redux/cartSlice";
 import { useCartContext } from "contexts/cartContext";
+import { showToast, ToastType } from "shared/toast";
 
 const cx = classNames.bind(styles);
 
@@ -145,7 +145,6 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [mainImage, setMainImage] = useState<string>("");
-  const { successMessage, errorMessage } = useNotification();
   const { setCart } = useCartContext();
   useEffect(() => {
     if (!id) return;
@@ -287,10 +286,7 @@ const ProductDetail = () => {
         );
 
         if (addToCartApi.fulfilled.match(resultAction)) {
-          successMessage({
-            description: `Đã thêm sản phẩm vào giỏ hàng!`,
-            title: "Giỏ hàng",
-          });
+          showToast(ToastType.SUCCESS, "Đã thêm sản phẩm vào giỏ hàng!");
           localStorage.setItem(
             "cartList",
             JSON.stringify(resultAction.payload)
@@ -300,10 +296,7 @@ const ProductDetail = () => {
         }
       } catch (error) {
         console.error("Error adding to cart:", error);
-        errorMessage({
-          description: `Thêm giỏ hàng thất bại!`,
-          title: "Giỏ hàng",
-        });
+        showToast(ToastType.ERROR, "Thêm giỏ hàng thất bại!");
       }
     } else {
       const tempCart: ICartResponse = JSON.parse(
@@ -330,10 +323,7 @@ const ProductDetail = () => {
 
       localStorage.setItem("tempCart", JSON.stringify(tempCart));
       setCart(tempCart);
-      successMessage({
-        description: `Đã thêm sản phẩm vào giỏ hàng!`,
-        title: "Giỏ hàng",
-      });
+      showToast(ToastType.SUCCESS, "Đã thêm sản phẩm vào giỏ hàng!");
     }
   };
 

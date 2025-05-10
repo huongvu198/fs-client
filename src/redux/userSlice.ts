@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  ChangePasswordPayload,
   CreateAddressPayload,
   IUpdateProfile,
   UpdateAddressPayload,
@@ -7,6 +8,7 @@ import {
   UserResponse,
 } from "../interfaces/user.interface";
 import { userService } from "@services/user";
+import { showToast, ToastType } from "shared/toast";
 
 interface UserState {
   data: UserResponse | null;
@@ -21,6 +23,8 @@ interface UserState {
   createAddressSuccess: boolean;
   deleteAddressSuccess: boolean;
   userAddress: UserAddress | null;
+  changePasswordSuccess: boolean;
+  loadingActionChangePassword: boolean;
 }
 
 // Initial state
@@ -37,6 +41,8 @@ const initialState: UserState = {
   deleteAddressSuccess: false,
   userAddress: null,
   loadingAction: false,
+  changePasswordSuccess: false,
+  loadingActionChangePassword: false,
 };
 
 // Create async thunk for get user
@@ -131,6 +137,18 @@ export const deleteAddress = createAsyncThunk<
   }
 });
 
+export const changePassword = createAsyncThunk<
+  void,
+  ChangePasswordPayload,
+  { rejectValue: string }
+>("user/changePassword", async (payload, { rejectWithValue }) => {
+  try {
+    await userService.changePassword(payload);
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 // Create user slice
 const userSlice = createSlice({
   name: "user",
@@ -147,6 +165,8 @@ const userSlice = createSlice({
       state.deleteAddressSuccess = false;
       state.loading = false;
       state.loadingAction = false;
+      state.loadingActionChangePassword = false;
+      state.changePasswordSuccess = false;
     },
     clearUserData: () => initialState,
   },
@@ -183,12 +203,14 @@ const userSlice = createSlice({
           state.data = action.payload;
           state.updateUserSuccess = true;
           state.error = null;
+          showToast(ToastType.SUCCESS, "Cập nhật thông tin thành công");
         }
       )
       .addCase(updateProfileApi.rejected, (state, action) => {
         state.loadingAction = false;
         state.updateUserSuccess = false;
         state.error = action.payload || "Cập nhật thông tin thất bại";
+        showToast(ToastType.ERROR, "Cập nhật thông tin thất bại");
       })
       .addCase(getUserAddress.pending, (state) => {
         state.loading = true;
@@ -208,6 +230,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.getUserAddressSuccess = false;
         state.error = "Lấy thông tin địa chỉ thất bại";
+        showToast(ToastType.ERROR, "Lấy thông tin địa chỉ thất bại");
       })
       .addCase(setDefaultAddress.pending, (state) => {
         state.loading = true;
@@ -221,12 +244,14 @@ const userSlice = createSlice({
           state.userAddress = action.payload;
           state.error = null;
           state.setAddressDefaultSuccess = true;
+          showToast(ToastType.SUCCESS, "Thiết lập địa chỉ mặc định thành công");
         }
       )
       .addCase(setDefaultAddress.rejected, (state, action) => {
         state.loadingAction = false;
         state.error = action.payload || "Thiết lập địa chỉ mặc định thất bại";
         state.setAddressDefaultSuccess = false;
+        showToast(ToastType.ERROR, "Thiết lập địa chỉ mặc định thất bại");
       })
       .addCase(updateAddress.pending, (state) => {
         state.loadingAction = true;
@@ -240,12 +265,14 @@ const userSlice = createSlice({
           state.userAddress = action.payload;
           state.error = null;
           state.updateAddressSuccess = true;
+          showToast(ToastType.SUCCESS, "Cập nhật địa chỉ thành công");
         }
       )
       .addCase(updateAddress.rejected, (state, action) => {
         state.loadingAction = false;
         state.error = action.payload || "Cập nhật địa chỉ thất bại";
         state.updateAddressSuccess = false;
+        showToast(ToastType.ERROR, "Cập nhật địa chỉ thất bại");
       })
       .addCase(createAddress.pending, (state) => {
         state.loadingAction = true;
@@ -259,12 +286,14 @@ const userSlice = createSlice({
           state.userAddress = action.payload;
           state.error = null;
           state.createAddressSuccess = true;
+          showToast(ToastType.SUCCESS, "Thêm địa chỉ thành công");
         }
       )
       .addCase(createAddress.rejected, (state, action) => {
         state.loadingAction = false;
         state.error = action.payload || "Thêm địa chỉ thất bại";
         state.createAddressSuccess = false;
+        showToast(ToastType.ERROR, "Thêm địa chỉ thất bại");
       })
       .addCase(deleteAddress.pending, (state) => {
         state.loadingAction = true;
@@ -278,12 +307,31 @@ const userSlice = createSlice({
           state.userAddress = action.payload;
           state.error = null;
           state.deleteAddressSuccess = true;
+          showToast(ToastType.SUCCESS, "Xoá địa chỉ thành công");
         }
       )
       .addCase(deleteAddress.rejected, (state, action) => {
         state.loadingAction = false;
         state.error = action.payload || "Xóa địa chỉ thất bại";
         state.deleteAddressSuccess = false;
+        showToast(ToastType.ERROR, "Xóa địa chỉ thất bại");
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.loadingActionChangePassword = true;
+        state.error = null;
+        state.changePasswordSuccess = false;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loadingActionChangePassword = false;
+        state.error = null;
+        state.changePasswordSuccess = true;
+        showToast(ToastType.SUCCESS, "Thay đổi mật khẩu thành công");
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loadingActionChangePassword = false;
+        state.error = action.payload || "Thay đổi mật khẩu thất bại";
+        state.changePasswordSuccess = false;
+        showToast(ToastType.ERROR, "Thay đổi mật khẩu thất bại");
       });
   },
 });

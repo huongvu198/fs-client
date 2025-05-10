@@ -3,6 +3,7 @@ import { Pagination } from "interfaces/app.interface";
 import { IProductResponse } from "interfaces/product.interface";
 import { productsService } from "services/product";
 import { parsePaginationHeaders } from "shared/common";
+import { showToast, ToastType } from "shared/toast";
 
 interface ProductState {
   isLoading: boolean;
@@ -86,6 +87,7 @@ const productSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.error.message || "Lấy danh sách sản phẩm mới thất bại";
+        showToast(ToastType.ERROR, "Lấy danh sách sản phẩm mới thất bại");
       })
       .addCase(getBestSellers.pending, (state) => {
         state.isLoading = true;
@@ -100,6 +102,7 @@ const productSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.error.message || "Lấy danh sách sản phẩm bán chạy thất bại";
+        showToast(ToastType.ERROR, "Lấy danh sách sản phẩm bán chạy thất bại");
       })
       .addCase(getProductById.pending, (state) => {
         state.isLoading = true;
@@ -112,6 +115,7 @@ const productSlice = createSlice({
       .addCase(getProductById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || "Lấy chi tiết sản phẩm thất bại.";
+        showToast(ToastType.ERROR, "Lấy chi tiết sản phẩm thất bại.");
       })
       .addCase(getProductWithCondition.pending, (state) => {
         state.isLoading = true;
@@ -125,6 +129,7 @@ const productSlice = createSlice({
       .addCase(getProductWithCondition.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || "Lấy danh sách sản phẩm thất bại";
+        showToast(ToastType.ERROR, "Lấy danh sách sản phẩm thất bại");
       });
   },
 });

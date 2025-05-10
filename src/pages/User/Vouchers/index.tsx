@@ -9,7 +9,6 @@ import { useDispatch } from "react-redux";
 import { ApiDispatch } from "@redux/index";
 import { useReduxSelector } from "@hooks/useRedux";
 import { getVoucherAvailable, resetVoucherState } from "@redux/voucherSlice";
-import useNotification from "@hooks/useNotification";
 import { Voucher } from "../../../interfaces/voucher.interface";
 
 const gridStyle: React.CSSProperties = {
@@ -21,7 +20,6 @@ const gridStyle: React.CSSProperties = {
 
 const UserVouchersPage = () => {
   const dispatch = useDispatch<ApiDispatch>();
-  const { successMessage, errorMessage } = useNotification();
   const { vouchers, error, loading } = useReduxSelector(
     (state) => state.voucher
   );
@@ -33,14 +31,8 @@ const UserVouchersPage = () => {
   }, [dispatch, vouchers]);
 
   useEffect(() => {
-    if (error) {
-      errorMessage({
-        title: "Khuyến mãi",
-        description: error!,
-      });
-    }
     dispatch(resetVoucherState());
-  }, [error, dispatch, errorMessage, successMessage]);
+  }, [error, dispatch]);
 
   return (
     <>

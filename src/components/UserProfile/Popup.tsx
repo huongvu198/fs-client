@@ -10,7 +10,6 @@ import {
   resetUserState,
   updateAddress,
 } from "@redux/userSlice";
-import useNotification from "@hooks/useNotification";
 import { useReduxSelector } from "@hooks/useRedux";
 
 interface UserAddressModalProps {
@@ -28,7 +27,6 @@ const UserAddressModal: React.FC<UserAddressModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<ApiDispatch>();
-  const { errorMessage, successMessage } = useNotification();
   const {
     updateAddressSuccess,
     createAddressSuccess,
@@ -76,27 +74,6 @@ const UserAddressModal: React.FC<UserAddressModalProps> = ({
   }, [mode, address]);
 
   useEffect(() => {
-    if (createAddressSuccess || updateAddressSuccess || deleteAddressSuccess) {
-      successMessage({
-        title: createAddressSuccess
-          ? "Tạo mới địa chỉ"
-          : updateAddressSuccess
-            ? "Cập nhật địa chỉ"
-            : "Xóa địa chỉ",
-        description: createAddressSuccess
-          ? "Địa chỉ đã được tạo mới thành công."
-          : updateAddressSuccess
-            ? "Địa chỉ đã được cập nhật thành công."
-            : "Địa chỉ đã được xóa thành công.",
-      });
-
-      setOpen({ isOpen: false, mode: EPopupMode.ADD, address: null }); // <-- di chuyển vào đây
-    }
-
-    if (error) {
-      errorMessage({ description: error });
-    }
-
     if (
       error ||
       createAddressSuccess ||

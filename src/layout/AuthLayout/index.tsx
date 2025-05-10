@@ -8,13 +8,15 @@ import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
-import { useReduxSelector } from "@hooks/useRedux";
+import { useRedux, useReduxSelector } from "@hooks/useRedux";
+import { getMasterData } from "@redux/appSlice";
 
 const AuthLayout = () => {
   const [, setIsOpenSideBar] = useState(true);
   const sidebarRef = useRef<any>(null);
   const resize = useWindowSize();
   const navigate = useNavigate();
+  const dispatch = useRedux();
   const { masterData } = useReduxSelector((state) => state.app);
 
   const handleShowSideBar = () => {

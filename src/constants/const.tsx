@@ -69,7 +69,7 @@ export const DATA_SIDEBAR = [
     key: "famale",
     label: "Nữ",
     slug: "/female",
-    hasDropdown: false,
+    hasDropdown: true,
     subItems: [
       { key: "pant", label: "Pant", slug: "/pant" },
       { key: "shirt", label: "Shirt", slug: "/shirt" },

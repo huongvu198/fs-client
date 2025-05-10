@@ -42,7 +42,7 @@ const CategoryWithDropdownComponent = () => {
             key={item.key}
           >
             <Space className={cx("category-item", { active: openDropdown })}>
-              {item.label} <DownOutlined />
+              {item.label.toUpperCase()} <DownOutlined />
             </Space>
           </Dropdown>
         ) : (
@@ -51,7 +51,7 @@ const CategoryWithDropdownComponent = () => {
             className={cx("category-item")}
             // onClick={() => handleNavigate(item.slug)}
           >
-            {item.label}
+            {item.label.toUpperCase()}
           </div>
         )
       )}

@@ -52,6 +52,21 @@ export const getProductById = createAsyncThunk(
   }
 );
 
+export const getProductWithCondition = createAsyncThunk(
+  "product/getProductWithCondition",
+  async (params: {
+    page?: number;
+    perPage?: number;
+    tag?: string;
+    search?: string;
+    color?: string[] | string;
+    size?: string[] | string;
+  }) => {
+    const response = await productsService.getProductsWithCondition(params);
+    return response;
+  }
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState,
@@ -97,6 +112,19 @@ const productSlice = createSlice({
       .addCase(getProductById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || "Lấy chi tiết sản phẩm thất bại.";
+      })
+      .addCase(getProductWithCondition.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getProductWithCondition.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.products = action.payload.items;
+        state.pagination = parsePaginationHeaders(action.payload.headers);
+      })
+      .addCase(getProductWithCondition.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "Lấy danh sách sản phẩm thất bại";
       });
   },
 });

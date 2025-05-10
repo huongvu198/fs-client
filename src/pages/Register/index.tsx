@@ -67,7 +67,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
       <Spinner isLoading={loading} fullscreen />
       <div className={cx("register-container")}>
         <div className={cx("register-card")}>
-          <h1 className={cx("register-title")}>Đăng kí</h1>
+          <h1 className={cx("register-title")}>Đăng ký</h1>
 
           <Form
             form={form}
@@ -82,7 +82,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your first name",
+                    message: "Vui lòng nhập họ",
                     validateTrigger: "onSubmit",
                   },
                 ]}
@@ -91,7 +91,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                   prefix={
                     <ShopOutlined className={cx("register-input-icon")} />
                   }
-                  placeholder="Enter your first"
+                  placeholder="Nhập họ"
                   className={cx("register-input")}
                 />
               </Form.Item>
@@ -102,7 +102,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Nhập họ",
+                    message: "Vui lòng nhập tên",
                     validateTrigger: "onSubmit",
                   },
                 ]}
@@ -122,8 +122,11 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 name="email"
                 className={cx("register-form-item")}
                 rules={[
-                  { required: true, message: "Please enter your email" },
-                  { type: "email", message: "Please enter a valid email" },
+                  { required: true, message: "Vui lòng nhập email" },
+                  {
+                    type: "email",
+                    message: "Vui lòng nhập đúng định dạng email",
+                  },
                 ]}
               >
                 <Input
@@ -138,9 +141,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
               <Form.Item
                 name="password"
                 className={cx("register-form-item")}
-                rules={[
-                  { required: true, message: "Please enter your password" },
-                ]}
+                rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
               >
                 <Input.Password
                   prefix={
@@ -181,7 +182,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                   prefix={
                     <LockOutlined className={cx("register-input-icon")} />
                   }
-                  placeholder="Confirm Password"
+                  placeholder="Nhập lại mật khẩu"
                   iconRender={(visible) =>
                     visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                   }

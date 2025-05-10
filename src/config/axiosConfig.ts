@@ -1,7 +1,12 @@
 import { FORBIDDEN, UNAUTHORIZED } from "@constants/const";
 import { cleanAndConvertToCamelCase, convertToCamelCase } from "@utils/index";
 import axios from "axios";
-import { getAccessToken, getLocalRefreshToken, getRefreshToken, removeAccessToken } from "./accessToken";
+import {
+  getAccessToken,
+  getLocalRefreshToken,
+  getRefreshToken,
+  removeAccessToken,
+} from "./accessToken";
 import { config } from "./appConfig";
 
 const { baseURL } = config.server;
@@ -21,6 +26,21 @@ export const unauthAxios = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+  },
+  paramsSerializer: (params) => {
+    const result: string[] = []; // Khai báo rõ ràng kiểu của result là mảng chuỗi
+    Object.keys(params).forEach((key) => {
+      if (Array.isArray(params[key])) {
+        // Duyệt qua mảng và thêm từng phần tử vào result
+        params[key].forEach((value) => {
+          result.push(`${key}=${encodeURIComponent(value)}`);
+        });
+      } else {
+        // Nếu không phải mảng, thêm trực tiếp vào result
+        result.push(`${key}=${encodeURIComponent(params[key])}`);
+      }
+    });
+    return result.join("&"); // Trả về chuỗi query string
   },
 });
 

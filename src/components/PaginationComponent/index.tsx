@@ -1,34 +1,35 @@
 import { useEffect, useState } from "react";
-import { Pagination } from "antd";
+import { Pagination as AntPagination } from "antd";
+import { Pagination as IPagination } from "interfaces/app.interface";
 
 interface PaginationComponentProps {
-  totalItems: number;
-  pageSize: number;
+  pagination: IPagination;
   onPageChange: (page: number, pageSize?: number) => void;
 }
 
 const PaginationComponent = ({
-  totalItems,
-  pageSize,
+  pagination,
   onPageChange,
 }: PaginationComponentProps) => {
-  const [current, setCurrent] = useState(1);
+  const [current, setCurrent] = useState(pagination.currentPage);
 
   useEffect(() => {
-    onPageChange(current, pageSize);
-  }, [current, pageSize]);
+    setCurrent(pagination.currentPage);
+  }, [pagination.currentPage]);
 
   const handleChange = (page: number, pageSize?: number) => {
     setCurrent(page);
-    onPageChange(page, pageSize);
+    onPageChange(page, pageSize); // Gọi API để lấy dữ liệu trang mới
   };
 
   return (
-    <Pagination
+    <AntPagination
       current={current}
-      total={totalItems}
-      pageSize={pageSize}
+      total={pagination.totalItems}
+      pageSize={pagination.perPage}
       onChange={handleChange}
+      showSizeChanger={false}
+      disabled={pagination.totalItems === 0}
     />
   );
 };

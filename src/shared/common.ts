@@ -49,3 +49,10 @@ export const formatDateToVietnamese = (date: string | Date): string => {
 
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
+
+export const convertSlugToUpperCase = (slug: string): string => {
+  return slug
+    .split("-")
+    .map((word) => word.toUpperCase())
+    .join(" ");
+};

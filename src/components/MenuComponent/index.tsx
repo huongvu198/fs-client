@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
 
@@ -20,12 +20,26 @@ interface CustomMenuProps {
   selectedKey: string;
 }
 
+const getDefaultOpenKeys = (items: MenuItem[]): string[] => {
+  let openKeys: string[] = [];
+
+  items.forEach((item) => {
+    if (item.children) {
+      openKeys.push(item.key);
+      openKeys = openKeys.concat(getDefaultOpenKeys(item.children));
+    }
+  });
+
+  return openKeys;
+};
+
 const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [openKeys, setOpenKeys] = useState<string[]>(getDefaultOpenKeys(items));
 
   const handleOpenChange = (keys: string[]) => {
     setOpenKeys(keys);
   };
+
   return (
     <Menu
       mode="inline"
@@ -33,9 +47,7 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
       openKeys={openKeys}
       onOpenChange={handleOpenChange}
       theme="light"
-      expandIcon={({ isOpen }) =>
-        isOpen ? <MinusOutlined /> : <PlusOutlined />
-      }
+      expandIcon={({ isOpen }) => (isOpen ? <UpOutlined /> : <DownOutlined />)}
       className={cx("menu-container")}
     >
       {items.map((item) =>
@@ -46,7 +58,7 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
             title={item.label}
             className={cx("submenu-container")}
             expandIcon={({ isOpen }) =>
-              isOpen ? <MinusOutlined /> : <PlusOutlined />
+              isOpen ? <UpOutlined /> : <DownOutlined />
             }
           >
             {item.children.map((child) =>
@@ -56,26 +68,49 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
                   icon={child.icon}
                   title={child.label}
                   expandIcon={({ isOpen }) =>
-                    isOpen ? <MinusOutlined /> : <PlusOutlined />
+                    isOpen ? <UpOutlined /> : <DownOutlined />
                   }
                   className={cx("submenu-container")}
                 >
                   {child.children.map((subChild) => (
-                    <Menu.Item key={subChild.key} className={cx("menu-item-container")}>
-                      <Link to={subChild.path || "#"} className={cx("menu-item-label")}>{subChild.label}</Link>
+                    <Menu.Item
+                      key={subChild.key}
+                      className={cx("menu-item-container")}
+                    >
+                      <Link
+                        to={subChild.path || "#"}
+                        className={cx("menu-item-label")}
+                      >
+                        {subChild.label}
+                      </Link>
                     </Menu.Item>
                   ))}
                 </Menu.SubMenu>
               ) : (
-                <Menu.Item key={child.key} icon={child.icon} className={cx("menu-item-container")}>
-                  <Link to={child.path || "#"} className={cx("menu-item-label")}>{child.label}</Link>
+                <Menu.Item
+                  key={child.key}
+                  icon={child.icon}
+                  className={cx("menu-item-container")}
+                >
+                  <Link
+                    to={child.path || "#"}
+                    className={cx("menu-item-label")}
+                  >
+                    {child.label}
+                  </Link>
                 </Menu.Item>
               )
             )}
           </Menu.SubMenu>
         ) : (
-          <Menu.Item key={item.key} icon={item.icon} className={cx("menu-item-container")}>
-            <Link to={item.path || "#"} className={cx("menu-item-label")}>{item.label} </Link>
+          <Menu.Item
+            key={item.key}
+            icon={item.icon}
+            className={cx("menu-item-container")}
+          >
+            <Link to={item.path || "#"} className={cx("menu-item-label")}>
+              {item.label}
+            </Link>
           </Menu.Item>
         )
       )}

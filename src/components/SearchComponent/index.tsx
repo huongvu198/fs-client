@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 interface Props {
   onSearch: (value: string) => void;
   placeholder?: string;
-  onPressEnter?: KeyboardEventHandler<HTMLInputElement> | undefined
+  onPressEnter?: KeyboardEventHandler<HTMLInputElement> | undefined;
 }
 
 const SearchComponent = ({ onSearch, placeholder }: Props) => {
@@ -20,7 +20,7 @@ const SearchComponent = ({ onSearch, placeholder }: Props) => {
     if (searchValue.trim()) {
       onSearch(searchValue);
     }
-    setSearchValue("")
+    setSearchValue("");
   };
 
   return (
@@ -29,7 +29,7 @@ const SearchComponent = ({ onSearch, placeholder }: Props) => {
       <div className={cx("search-desktop")}>
         <Input
           placeholder={placeholder}
-          prefix={<SearchOutlined className={cx("search-icon")}/>}
+          prefix={<SearchOutlined className={cx("search-icon")} />}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           onPressEnter={handleSearch}

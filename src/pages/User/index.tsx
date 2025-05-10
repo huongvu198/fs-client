@@ -33,7 +33,7 @@ const UserPage = () => {
               <UserMenu />
             </Sider>
             <Layout style={{ background: "white" }}>
-              <Content style={{ padding: "20px" }}>
+              <Content style={{ paddingLeft: "20px", paddingRight: "20px" }}>
                 <Suspense
                   fallback={<Skeleton active paragraph={{ rows: 4 }} />}
                 >

@@ -5,17 +5,19 @@ import {
   isAnyOf,
 } from "@reduxjs/toolkit";
 import { cartService, ICartId } from "@services/cart";
-import { CartRequest, ICartResponse } from "interfaces/cart.interface";
+import { CartRequest, ICartResponse, IVoucherRequest, IVoucherResponse } from "interfaces/cart.interface";
 
 interface CartState {
   loading: boolean;
   error: string | null;
   dataCart: ICartResponse | null;
+  dataVoucher: IVoucherResponse | null;
   success: boolean;
 }
 
 const initialState: CartState = {
   dataCart: null,
+  dataVoucher: null,
   loading: false,
   error: null,
   success: false,
@@ -74,6 +76,19 @@ export const getCartByUserApi = createAsyncThunk<
   }
 });
 
+export const acceptVoucherApi = createAsyncThunk<
+IVoucherResponse,
+IVoucherRequest,
+  { rejectValue: string }
+>("cart/acceptVoucherApi", async (voucherRequest, { rejectWithValue }) => {
+  try {
+    const response = await cartService.acceptVoucher(voucherRequest);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 // 2. Slice
 const cartSlice = createSlice({
   name: "cart",
@@ -89,7 +104,8 @@ const cartSlice = createSlice({
           addToCartApi.pending,
           addToCartImportApi.pending,
           deleteCartItemApi.pending,
-          getCartByUserApi.pending
+          getCartByUserApi.pending,
+          acceptVoucherApi.pending
         ),
         (state) => {
           state.loading = true;
@@ -111,13 +127,25 @@ const cartSlice = createSlice({
           state.success = true;
         }
       )
+      .addMatcher(
+        isAnyOf(
+          acceptVoucherApi.fulfilled,
+        ),
+        (state, action: PayloadAction<IVoucherResponse>) => {
+          state.loading = false;
+          state.dataVoucher = action.payload;
+          state.error = null;
+          state.success = true;
+        }
+      )
       // 2.3 Rejected chung
       .addMatcher(
         isAnyOf(
           addToCartApi.rejected,
           addToCartImportApi.rejected,
           deleteCartItemApi.rejected,
-          getCartByUserApi.rejected
+          getCartByUserApi.rejected,
+          acceptVoucherApi.rejected
         ),
         (state, action) => {
           state.loading = false;

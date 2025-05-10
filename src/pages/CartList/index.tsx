@@ -14,9 +14,14 @@ import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken } from "@config/accessToken";
 import { useDispatch } from "react-redux";
 import { useCartContext } from "contexts/cartContext";
-import { addToCartApi, deleteCartItemApi } from "@redux/cartSlice";
+import {
+  acceptVoucherApi,
+  addToCartApi,
+  deleteCartItemApi,
+} from "@redux/cartSlice";
 import useNotification from "@hooks/useNotification";
 import { FormattedNumber } from "react-intl";
+import { useReduxSelector } from "@hooks/useRedux";
 
 const cx = classNames.bind(styles);
 
@@ -26,28 +31,39 @@ const initialCartItems: ICartResponse = { id: "", items: [] };
 const CartList = () => {
   const [cartItems, setCartItems] = useState<ICartResponse>(initialCartItems);
   const [promoCode, setPromoCode] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(20);
+  const [discount, setDiscount] = useState<number>(0);
   const dispatch = useDispatch();
   const { setCart } = useCartContext();
   const { successMessage } = useNotification();
-  // const deliveryFee = 15;
 
   const [subtotal, setSubtotal] = useState<number>(0);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const { dataVoucher, loading } = useReduxSelector((state) => state.cart);
 
   useEffect(() => {
     const calcSubtotal = cartItems.items.reduce(
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
-    const calcDiscountAmount = (calcSubtotal * discount) / 100;
-    const calcTotal = calcSubtotal - calcDiscountAmount;
-
+  
+    let calcDiscountAmount = 0;
+    let calcTotal = calcSubtotal;
+  
+    if (discount > 0) {
+      if (dataVoucher.type === "PERCENT") {
+        calcDiscountAmount = (calcSubtotal * discount) / 100;
+        calcTotal = calcSubtotal - calcDiscountAmount;
+      } else {
+        calcDiscountAmount = discount;
+        calcTotal = calcSubtotal - discount;
+      }
+    }
+  
     setSubtotal(calcSubtotal);
     setDiscountAmount(calcDiscountAmount);
     setTotal(calcTotal);
-  }, [cartItems, discount]);
+  }, [cartItems, discount, dataVoucher]);
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -123,11 +139,18 @@ const CartList = () => {
     setPromoCode(e.target.value);
   };
 
-  const applyPromoCode = () => {
-    if (promoCode.trim().length > 0) {
-      setDiscount(25);
-    }
+  const applyPromoCode = async () => {
+    const voucherRequest = {
+      code: promoCode,
+    };
+    dispatch(acceptVoucherApi(voucherRequest));
   };
+
+  useEffect(() => {
+    if (dataVoucher) {
+      setDiscount(dataVoucher.discount);
+    }
+  }, [dataVoucher]);
 
   useEffect(() => {
     const loadCart = () => {
@@ -175,16 +198,6 @@ const CartList = () => {
                       style="currency"
                     />
                   </p>
-                  {item.product.discountPrice && (
-                    <p className={cx("product-discount")}>
-                      Discount Price:{" "}
-                      <FormattedNumber
-                        value={item.product.discountPrice}
-                        currency="VND"
-                        style="currency"
-                      />
-                    </p>
-                  )}
                 </div>
 
                 <Button
@@ -237,30 +250,35 @@ const CartList = () => {
                 />
               </span>
             </div>
-
-            <div className={cx("summary-row")}>
-              <span>Discount (-{discount}%) </span>
-              <span className={cx("discount-amount")}>
-                -
-                <FormattedNumber
-                  value={discountAmount}
-                  currency="VND"
-                  style="currency"
-                />
-              </span>
-            </div>
-
-            {/* <div className={cx("summary-row")}>
-              <span>Delivery Fee</span>
-              <span>$
-              <FormattedNumber
-                  value={deliveryFee}
-                  currency="VND"
-                  style="currency"
-                />
-              </span>
-            </div> */}
-
+            {discount ? (
+              <div className={cx("summary-row")}>
+                {discount < 100 ? (
+                  <>
+                    <span>Discount (-{discount}%)</span>
+                    <span className={cx("discount-amount")}>
+                      -
+                      <FormattedNumber
+                        value={discountAmount}
+                        currency="VND"
+                        style="currency"
+                      />
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span>Discount Price</span>
+                    <span className={cx("discount-amount")}>
+                      -
+                      <FormattedNumber
+                        value={discountAmount}
+                        currency="VND"
+                        style="currency"
+                      />
+                    </span>
+                  </>
+                )}
+              </div>
+            ) : null}
             <div className={`${cx("summary-row")} ${cx("total-row")}`}>
               <span>Total</span>
               <span>
@@ -284,6 +302,7 @@ const CartList = () => {
                 type="primary"
                 onClick={applyPromoCode}
                 className={cx("apply-button")}
+                loading={loading}
               >
                 Apply
               </Button>

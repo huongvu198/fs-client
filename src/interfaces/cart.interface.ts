@@ -54,3 +54,20 @@ interface Size {
   size: string;
   inventory: number;
 }
+
+export interface IVoucherRequest {
+  code: string;
+}
+
+export interface IVoucherResponse {
+  id: string;
+  code: string;
+  discount: number;
+  type: string;
+  startDate?: string;
+  endDate?: string;
+  errorCode?: string;
+  status: boolean;
+  message: string;
+  statusCode?: number;
+}

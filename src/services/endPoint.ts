@@ -20,6 +20,7 @@ export const endPoint = {
     ADD_TO_CART_IMPORT: "/cart/import",
     DELETE_CART_ITEM: "/cart/item/{itemId}",
     GET_CART_BY_USER: "/cart",
+    ADD_VOUCHER: "/vouchers-public"
   },
   USER_ADDRESS: {
     GET_USER_ADDRESS: "/user-address/addresses",

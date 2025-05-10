@@ -187,6 +187,7 @@ const LoginRegistrationForm: React.FC = () => {
                 type="primary"
                 className={cx("register-button")}
                 block
+                onClick={() => navigate(RegisterPath)}
               >
                 ĐĂNG KÝ
               </ButtonComponent>

@@ -17,6 +17,7 @@ module.exports = {
     "react-hooks/exhaustive-deps": 0,
     "no-console": ["warn", { allow: ["warn"] }],
     "@typescript-eslint/no-explicit-any": "warn",
+    "no-empty-pattern": "off",
     "prettier/prettier": [
       "warn",
       {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Form,
   Input,
@@ -9,13 +9,16 @@ import {
   Skeleton,
   Image,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  PlusOutlined,
+} from "@ant-design/icons";
 import type { RcFile, UploadFile } from "antd/es/upload/interface";
 import { useDispatch } from "react-redux";
-import { getUserApi, resetUserState, updateProfileApi } from "@redux/userSlice";
+import { changePassword, updateProfileApi } from "@redux/userSlice";
 import { ApiDispatch } from "@redux/index";
 import { useReduxSelector } from "@hooks/useRedux";
-import useNotification from "@hooks/useNotification";
 
 const { Item } = Form;
 
@@ -29,6 +32,8 @@ const getBase64 = (file: RcFile): Promise<string> =>
 
 const ProfilePage = () => {
   const [form] = Form.useForm();
+  const [passwordForm] = Form.useForm();
+
   const dispatch = useDispatch<ApiDispatch>();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -37,36 +42,10 @@ const ProfilePage = () => {
 
   const {
     data: user,
-    updateUserSuccess,
-    error,
     loading,
     loadingAction,
+    loadingActionChangePassword,
   } = useReduxSelector((state) => state.user);
-
-  const { successMessage, errorMessage } = useNotification();
-
-  useEffect(() => {
-    if (!user) {
-      dispatch(getUserApi());
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!updateUserSuccess && !error) return;
-
-    if (updateUserSuccess) {
-      successMessage({
-        title: "Cập nhật hồ sơ",
-        description: "Thông tin của bạn đã được lưu.",
-      });
-    } else {
-      errorMessage({
-        title: "Cập nhật thất bại",
-        description: error!,
-      });
-    }
-    dispatch(resetUserState());
-  }, [updateUserSuccess, error, successMessage, errorMessage, dispatch]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -105,12 +84,17 @@ const ProfilePage = () => {
     }
   };
 
-  const onFinish = (values: any) => {
+  const onProfileFinish = (values: any) => {
     const formatted = {
       ...values,
       avatar: imageUrl,
     };
     dispatch(updateProfileApi(formatted));
+  };
+
+  const onPasswordFinish = (values: any) => {
+    const { currentPassword, newPassword } = values;
+    dispatch(changePassword({ currentPassword, newPassword }));
   };
 
   const uploadButton = (
@@ -125,77 +109,145 @@ const ProfilePage = () => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : (
-        <Card title="Hồ sơ của tôi" className="profile-card">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ flex: "1 0 70%", textAlign: "left" }}>
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-                style={{ flex: 1 }}
-                initialValues={{
-                  fullName: user?.fullName,
-                  email: user?.email,
+        <>
+          <Card title="Hồ sơ của tôi" className="profile-card">
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ flex: "1 0 70%", textAlign: "left" }}>
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={onProfileFinish}
+                  style={{ flex: 1 }}
+                  initialValues={{
+                    fullName: user?.fullName,
+                    email: user?.email,
+                  }}
+                >
+                  <Item
+                    label="Họ và tên"
+                    name="fullName"
+                    rules={[{ required: true, message: "Họ tên là bắt buộc" }]}
+                  >
+                    <Input placeholder="Nhập họ tên" />
+                  </Item>
+
+                  <Item label="Email" name="email">
+                    <Input disabled />
+                  </Item>
+
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loadingAction}
+                  >
+                    Lưu
+                  </Button>
+                </Form>
+              </div>
+              <div
+                style={{
+                  flex: "0 0 30%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <Item
-                  label="Họ và tên"
-                  name="fullName"
-                  rules={[{ required: true, message: "Họ tên là bắt buộc" }]}
+                <Upload
+                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                  listType="picture-circle"
+                  fileList={fileList}
+                  beforeUpload={beforeUpload}
+                  onPreview={handlePreview}
+                  onChange={handleChange}
                 >
-                  <Input placeholder="Nhập họ tên" />
-                </Item>
+                  {fileList.length >= 1 ? null : uploadButton}
+                </Upload>
 
-                <Item label="Email" name="email">
-                  <Input disabled />
-                </Item>
+                {previewImage && (
+                  <Image
+                    wrapperStyle={{ display: "none" }}
+                    preview={{
+                      visible: previewOpen,
+                      onVisibleChange: (visible) => setPreviewOpen(visible),
+                      afterOpenChange: (visible) =>
+                        !visible && setPreviewImage(""),
+                    }}
+                    src={previewImage}
+                  />
+                )}
+                <p style={{ fontSize: 12 }}>Dung lượng file tối đa 1 MB</p>
+                <p style={{ fontSize: 12 }}>Định dạng: .JPEG, .PNG</p>
+              </div>
+            </div>
+          </Card>
 
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loadingAction}
+          <Card
+            title="Thay đổi mật khẩu"
+            className="profile-card"
+            style={{ marginTop: 12 }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ flex: "1 0 70%", textAlign: "left" }}>
+                <Form
+                  form={passwordForm}
+                  layout="vertical"
+                  onFinish={onPasswordFinish}
+                  style={{ flex: 1 }}
+                  validateTrigger={["onSubmit"]}
                 >
-                  Lưu
-                </Button>
-              </Form>
-            </div>
-            <div
-              style={{
-                flex: "0 0 30%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Upload
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                listType="picture-circle"
-                fileList={fileList}
-                beforeUpload={beforeUpload}
-                onPreview={handlePreview}
-                onChange={handleChange}
-              >
-                {fileList.length >= 1 ? null : uploadButton}
-              </Upload>
+                  <Item
+                    label="Mật khẩu"
+                    name="currentPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Mật khẩu hiện tại là bắt buộc",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      placeholder="Nhập mật khẩu hiện tại"
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                    />
+                  </Item>
 
-              {previewImage && (
-                <Image
-                  wrapperStyle={{ display: "none" }}
-                  preview={{
-                    visible: previewOpen,
-                    onVisibleChange: (visible) => setPreviewOpen(visible),
-                    afterOpenChange: (visible) =>
-                      !visible && setPreviewImage(""),
-                  }}
-                  src={previewImage}
-                />
-              )}
-              <p style={{ fontSize: 12 }}>Dung lượng file tối đa 1 MB</p>
-              <p style={{ fontSize: 12 }}>Định dạng: .JPEG, .PNG</p>
+                  <Item
+                    label="Mật khẩu mới"
+                    name="newPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Mật khẩu mới là bắt buộc",
+                      },
+                      {
+                        min: 8,
+                        message: "Mật khẩu phải có ít nhất 8 ký tự",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      placeholder="Nhập mật khẩu mới"
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                    />
+                  </Item>
+
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loadingActionChangePassword}
+                  >
+                    Thay đổi
+                  </Button>
+                </Form>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </>
       )}
     </>
   );

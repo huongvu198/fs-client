@@ -11,12 +11,10 @@ import {
   setDefaultAddress,
 } from "@redux/userSlice";
 import { Address } from "interfaces/user.interface";
-import useNotification from "@hooks/useNotification";
 import UserAddressModal from "@components/UserProfile/Popup";
 
 const UserAddressPage: React.FC = () => {
   const dispatch = useDispatch<ApiDispatch>();
-  const { errorMessage, successMessage } = useNotification();
   const { userAddress, setAddressDefaultSuccess, error } = useReduxSelector(
     (state) => state.user
   );
@@ -42,15 +40,6 @@ const UserAddressPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (error) {
-      errorMessage({ description: error });
-    }
-    if (setAddressDefaultSuccess) {
-      successMessage({
-        title: "Cập nhật địa chỉ",
-        description: "Địa chỉ mặc định đã được cập nhật thành công.",
-      });
-    }
     dispatch(resetUserState());
   }, [error, setAddressDefaultSuccess]);
 

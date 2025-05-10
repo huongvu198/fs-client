@@ -10,6 +10,8 @@ import "./locales";
 import { IntlProvider } from "react-intl";
 import { CartProvider } from "contexts/cartContext";
 import { AuthProvider } from "contexts/authContext";
+import { ToastContainer } from "react-toastify";
+
 const App = () => {
   const {
     i18n: { changeLanguage },
@@ -42,6 +44,7 @@ const App = () => {
           </CartProvider>
         </AuthProvider>
       </ConfigProvider>
+      <ToastContainer draggable draggableDirection="y" />
     </Provider>
   );
 };

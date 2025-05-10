@@ -91,7 +91,7 @@ input {
 
   &:focus {
     border-color: #444; // màu đen đậm hơn khi focus
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); // viền sáng nhẹ
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important; // viền sáng nhẹ
   }
 }
 
@@ -107,6 +107,6 @@ input {
   &:focus,
   &.ant-input-focused {
     border-color: #444;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
   }
 }

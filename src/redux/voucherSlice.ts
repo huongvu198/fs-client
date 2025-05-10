@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { voucherService } from "@services/voucher";
 import { Voucher } from "interfaces/order.interface";
+import { showToast, ToastType } from "shared/toast";
 
 interface VoucherState {
   vouchers: Voucher[] | null;
@@ -57,6 +58,7 @@ const voucherSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
         state.getVouchersSuccess = false;
+        showToast(ToastType.ERROR, "Lấy thông tin vouchers thất bại");
       });
   },
 });

@@ -1,6 +1,7 @@
 import { authAxios } from "@config/axiosConfig";
 import { endPoint } from "./endPoint";
 import {
+  ChangePasswordPayload,
   IUpdateProfile,
   UpdateAddressPayload,
   UserResponse,
@@ -122,6 +123,23 @@ export const userService = {
       }
       throw new Error(
         error.message || "An error occurred during delete address"
+      );
+    }
+  },
+
+  changePassword: async (payload: ChangePasswordPayload) => {
+    try {
+      const response = await authAxios.post(
+        endPoint.AUTH.CHANGE_PASSWORD,
+        payload
+      );
+      return response;
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(
+        error.message || "An error occurred during change password"
       );
     }
   },

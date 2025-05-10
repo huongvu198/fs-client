@@ -82,3 +82,8 @@ export interface CreateAddressPayload {
   country: string;
   isDefault?: boolean;
 }
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}

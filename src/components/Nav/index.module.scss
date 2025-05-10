@@ -26,14 +26,31 @@
     padding: 0 15px; // đảm bảo có padding hai bên
     :global(.logo) {
       display: flex;
-      flex-grow: 1;
+      // flex-grow: 1;
       align-items: center;
       justify-content: center;
+
       img {
         cursor: pointer;
         max-height: 40px;
-        @media (max-width: 992px) {
-          max-height: 20px;
+
+        @media (max-width: 768px) {
+          display: none;
+        }
+      }
+
+      .brand-name {
+        margin-left: 10px;
+        font-size: 22px;
+        font-weight: 600;
+        font-family: "Pacifico", cursive;
+        color: #ea7098;
+        cursor: pointer;
+        user-select: none;
+        letter-spacing: 1px;
+
+        @media (max-width: 768px) {
+          display: none;
         }
       }
       :global(.btn-expaned-sp) {

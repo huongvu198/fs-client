@@ -3,7 +3,6 @@ import classNames from "classnames/bind";
 import { Outlet, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
-import Spinner from "@components/Spinner";
 import Nav from "@components/Nav";
 import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
@@ -12,6 +11,8 @@ import { hasAccessToken } from "@config/accessToken";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { getUserApi } from "@redux/userSlice";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
+import { getMasterData } from "@redux/appSlice";
+import { Spin } from "antd";
 
 const cx = classNames.bind(styles);
 
@@ -22,6 +23,7 @@ const PublicLayout = () => {
   const navigate = useNavigate();
   const dispatch = useRedux();
   const { getUserSuccess } = useReduxSelector((state) => state.getUser);
+  const { masterData } = useReduxSelector((state) => state.app);
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();
@@ -37,12 +39,10 @@ const PublicLayout = () => {
     }
   }, [resize]);
   useEffect(() => {
-    
     const token = hasAccessToken();
     const publicPaths = ["/login", "/register", "/verify"];
 
     if (token) {
-      
       if (!getUserSuccess) {
         dispatch(getUserApi());
       }
@@ -53,10 +53,16 @@ const PublicLayout = () => {
     }
   }, [location, navigate, dispatch, getUserSuccess]);
 
+  useEffect(() => {
+    if (!masterData) {
+      dispatch(getMasterData());
+    }
+  }, [dispatch]);
+
   return (
     <>
       <div>
-        <ScrollOnTop/>
+        <ScrollOnTop />
         <Nav
           handleHiddenSideBar={handleHiddenSideBar}
           handleShowSideBar={handleShowSideBar}
@@ -64,7 +70,7 @@ const PublicLayout = () => {
         <div className={cx("example-layout")}>
           <Sidebar ref={sidebarRef} />
           <div className="body-layout">
-            <Suspense fallback={<Spinner />}>
+            <Suspense fallback={<Spin size="large" fullscreen={true} />}>
               <Outlet />
             </Suspense>
           </div>

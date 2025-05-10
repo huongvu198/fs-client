@@ -8,12 +8,14 @@ import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
+import { useReduxSelector } from "@hooks/useRedux";
 
 const AuthLayout = () => {
   const [, setIsOpenSideBar] = useState(true);
   const sidebarRef = useRef<any>(null);
   const resize = useWindowSize();
   const navigate = useNavigate();
+  const { masterData } = useReduxSelector((state) => state.app);
 
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
@@ -36,6 +38,12 @@ const AuthLayout = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    if (!masterData) {
+      dispatch(getMasterData());
+    }
+  }, [dispatch]);
 
   return (
     <>

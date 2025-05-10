@@ -54,4 +54,30 @@ export const productsService = {
       throw new Error(error.message || "An error occurred during get arrivals");
     }
   },
+
+  getProductsWithCondition: async (params: {
+    page?: number;
+    perPage?: number;
+    tag?: string;
+    search?: string;
+    color?: string[] | string;
+    size?: string[] | string;
+  }) => {
+    try {
+      const response = await unauthAxios.get<
+        PaginatedResponse<IProductResponse>
+      >(endPoint.PRODUCT.GET_PRODUCTS_WITH_CONDITION, {
+        params,
+      });
+      if (response.data) {
+        return response.data;
+      }
+      throw new Error("Invalid response format");
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(error.message || "An error occurred during get arrivals");
+    }
+  },
 };

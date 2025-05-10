@@ -9,7 +9,7 @@ import ButtonComponent from "@components/ButtonComponent";
 import { IProductResponse, Product } from "interfaces/product.interface";
 import { FormattedNumber } from "react-intl";
 import { NavigateFunction } from "react-router-dom";
-import { ProductDetailPath } from "@config/routerConfig";
+import { ProductDetailPath, ProductsQueryPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 const { Title, Text } = Typography;
@@ -120,12 +120,12 @@ const ProductSection = ({
   const isSmallPC = useMediaQuery({ minWidth: 1440, maxWidth: 1720 });
   const isLargePC = useMediaQuery({ minWidth: 1721 });
 
-  let slidesToShow = 5;
+  let slidesToShow = 4;
   if (isMobile) slidesToShow = 1;
   else if (isTablet) slidesToShow = 2;
   else if (isLaptop) slidesToShow = 3;
   else if (isSmallPC) slidesToShow = 4;
-  else if (isLargePC) slidesToShow = 5;
+  else if (isLargePC) slidesToShow = 4;
 
   slidesToShow = Math.min(slidesToShow, products.length);
 
@@ -185,7 +185,16 @@ const ProductSection = ({
         )}
         <div className={cx("view-all-container")}>
           {isViewAll && (
-            <ButtonComponent className={cx("view-all-button")}>
+            <ButtonComponent
+              className={cx("view-all-button")}
+              onClick={() =>
+                navigate(
+                  ProductsQueryPath({
+                    tag: tag === "New" ? "new-arrivals" : "best-sellers",
+                  })
+                )
+              }
+            >
               View All
             </ButtonComponent>
           )}

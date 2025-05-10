@@ -3,7 +3,7 @@ import styles from "./index.module.scss";
 import BreadcrumbComponent from "@components/BreadCrumbComponent";
 import { useEffect, useState } from "react";
 import RadioComponent from "@components/RadioComponent";
-import { Button, InputNumber } from "antd";
+import { Button, InputNumber, Spin } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -199,7 +199,7 @@ const ProductDetail = () => {
   }, [selectorColor]);
 
   if (!productData) {
-    return <div className="loading">Loading product...</div>;
+    return <Spin size="large" fullscreen={true} />;
   }
 
   const { originalPrice, discountPercentage, currentPrice } =
@@ -299,6 +299,7 @@ const ProductDetail = () => {
           throw new Error();
         }
       } catch (error) {
+        console.error("Error adding to cart:", error);
         errorMessage({
           description: `Thêm giỏ hàng thất bại!`,
           title: "Giỏ hàng",

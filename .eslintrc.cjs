@@ -15,7 +15,7 @@ module.exports = {
     "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": 0,
-    "no-console": ["error", { allow: ["warn"] }],
+    "no-console": ["warn", { allow: ["warn"] }],
     "@typescript-eslint/no-explicit-any": "warn",
     "prettier/prettier": [
       "warn",

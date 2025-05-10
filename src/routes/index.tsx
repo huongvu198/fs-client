@@ -1,6 +1,8 @@
 import {
+  CartPath,
   LoginPath,
   ProductDetailPath,
+  ProductsPath,
   ProfilePath,
   RegisterPath,
   UserAddressPath,
@@ -39,7 +41,7 @@ const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
           element: <Home />,
         },
         {
-          path: "/category",
+          path: ProductsPath,
           element: <ListProduct />,
         },
         {
@@ -47,7 +49,7 @@ const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
           element: <ProductDetail />,
         },
         {
-          path: "/cartList",
+          path: CartPath,
           element: <CartList />,
         },
         {

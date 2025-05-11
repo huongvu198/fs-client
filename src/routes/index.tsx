@@ -1,10 +1,12 @@
 import {
   CartPath,
   LoginPath,
+  PaymentMethodPath,
   ProductDetailPath,
   ProductsPath,
   ProfilePath,
   RegisterPath,
+  ShippingDetailPath,
   UserAddressPath,
   UserOrders,
   UserPath,
@@ -97,11 +99,11 @@ const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
       element: <AuthLayout />,
       children: [
         {
-          path: "/shippingDetails",
+          path: ShippingDetailPath,
           element: <ShippingDetails />,
         },
         {
-          path: "/paymentMethod",
+          path: PaymentMethodPath,
           element: <PaymentMethod />,
         },
       ],

@@ -1,48 +1,103 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Select, Radio, Button } from "antd";
 import styles from "./index.module.scss";
 import OrderSummary from "@components/OrderSummaryComponent";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useReduxSelector } from "@hooks/useRedux";
+import { useDispatch } from "react-redux";
+import { createAddress, getUserAddress, resetUserState } from "@redux/userSlice";
+import { Address } from "interfaces/user.interface";
+import useNotification from "@hooks/useNotification";
 
 const { Option } = Select;
 
 interface ShippingFormData {
   firstName: string;
   lastName: string;
-  address1: string;
-  address2?: string;
+  address: string;
   country: string;
+  district: string;
   city: string;
-  zipCode: string;
   phoneNumber: string;
   selectedAddress: string;
+  street: string;
+  ward: string;
 }
 
 const ShippingDetails: React.FC = () => {
   const [form] = Form.useForm<ShippingFormData>();
   const [selectedAddress, setSelectedAddress] = React.useState("address-1");
-
-  const cart = { items: [] };
-  const subtotal = 100;
-  const shipping = 10;
-  const taxes = 5;
-  const total = 115;
-
-  const handleNext = (data: ShippingFormData) => {
-    console.log("Form Data:", data);
+  const [isAddNewAddress, setIsAddNewAddress] = React.useState(false);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const cartItems = location.state?.cartItems;
+  const discountAmount = location.state?.discountAmount;
+  const discountPercent = location.state?.discount;
+  const voucherType = location.state?.voucherType;
+  const selectedPoint = location.state?.selectedPoint;
+  const voucherId = location.state?.voucherId;
+  const cart = cartItems;
+  const { userAddress, createAddressSuccess, error } = useReduxSelector((state) => state.user);
+  const { errorMessage, successMessage } = useNotification();
+  const handleNext = async () => {
+    const values = await form.validateFields()
+    const selectedAddress = values.selectedAddress
+    navigate("/paymentMethod", {
+      state: { cart, discountAmount, voucherType, selectedPoint, discountPercent, selectedAddress, voucherId },
+    })
   };
 
   const handleCancel = () => {
     console.log("Canceled");
   };
 
-  const handleSubmit = async () => {
-    try {
+  const handleAddNewAddress = async () => {
       const values = await form.validateFields();
-      handleNext(values);
-    } catch (errorInfo) {
-      console.error("Validation Failed:", errorInfo);
-    }
+      if (values.selectedAddress === "add") {
+        const formDataCreateAddress = {
+          fullName: values.firstName + " " + values.lastName,
+          phone: values.phoneNumber,
+          street: values.street,
+          city: values.city,
+          district: values.district,
+          ward: values.ward,
+          country: values.country,
+        };
+        dispatch(createAddress(formDataCreateAddress))
+      }
   };
+
+  const isInputDisabled = !isAddNewAddress;
+
+  useEffect(() => {
+    if (!userAddress) {
+      dispatch(getUserAddress());
+    }
+  }, [userAddress, dispatch]);
+
+  useEffect(() => {
+      if (createAddressSuccess ) {
+        successMessage({
+          title: createAddressSuccess
+            ? "Tạo mới địa chỉ" : "Lỗi tạo địa chỉ",
+          description: createAddressSuccess
+            ? "Địa chỉ đã được tạo mới thành công."
+            : "Địa chỉ bị lỗi , vui lòng thử lại"
+        });
+        form.resetFields();
+      }
+  
+      if (error) {
+        errorMessage({ description: error });
+      }
+  
+      if (
+        createAddressSuccess || error
+      ) {
+        dispatch(resetUserState());
+      }
+    }, [createAddressSuccess]);
 
   return (
     <div>
@@ -56,102 +111,6 @@ const ShippingDetails: React.FC = () => {
             initialValues={{ selectedAddress: "address-1" }}
             className={styles.formSection}
           >
-            <div className={styles.formRow}>
-              <Form.Item
-                name="firstName"
-                label="First Name"
-                rules={[
-                  { required: true, message: "Please enter your first name" },
-                ]}
-                className={styles.formItem}
-              >
-                <Input placeholder="First Name" />
-              </Form.Item>
-
-              <Form.Item
-                name="lastName"
-                label="Last Name"
-                rules={[
-                  { required: true, message: "Please enter your last name" },
-                ]}
-                className={styles.formItem}
-              >
-                <Input placeholder="Last Name" />
-              </Form.Item>
-            </div>
-
-            <Form.Item
-              name="address1"
-              label="Address"
-              rules={[{ required: true, message: "Please enter your address" }]}
-              className={styles.formItem}
-            >
-              <Input placeholder="Address" />
-            </Form.Item>
-
-            <Form.Item
-              name="address2"
-              label="Address 2"
-              className={styles.formItem}
-            >
-              <Input placeholder="Address 2" />
-            </Form.Item>
-
-            <div className={styles.formRow}>
-              <Form.Item
-                name="country"
-                label="Country"
-                rules={[
-                  { required: true, message: "Please select your country" },
-                ]}
-                className={styles.formItem}
-              >
-                <Select placeholder="Country">
-                  <Option value="us">United States</Option>
-                  <Option value="ca">Canada</Option>
-                  <Option value="uk">United Kingdom</Option>
-                  <Option value="au">Australia</Option>
-                  <Option value="vn">Vietnam</Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                name="city"
-                label="City"
-                rules={[{ required: true, message: "Please enter your city" }]}
-                className={styles.formItem}
-              >
-                <Input placeholder="City" />
-              </Form.Item>
-            </div>
-
-            <div className={styles.formRow}>
-              <Form.Item
-                name="zipCode"
-                label="Zip/Postal Code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter your zip/postal code",
-                  },
-                ]}
-                className={styles.formItem}
-              >
-                <Input placeholder="Zip/Postal Code" />
-              </Form.Item>
-
-              <Form.Item
-                name="phoneNumber"
-                label="Phone Number"
-                rules={[
-                  { required: true, message: "Please enter your phone number" },
-                ]}
-                className={styles.formItem}
-              >
-                <Input placeholder="Phone Number" />
-              </Form.Item>
-            </div>
-
             <Form.Item
               name="selectedAddress"
               label="Select an Address"
@@ -159,44 +118,193 @@ const ShippingDetails: React.FC = () => {
             >
               <Radio.Group
                 value={selectedAddress}
-                onChange={(e) => setSelectedAddress(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedAddress(value);
+                  form.setFieldsValue({ selectedAddress: value });
+                  setIsAddNewAddress(value === "add");
+                }}
                 style={{ width: "100%" }}
               >
+                {userAddress?.addresses.map((address: Address) => (
+                  <div
+                    key={address.id}
+                    className={`${styles.addressOption} ${
+                      selectedAddress === address.id ? styles.selected : ""
+                    }`}
+                  >
+                    <Radio value={address.id}>
+                      <div>
+                        <div className={styles.addressTitle}>
+                          {address.street}
+                        </div>
+                        <div className={styles.addressDetails}>
+                          {`${address.ward}, ${address.district}, ${address.city}, ${address.country}`}
+                        </div>
+                        {address.phone && (
+                          <div className={styles.addressDetails}>
+                            Phone: {address.phone}
+                          </div>
+                        )}
+                      </div>
+                    </Radio>
+                  </div>
+                ))}
                 <div
-                  className={`${styles.addressOption} ${selectedAddress === "address-1" ? styles.selected : ""}`}
+                  className={`${styles.addressOption} ${
+                    selectedAddress === "add" ? styles.selected : ""
+                  }`}
                 >
-                  <Radio value="address-1">
-                    <div>
-                      <div className={styles.addressTitle}>Address-1</div>
-                      <div className={styles.addressDetails}>HN-VN</div>
-                    </div>
-                  </Radio>
-                </div>
-
-                <div
-                  className={`${styles.addressOption} ${selectedAddress === "address-2" ? styles.selected : ""}`}
-                >
-                  <Radio value="address-2">
-                    <div>
-                      <div className={styles.addressTitle}>Address-2</div>
-                      <div className={styles.addressDetails}>HN-VN</div>
-                    </div>
+                  <Radio value="add">
+                    <div className={styles.addressTitle}>Thêm địa chỉ mới</div>
                   </Radio>
                 </div>
               </Radio.Group>
             </Form.Item>
 
-            <div className={styles.buttonGroup}>
-              <Button
-                type="primary"
-                onClick={handleSubmit}
+            <div className={styles.formRow}>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                rules={[
+                  {
+                    required: isAddNewAddress,
+                    message: "Please enter your first name",
+                  },
+                ]}
+                className={styles.formItem}
               >
+                <Input placeholder="First Name" disabled={isInputDisabled} />
+              </Form.Item>
+
+              <Form.Item
+                name="lastName"
+                label="Last Name"
+                rules={[
+                  {
+                    required: isAddNewAddress,
+                    message: "Please enter your last name",
+                  },
+                ]}
+                className={styles.formItem}
+              >
+                <Input placeholder="Last Name" disabled={isInputDisabled} />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="street"
+              label="Đường"
+              rules={[
+                {
+                  required: isAddNewAddress,
+                  message: "Hãy nhập tên đường",
+                },
+              ]}
+              className={styles.formItem}
+            >
+              <Input placeholder="Tên đường..." disabled={isInputDisabled} />
+            </Form.Item>
+
+            <Form.Item
+              name="ward"
+              label="Phường/Xã"
+              rules={[
+                {
+                  required: isAddNewAddress,
+                  message: "Hãy nhập tên phường/xã",
+                },
+              ]}
+              className={styles.formItem}
+            >
+              <Input
+                placeholder="Tên phường/xã..."
+                disabled={isInputDisabled}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="district"
+              label="Quận/Huyện"
+              rules={[
+                {
+                  required: isAddNewAddress,
+                  message: "Hãy nhập tên quận/huyện",
+                },
+              ]}
+              className={styles.formItem}
+            >
+              <Input
+                placeholder="Tên quận/huyện..."
+                disabled={isInputDisabled}
+              />
+            </Form.Item>
+
+            <div className={styles.formRow}>
+              <Form.Item
+                name="city"
+                label="Thành phố"
+                rules={[
+                  {
+                    required: isAddNewAddress,
+                    message: "Hãy nhập thành phố",
+                  },
+                ]}
+                className={styles.formItem}
+              >
+                <Input placeholder="Thành phố..." disabled={isInputDisabled} />
+              </Form.Item>
+
+              <Form.Item
+                name="country"
+                label="Quốc gia"
+                rules={[
+                  {
+                    required: isAddNewAddress,
+                    message: "Hãy chọn quốc gia",
+                  },
+                ]}
+                className={styles.formItem}
+              >
+                <Select style={{height: "44.5px"}} placeholder="Quốc gia" disabled={isInputDisabled}>
+                  <Option value="us">United States</Option>
+                  <Option value="ca">Canada</Option>
+                  <Option value="uk">United Kingdom</Option>
+                  <Option value="au">Australia</Option>
+                  <Option value="vn">Vietnam</Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className={styles.formRow}>
+              <Form.Item
+                name="phoneNumber"
+                label="Số điện thoại"
+                rules={[
+                  {
+                    required: isAddNewAddress,
+                    message: "Hãy nhập số điện thoại",
+                  },
+                ]}
+                className={styles.formItem}
+              >
+                <Input placeholder="Số điện thoại..." disabled={isInputDisabled} />
+              </Form.Item>
+            </div>
+
+            {isAddNewAddress && (
+              <div style={{ marginBottom: 16 }}>
+                <Button type="dashed" onClick={handleAddNewAddress}>
+                  Thêm địa chỉ mới
+                </Button>
+              </div>
+            )}
+
+            <div className={styles.buttonGroup}>
+              <Button type="primary" onClick={handleNext}>
                 Next
               </Button>
-              <Button
-                type="default"
-                onClick={handleCancel}
-              >
+              <Button type="default" onClick={handleCancel}>
                 Cancel
               </Button>
             </div>
@@ -205,11 +313,11 @@ const ShippingDetails: React.FC = () => {
 
         <div className={styles.sidebar}>
           <OrderSummary
+            discountType={voucherType}
             cart={cart}
-            subtotal={subtotal}
-            shipping={shipping}
-            taxes={taxes}
-            total={total}
+            discount={discountPercent}
+            discountAmount={discountAmount}
+            selectedPoint={selectedPoint}
           />
         </div>
       </div>

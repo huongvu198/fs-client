@@ -32,3 +32,5 @@ export const RegisterPath = "/register";
 export const LoginPath = "/login";
 export const VerifyPath = "/verify";
 export const CartPath = "/cart";
+export const ShippingDetailPath = "/shippingDetails";
+export const PaymentMethodPath = "/paymentMethod"

@@ -98,3 +98,13 @@ export enum VerifyCodeEnum {
   CREATE_ACCOUNT = "CREATE_ACCOUNT",
   FORGOT_PASSWORD = "FORGOT_PASSWORD",
 }
+
+export enum VoucherType {
+  PERCENT = "PERCENT",
+  FIXED = "FIXED"
+}
+
+export enum PaymentMethodEnum {
+  COD = 'COD',
+  BANKING = 'BANKING',
+}

@@ -1,6 +1,6 @@
 import { authAxios } from "@config/axiosConfig";
 import { PaginatedResponse } from "interfaces/app.interface";
-import { Order } from "interfaces/order.interface";
+import { IOrderReq, IOrderResponse, Order } from "interfaces/order.interface";
 import { endPoint } from "./endPoint";
 
 export const orderService = {
@@ -35,4 +35,18 @@ export const orderService = {
       throw new Error(error.message || "An error occurred during cancel order");
     }
   },
+  createOrder: async (params: IOrderReq): Promise<IOrderResponse>=> {
+    try {
+      const response = await authAxios.post<IOrderResponse>(
+        endPoint.ORDER.CREATE_ORDER,
+          params,
+      )
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(error.message || "An error occurred during create order");
+    }
+  }
 };

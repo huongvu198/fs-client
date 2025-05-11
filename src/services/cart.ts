@@ -1,5 +1,5 @@
 import { authAxios } from "@config/axiosConfig";
-import { CartRequest, ICartResponse, IVoucherRequest, IVoucherResponse } from "interfaces/cart.interface";
+import { CartRequest, ICartResponse, IVoucherResponse } from "interfaces/cart.interface";
 import { endPoint } from "./endPoint";
 
 export interface ICartId {

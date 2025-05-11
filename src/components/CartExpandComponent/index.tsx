@@ -8,7 +8,6 @@ import ButtonComponent from "@components/ButtonComponent";
 import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
 import { useCartContext } from "contexts/cartContext";
 import { useReduxSelector } from "@hooks/useRedux";
-import useNotification from "@hooks/useNotification";
 
 const cx = classNames.bind(styles);
 
@@ -17,7 +16,6 @@ const CartExpand = () => {
   const navigate = useNavigate();
   const { setCart, cart } = useCartContext();
   const dataCart = useReduxSelector((state) => state.cart.dataCart);
-  const { successMessage } = useNotification();
 
   const showDrawer = () => {
     setVisible(true);
@@ -58,7 +56,7 @@ const CartExpand = () => {
 
   const goToCart = () => {
     setVisible(false);
-    navigate("/cartList");
+    navigate("/cart");
   };
 
   const goToLogin = () => {
@@ -67,16 +65,26 @@ const CartExpand = () => {
   };
 
   useEffect(() => {
-    if (dataCart) {
-      setCart(() => {
-        const localKey =
-          hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
-        localStorage.setItem(localKey, JSON.stringify(dataCart));
-
-        return dataCart;
-      });
+    const localKey = hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
+  
+    if (dataCart && dataCart.items && dataCart.items.length > 0) {
+      setCart(dataCart);
+      localStorage.setItem(localKey, JSON.stringify(dataCart));
+    } else {
+      const localData = localStorage.getItem(localKey);
+      if (localData) {
+        const parsedCart = JSON.parse(localData);
+        if (parsedCart && parsedCart.items && parsedCart.items.length > 0) {
+          setCart(parsedCart);
+        } else {
+          setCart(null);
+        }
+      } else {
+        setCart(null);
+      }
     }
-  }, [dataCart, setCart, successMessage]);
+  }, [dataCart, setCart]);
+  
 
   return (
     <div className={cx("cart-container")}>

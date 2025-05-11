@@ -20,7 +20,6 @@ import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
 import { useCartContext } from "contexts/cartContext"; // Assuming you have a cartContext
 import { CartRequest } from "interfaces/cart.interface";
-import { RegisterPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 
@@ -103,12 +102,12 @@ const LoginRegistrationForm: React.FC = () => {
     }
   }, [error]);
 
-  // Khi lấy giỏ hàng thành công, update context
-  useEffect(() => {
-    if (dataCart) {
-      setCart(dataCart); // Cập nhật cart vào context
-    }
-  }, [dataCart, setCart]);
+  // // Khi lấy giỏ hàng thành công, update context
+  // useEffect(() => {
+  //   if (dataCart) {
+  //     setCart(dataCart); // Cập nhật cart vào context
+  //   }
+  // }, [dataCart, setCart]);
 
   return (
     <>

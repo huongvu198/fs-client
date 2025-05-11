@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, Radio, RadioChangeEvent } from "antd";
 import {
   DeleteOutlined,
   MinusOutlined,
@@ -22,6 +22,8 @@ import {
 import useNotification from "@hooks/useNotification";
 import { FormattedNumber } from "react-intl";
 import { useReduxSelector } from "@hooks/useRedux";
+import { useNavigate } from "react-router-dom";
+import { VoucherType } from "@constants/const";
 
 const cx = classNames.bind(styles);
 
@@ -33,6 +35,7 @@ const CartList = () => {
   const [promoCode, setPromoCode] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { setCart } = useCartContext();
   const { successMessage } = useNotification();
 
@@ -40,18 +43,22 @@ const CartList = () => {
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
   const { dataVoucher, loading } = useReduxSelector((state) => state.cart);
-
+  const [voucherType, setVoucherType] = useState<string>("");
+  const [selectedPoint, setSelectePoint] = React.useState("");
+  const [voucherId, setVoucherId] = React.useState("");
+  const [isDisableInputVoucher, setIsDisableInputVoucher] =
+    useState<boolean>(false);
   useEffect(() => {
     const calcSubtotal = cartItems.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum, item) => sum + item.product.discountPrice * item.quantity,
       0
     );
-  
+
     let calcDiscountAmount = 0;
     let calcTotal = calcSubtotal;
-  
+
     if (discount > 0) {
-      if (dataVoucher.type === "PERCENT") {
+      if (dataVoucher.type === VoucherType.PERCENT) {
         calcDiscountAmount = (calcSubtotal * discount) / 100;
         calcTotal = calcSubtotal - calcDiscountAmount;
       } else {
@@ -59,7 +66,7 @@ const CartList = () => {
         calcTotal = calcSubtotal - discount;
       }
     }
-  
+    setVoucherType(dataVoucher?.type);
     setSubtotal(calcSubtotal);
     setDiscountAmount(calcDiscountAmount);
     setTotal(calcTotal);
@@ -110,7 +117,6 @@ const CartList = () => {
     const hasToken = hasAccessToken();
 
     if (!hasToken) {
-      // Không có token => Xóa local và cập nhật Context + State
       setCart((prevCart) => {
         if (!prevCart) return null;
         const updatedCart = {
@@ -119,15 +125,14 @@ const CartList = () => {
         };
 
         localStorage.setItem("tempCart", JSON.stringify(updatedCart));
-        setCartItems(updatedCart); // <- Cập nhật state
+        setCartItems(updatedCart);
         return updatedCart;
       });
     } else {
-      // Có token => Gọi API xóa
       try {
         const updatedCart = await dispatch(deleteCartItemApi({ id })).unwrap();
         setCart(updatedCart);
-        setCartItems(updatedCart); // <- Cập nhật state
+        setCartItems(updatedCart);
         successMessage({ title: "Giỏ hàng", description: "Xóa thành công!" });
       } catch (error) {
         console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", error);
@@ -148,6 +153,7 @@ const CartList = () => {
 
   useEffect(() => {
     if (dataVoucher) {
+      setVoucherId(dataVoucher.id);
       setDiscount(dataVoucher.discount);
     }
   }, [dataVoucher]);
@@ -192,11 +198,30 @@ const CartList = () => {
                     Color: {item.variant.color}
                   </p>
                   <p className={cx("product-price")}>
-                    <FormattedNumber
-                      value={item.product.price}
-                      currency="VND"
-                      style="currency"
-                    />
+                    {item.product.discount > 0 ? (
+                      <>
+                        <span className={cx("original-price")}>
+                          <FormattedNumber
+                            value={item.product.price}
+                            currency="VND"
+                            style="currency"
+                          />
+                        </span>
+                        <span className={cx("discounted-price")}>
+                          <FormattedNumber
+                            value={item.product.discountPrice}
+                            currency="VND"
+                            style="currency"
+                          />
+                        </span>
+                      </>
+                    ) : (
+                      <FormattedNumber
+                        value={item.product.price}
+                        currency="VND"
+                        style="currency"
+                      />
+                    )}
                   </p>
                 </div>
 
@@ -279,17 +304,19 @@ const CartList = () => {
                 )}
               </div>
             ) : null}
-            <div className={`${cx("summary-row")} ${cx("total-row")}`}>
-              <span>Total</span>
-              <span>
-                <FormattedNumber
-                  value={total}
-                  currency="VND"
-                  style="currency"
-                />
-              </span>
-            </div>
-
+            {selectedPoint === "point" && (
+              <div className={cx("summary-row")}>
+                <span>Point Discount (1P ~ 1đ)</span>
+                <span className={cx("discount-amount")}>
+                  -
+                  <FormattedNumber
+                    value={total}
+                    currency="VND"
+                    style="currency"
+                  />
+                </span>
+              </div>
+            )}
             <div className={cx("promoCode-container")}>
               <Input
                 prefix={<TagOutlined />}
@@ -297,6 +324,7 @@ const CartList = () => {
                 value={promoCode}
                 onChange={handlePromoCodeChange}
                 className={cx("promo-input")}
+                disabled={isDisableInputVoucher}
               />
               <Button
                 type="primary"
@@ -307,6 +335,37 @@ const CartList = () => {
                 Apply
               </Button>
             </div>
+            <div
+              className={`${cx("point-option")} ${
+                selectedPoint === "point" ? "selected" : ""
+              }`}
+              onClick={() => {
+                if (selectedPoint === "point") {
+                  setSelectePoint("");
+                  setIsDisableInputVoucher(false);
+                } else {
+                  setSelectePoint("point");
+                  setIsDisableInputVoucher(true);
+                }
+              }}
+            >
+              <Radio checked={selectedPoint === "point"}>
+                <div>
+                  <div className={cx("point-title")}>Sử dụng Point</div>
+                </div>
+              </Radio>
+            </div>
+
+            <div className={`${cx("summary-row")} ${cx("total-row")}`}>
+              <span>Total</span>
+              <span>
+                <FormattedNumber
+                  value={selectedPoint === "point" ? 0 : total}
+                  currency="VND"
+                  style="currency"
+                />
+              </span>
+            </div>
 
             <Button
               type="primary"
@@ -314,6 +373,18 @@ const CartList = () => {
               block
               className={cx("checkout-button")}
               disabled={cartItems.items.length === 0}
+              onClick={() =>
+                navigate("/shippingDetails", {
+                  state: {
+                    cartItems,
+                    total,
+                    discount,
+                    voucherType,
+                    selectedPoint,
+                    voucherId,
+                  },
+                })
+              }
             >
               Go to Checkout <ArrowRightOutlined />
             </Button>

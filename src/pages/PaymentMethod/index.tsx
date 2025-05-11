@@ -1,93 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Radio } from 'antd';
-import styles from './index.module.scss';
-import OrderSummary from '@components/OrderSummaryComponent';
-import { ICartResponse } from 'interfaces/cart.interface';
-import classNames from 'classnames'; // cần thêm
+import React, { useState } from "react";
+import { Form, Radio } from "antd";
+import styles from "./index.module.scss";
+import OrderSummary from "@components/OrderSummaryComponent";
+import classNames from "classnames";
+import { useLocation, useNavigate } from "react-router-dom";
+import useNotification from "@hooks/useNotification";
+import { PaymentMethodEnum } from "@constants/const";
+import { useDispatch } from "react-redux";
+import { createOrder } from "@redux/orderSlice";
+import { useReduxSelector } from "@hooks/useRedux";
 
 const PaymentMethod: React.FC = () => {
   const [form] = Form.useForm();
-  const [selectedPayment, setSelectedPayment] = useState<string>('cod');
-
-  const [cart] = useState<ICartResponse>({
-    id: 'cart_fake_001',
-    items: [
-      {
-        id: 'item_001',
-        quantity: 2,
-        status: 'AVAILABLE',
-        product: {
-          id: 'product_001',
-          name: 'T-shirt Basic',
-          price: 25.0,
-          discount: 10,
-          discountPrice: 22.5,
-        },
-        variant: {
-          id: 'variant_001',
-          color: 'Red',
-          image: 'https://via.placeholder.com/150x150.png?text=T-shirt+Red',
-        },
-        size: {
-          id: 'size_001',
-          size: 'M',
-          inventory: 50,
-        },
-      },
-      {
-        id: 'item_002',
-        quantity: 1,
-        status: 'AVAILABLE',
-        product: {
-          id: 'product_002',
-          name: 'Hoodie Oversized',
-          price: 50.0,
-          discount: 20,
-          discountPrice: 40.0,
-        },
-        variant: {
-          id: 'variant_002',
-          color: 'Black',
-          image: 'https://via.placeholder.com/150x150.png?text=Hoodie+Black',
-        },
-        size: {
-          id: 'size_002',
-          size: 'L',
-          inventory: 20,
-        },
-      },
-    ],
-    statusCode: 200,
-    message: 'Success',
-  });
-
-  const [subtotal, setSubtotal] = useState(0);
-  const [shipping] = useState(10);
-  const [taxes, setTaxes] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    if (cart.items.length > 0) {
-      const subtotalCalc = cart.items.reduce((sum: number, item: { product: { discountPrice: number; }; quantity: number; }) => {
-        return sum + (item.product.discountPrice * item.quantity);
-      }, 0);
-      const taxCalc = subtotalCalc * 0.08;
-      const totalCalc = subtotalCalc + shipping + taxCalc;
-
-      setSubtotal(subtotalCalc);
-      setTaxes(taxCalc);
-      setTotal(totalCalc);
-    }
-  }, [cart, shipping]);
-
+  const location = useLocation();
+  const [selectedPayment, setSelectedPayment] = useState<string>("cod");
+  const cartItems = location.state?.cart;
+  const discountAmount = location.state?.discountAmount;
+  const voucherType = location.state?.voucherType;
+  const selectedPoint = location.state?.selectedPoint;
+  const discountPercent = location.state?.discountPercent;
+  const selectedAddress = location.state?.selectedAddress;
+  const voucherId = location.state?.voucherId;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { errorMessage, successMessage } = useNotification();
+  const { createOrderSuccess, orderQr } = useReduxSelector(
+    (state) => state.order
+  );
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      console.log('Payment data:', values);
+      if (values.paymentMethod === PaymentMethodEnum.COD) {
+        successMessage({
+          title: "Thanh toán",
+          description: "Thanh toán thành công!",
+        });
+      } else {
+        dispatch(
+          createOrder({
+            addressId: selectedAddress,
+            paymentMethod: values.paymentMethod,
+            point: selectedPoint === "point" ? "point" : "",
+            ...(voucherId ? { voucherId } : {}),
+          })
+        );
+      }
     });
   };
 
-  const handleCancel = () => {
-    console.log('Cancel payment');
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const handlePaymentChange = (e: any) => {
@@ -103,21 +64,22 @@ const PaymentMethod: React.FC = () => {
           <Form
             form={form}
             layout="vertical"
-            initialValues={{ paymentMethod: 'cod' }}
+            initialValues={{ paymentMethod: PaymentMethodEnum.COD }}
             className={styles.formSection}
           >
             <Form.Item name="paymentMethod">
               <Radio.Group
                 onChange={handlePaymentChange}
                 value={selectedPayment}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
               >
                 <div
                   className={classNames(styles.paymentOption, {
-                    [styles.selected]: selectedPayment === 'cod',
+                    [styles.selected]:
+                      selectedPayment === PaymentMethodEnum.COD,
                   })}
                 >
-                  <Radio value="cod">
+                  <Radio value={PaymentMethodEnum.COD}>
                     <div>
                       <div className={styles.paymentTitle}>COD</div>
                       <div className={styles.paymentDescription}>
@@ -129,10 +91,14 @@ const PaymentMethod: React.FC = () => {
 
                 <div
                   className={classNames(styles.paymentOption, {
-                    [styles.selected]: selectedPayment === 'banking',
+                    [styles.selected]:
+                      selectedPayment === PaymentMethodEnum.BANKING,
                   })}
                 >
-                  <Radio value="banking">
+                  <Radio
+                    value={PaymentMethodEnum.BANKING}
+                    disabled={selectedPoint === "point" ? true : false}
+                  >
                     <div>
                       <div className={styles.paymentTitle}>Banking</div>
                       <div className={styles.paymentDescription}>
@@ -145,23 +111,36 @@ const PaymentMethod: React.FC = () => {
             </Form.Item>
 
             <div className={styles.buttonGroup}>
-              <button type="button" className={styles.primaryButton} onClick={handleSubmit}>
-                Pay now
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={handleSubmit}
+              >
+                Thanh toán
               </button>
-              <button type="button" className={styles.secondaryButton} onClick={handleCancel}>
-                Cancel
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={handleBack}
+              >
+                Trở về
               </button>
             </div>
           </Form>
+          {orderQr && selectedPayment === PaymentMethodEnum.BANKING ? (
+            <div className={styles.qrImageContainer}>
+              <img width={350} src={orderQr.data.qrDataURL} alt="not image" />
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.sidebar}>
           <OrderSummary
-            cart={cart}
-            subtotal={subtotal}
-            shipping={shipping}
-            taxes={taxes}
-            total={total}
+            discountType={voucherType}
+            cart={cartItems}
+            discount={discountPercent}
+            discountAmount={discountAmount}
+            selectedPoint={selectedPoint}
           />
         </div>
       </div>

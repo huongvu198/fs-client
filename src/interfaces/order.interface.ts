@@ -116,3 +116,28 @@ export interface Order {
   address: any | null;
   transactions: Transaction | null;
 }
+
+export interface QRCode {
+  qrCode: string;
+  qrDataURL: string;
+}
+
+export interface QR {
+  code: string;
+  desc: string;
+  data: QRCode
+}
+
+export interface IOrderReq {
+  addressId: string;
+  voucherId?: string;
+  paymentMethod: string;
+  point: string;
+}
+
+
+export interface IOrderResponse {
+  type: string;
+  order: Order;
+  qr: QR;
+}

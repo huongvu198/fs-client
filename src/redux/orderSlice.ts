@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Order } from "../interfaces/order.interface";
+import { IOrderReq, Order, QR } from "../interfaces/order.interface";
 import { orderService } from "@services/order";
 import { Pagination } from "../interfaces/app.interface";
 import { parsePaginationHeaders } from "shared/common";
@@ -10,7 +10,9 @@ interface OrderState {
   error: string | null;
   getOrderHistorySuccess: boolean;
   cancelOrderSuccess: boolean;
+  createOrderSuccess: boolean;
   pagination: Pagination;
+  orderQr:  QR | null ;
 }
 
 const initialState: OrderState = {
@@ -18,6 +20,7 @@ const initialState: OrderState = {
   loading: false,
   error: null,
   getOrderHistorySuccess: false,
+  createOrderSuccess: false,
   cancelOrderSuccess: false,
   pagination: {
     currentPage: 1,
@@ -25,6 +28,7 @@ const initialState: OrderState = {
     perPage: 10,
     totalItems: 0,
   },
+  orderQr : null
 };
 
 // Async thunk to fetch order history with pagination
@@ -51,6 +55,18 @@ export const cancelOrder = createAsyncThunk(
     }
   }
 );
+
+export const createOrder = createAsyncThunk(
+  "order/createOrder",
+  async (orderReq: IOrderReq, { rejectWithValue }) => {
+    try {
+      const response = await orderService.createOrder(orderReq);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to create order"); 
+    }
+  }
+)
 
 // Slice for order state management
 const orderSlice = createSlice({
@@ -98,6 +114,21 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = "Huỷ đơn hàng thất bại";
         state.cancelOrderSuccess = false;
+      })
+      .addCase(createOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.cancelOrderSuccess = false;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orderQr = action.payload.qr;
+        state.createOrderSuccess = true;
+      })
+      .addCase(createOrder.rejected, (state) => {
+        state.loading = false;
+        state.error = "Mã QR đang xảy ra lỗi , vui lòng thử lại!";
+        state.createOrderSuccess = false;
       });
   },
 });

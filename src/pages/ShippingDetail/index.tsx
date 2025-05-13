@@ -5,7 +5,11 @@ import OrderSummary from "@components/OrderSummaryComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useReduxSelector } from "@hooks/useRedux";
 import { useDispatch } from "react-redux";
-import { createAddress, getUserAddress, resetUserState } from "@redux/userSlice";
+import {
+  createAddress,
+  getUserAddress,
+  resetUserState,
+} from "@redux/userSlice";
 import { Address } from "interfaces/user.interface";
 import useNotification from "@hooks/useNotification";
 
@@ -30,7 +34,7 @@ const ShippingDetails: React.FC = () => {
   const [isAddNewAddress, setIsAddNewAddress] = React.useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const cartItems = location.state?.cartItems;
   const discountAmount = location.state?.discountAmount;
   const discountPercent = location.state?.discount;
@@ -38,34 +42,44 @@ const ShippingDetails: React.FC = () => {
   const selectedPoint = location.state?.selectedPoint;
   const voucherId = location.state?.voucherId;
   const cart = cartItems;
-  const { userAddress, createAddressSuccess, error } = useReduxSelector((state) => state.user);
+  const { userAddress, createAddressSuccess, error } = useReduxSelector(
+    (state) => state.user
+  );
   const { errorMessage, successMessage } = useNotification();
   const handleNext = async () => {
-    const values = await form.validateFields()
-    const selectedAddress = values.selectedAddress
+    const values = await form.validateFields();
+    const selectedAddress = values.selectedAddress;
     navigate("/paymentMethod", {
-      state: { cart, discountAmount, voucherType, selectedPoint, discountPercent, selectedAddress, voucherId },
-    })
+      state: {
+        cart,
+        discountAmount,
+        voucherType,
+        selectedPoint,
+        discountPercent,
+        selectedAddress,
+        voucherId,
+      },
+    });
   };
 
   const handleCancel = () => {
-    console.log("Canceled");
+    history.back();
   };
 
   const handleAddNewAddress = async () => {
-      const values = await form.validateFields();
-      if (values.selectedAddress === "add") {
-        const formDataCreateAddress = {
-          fullName: values.firstName + " " + values.lastName,
-          phone: values.phoneNumber,
-          street: values.street,
-          city: values.city,
-          district: values.district,
-          ward: values.ward,
-          country: values.country,
-        };
-        dispatch(createAddress(formDataCreateAddress))
-      }
+    const values = await form.validateFields();
+    if (values.selectedAddress === "add") {
+      const formDataCreateAddress = {
+        fullName: values.firstName + " " + values.lastName,
+        phone: values.phoneNumber,
+        street: values.street,
+        city: values.city,
+        district: values.district,
+        ward: values.ward,
+        country: values.country,
+      };
+      dispatch(createAddress(formDataCreateAddress));
+    }
   };
 
   const isInputDisabled = !isAddNewAddress;
@@ -77,27 +91,36 @@ const ShippingDetails: React.FC = () => {
   }, [userAddress, dispatch]);
 
   useEffect(() => {
-      if (createAddressSuccess ) {
-        successMessage({
-          title: createAddressSuccess
-            ? "Tạo mới địa chỉ" : "Lỗi tạo địa chỉ",
-          description: createAddressSuccess
-            ? "Địa chỉ đã được tạo mới thành công."
-            : "Địa chỉ bị lỗi , vui lòng thử lại"
-        });
-        form.resetFields();
-      }
-  
-      if (error) {
-        errorMessage({ description: error });
-      }
-  
-      if (
-        createAddressSuccess || error
-      ) {
-        dispatch(resetUserState());
-      }
-    }, [createAddressSuccess]);
+    if (
+      userAddress?.addresses?.length &&
+      !form.getFieldValue("selectedAddress")
+    ) {
+      const defaultAddressId = userAddress.addresses[0].id;
+      setSelectedAddress(defaultAddressId);
+      form.setFieldsValue({ selectedAddress: defaultAddressId });
+      setIsAddNewAddress(false);
+    }
+  }, [userAddress, form]);
+
+  useEffect(() => {
+    if (createAddressSuccess) {
+      successMessage({
+        title: createAddressSuccess ? "Tạo mới địa chỉ" : "Lỗi tạo địa chỉ",
+        description: createAddressSuccess
+          ? "Địa chỉ đã được tạo mới thành công."
+          : "Địa chỉ bị lỗi , vui lòng thử lại",
+      });
+      form.resetFields();
+    }
+
+    if (error) {
+      errorMessage({ description: error });
+    }
+
+    if (createAddressSuccess || error) {
+      dispatch(resetUserState());
+    }
+  }, [createAddressSuccess]);
 
   return (
     <div>
@@ -105,12 +128,7 @@ const ShippingDetails: React.FC = () => {
         <div className={styles.mainContent}>
           <h1 className={styles.pageTitle}>Shipping Details</h1>
 
-          <Form
-            form={form}
-            layout="vertical"
-            initialValues={{ selectedAddress: "address-1" }}
-            className={styles.formSection}
-          >
+          <Form form={form} layout="vertical" className={styles.formSection}>
             <Form.Item
               name="selectedAddress"
               label="Select an Address"
@@ -266,7 +284,11 @@ const ShippingDetails: React.FC = () => {
                 ]}
                 className={styles.formItem}
               >
-                <Select style={{height: "44.5px"}} placeholder="Quốc gia" disabled={isInputDisabled}>
+                <Select
+                  style={{ height: "44.5px" }}
+                  placeholder="Quốc gia"
+                  disabled={isInputDisabled}
+                >
                   <Option value="us">United States</Option>
                   <Option value="ca">Canada</Option>
                   <Option value="uk">United Kingdom</Option>
@@ -288,7 +310,10 @@ const ShippingDetails: React.FC = () => {
                 ]}
                 className={styles.formItem}
               >
-                <Input placeholder="Số điện thoại..." disabled={isInputDisabled} />
+                <Input
+                  placeholder="Số điện thoại..."
+                  disabled={isInputDisabled}
+                />
               </Form.Item>
             </div>
 
@@ -301,12 +326,20 @@ const ShippingDetails: React.FC = () => {
             )}
 
             <div className={styles.buttonGroup}>
-              <Button type="primary" onClick={handleNext}>
-                Next
-              </Button>
-              <Button type="default" onClick={handleCancel}>
-                Cancel
-              </Button>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={handleNext}
+              >
+                Tiếp theo
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={handleCancel}
+              >
+                Trở về
+              </button>
             </div>
           </Form>
         </div>

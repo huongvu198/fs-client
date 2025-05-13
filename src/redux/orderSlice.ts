@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IOrderReq, Order, QR } from "../interfaces/order.interface";
+import { IOrderReq, IOrderResponse, Order } from "../interfaces/order.interface";
 import { orderService } from "@services/order";
 import { Pagination } from "../interfaces/app.interface";
 import { parsePaginationHeaders } from "shared/common";
@@ -12,7 +12,7 @@ interface OrderState {
   cancelOrderSuccess: boolean;
   createOrderSuccess: boolean;
   pagination: Pagination;
-  orderQr:  QR | null ;
+  orderQr:  IOrderResponse | null ;
 }
 
 const initialState: OrderState = {
@@ -122,7 +122,7 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.orderQr = action.payload.qr;
+        state.orderQr = action.payload;
         state.createOrderSuccess = true;
       })
       .addCase(createOrder.rejected, (state) => {

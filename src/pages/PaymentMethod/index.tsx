@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Form, Radio } from "antd";
+import { Form, Modal, Radio } from "antd";
 import styles from "./index.module.scss";
 import OrderSummary from "@components/OrderSummaryComponent";
 import classNames from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import useNotification from "@hooks/useNotification";
-import { PaymentMethodEnum } from "@constants/const";
+import { PaymentMethodEnum, SocketEvent } from "@constants/const";
 import { useDispatch } from "react-redux";
-import { createOrder } from "@redux/orderSlice";
+import { clearOrderState, createOrder } from "@redux/orderSlice";
 import { useReduxSelector } from "@hooks/useRedux";
 import dayjs from "dayjs";
+import useSocket from "@hooks/useSocket";
 const PaymentMethod: React.FC = () => {
   const [form] = Form.useForm();
   const location = useLocation();
@@ -24,11 +25,10 @@ const PaymentMethod: React.FC = () => {
   const voucherId = location.state?.voucherId;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { errorMessage, successMessage } = useNotification();
-  const { createOrderSuccess, orderQr } = useReduxSelector(
+  const { successMessage } = useNotification();
+  const { orderQr } = useReduxSelector(
     (state) => state.order
   );
-  console.log("🚀 ~ orderQr:", orderQr);
   const handleSubmit = () => {
     form.validateFields().then((values) => {
       if (values.paymentMethod === PaymentMethodEnum.COD) {
@@ -57,6 +57,36 @@ const PaymentMethod: React.FC = () => {
     setSelectedPayment(e.target.value);
   };
 
+  const { sendMessage } = useSocket(`${import.meta.env.VITE_URL_WEB_SOCKET}`, {
+    [SocketEvent.ORDER_PAYMENT_EXPIRED]: (data: any) => {
+      console.log("🔥 [Handler Triggered] ORDER_PAYMENT_EXPIRED:", data);
+      alert("ORDER_PAYMENT_EXPIRED received"); // DEBUG
+      Modal.confirm({
+        centered: true,
+        title: "Đơn hàng đã hết hạn",
+        content: "Thời gian thanh toán đã kết thúc. Bạn có muốn quay lại trang chủ không?",
+        okText: "Trang chủ",
+        cancelText: "Huỷ",
+        onOk() {
+          navigate("/");
+        },
+      });
+    },
+    [SocketEvent.PAYMENT_SUCCESSFUL]: (data: any) => {
+      console.log("✅ Payment successful:", data);
+      Modal.confirm({
+        centered: true,
+        title: "Thanh toán thành công",
+        content: "Đơn hàng của bạn đã được thanh toán thành công.",
+        okText: "Xem đơn hàng",
+        cancelText: "Huỷ",
+        onOk() {
+          navigate("/");
+        },
+      });
+    },
+  });
+  
   useEffect(() => {
     if (
       orderQr &&
@@ -66,22 +96,18 @@ const PaymentMethod: React.FC = () => {
       const interval = setInterval(() => {
         const now = dayjs();
         const expireTime = dayjs(orderQr.order.paymentExpiredAt);
-        const diff = expireTime.diff(now, "second");
+        const diff = expireTime.diff(now, 'second');
   
         if (diff <= 0) {
           setTimeLeft("00:00:00");
           clearInterval(interval);
-  
-          // 🔔 Bắn noti
-          errorMessage({
-            title: "Hết thời gian thanh toán",
-            description: "Đơn hàng đã hết hạn. Bạn sẽ được chuyển về trang chủ sau 5s.",
+
+          sendMessage(SocketEvent.ORDER_PAYMENT_EXPIRED, {
+            orderId: orderQr.order.id,
+            userId: orderQr.order.userId,
           });
-  
-          // ⏳ Chờ 5 giây rồi quay về home
-          setTimeout(() => {
-            navigate("/");
-          }, 5000);
+          dispatch(clearOrderState());
+          
         } else {
           const hours = String(Math.floor(diff / 3600)).padStart(2, "0");
           const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
@@ -92,9 +118,8 @@ const PaymentMethod: React.FC = () => {
   
       return () => clearInterval(interval);
     }
-  }, [orderQr, selectedPayment, errorMessage, navigate]);
+  }, [orderQr, selectedPayment, sendMessage]);
   
-
   return (
     <div>
       <div className={styles.layout}>

@@ -104,12 +104,6 @@ const ShippingDetails: React.FC = () => {
 
   useEffect(() => {
     if (createAddressSuccess) {
-      successMessage({
-        title: createAddressSuccess ? "Tạo mới địa chỉ" : "Lỗi tạo địa chỉ",
-        description: createAddressSuccess
-          ? "Địa chỉ đã được tạo mới thành công."
-          : "Địa chỉ bị lỗi , vui lòng thử lại",
-      });
       form.resetFields();
     }
 

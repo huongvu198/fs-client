@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Radio } from "antd";
 import styles from "./index.module.scss";
 import OrderSummary from "@components/OrderSummaryComponent";
@@ -9,11 +9,12 @@ import { PaymentMethodEnum } from "@constants/const";
 import { useDispatch } from "react-redux";
 import { createOrder } from "@redux/orderSlice";
 import { useReduxSelector } from "@hooks/useRedux";
-
+import dayjs from "dayjs";
 const PaymentMethod: React.FC = () => {
   const [form] = Form.useForm();
   const location = useLocation();
   const [selectedPayment, setSelectedPayment] = useState<string>("cod");
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const cartItems = location.state?.cart;
   const discountAmount = location.state?.discountAmount;
   const voucherType = location.state?.voucherType;
@@ -27,6 +28,7 @@ const PaymentMethod: React.FC = () => {
   const { createOrderSuccess, orderQr } = useReduxSelector(
     (state) => state.order
   );
+  console.log("🚀 ~ orderQr:", orderQr);
   const handleSubmit = () => {
     form.validateFields().then((values) => {
       if (values.paymentMethod === PaymentMethodEnum.COD) {
@@ -54,6 +56,44 @@ const PaymentMethod: React.FC = () => {
   const handlePaymentChange = (e: any) => {
     setSelectedPayment(e.target.value);
   };
+
+  useEffect(() => {
+    if (
+      orderQr &&
+      orderQr.order.paymentExpiredAt &&
+      selectedPayment === PaymentMethodEnum.BANKING
+    ) {
+      const interval = setInterval(() => {
+        const now = dayjs();
+        const expireTime = dayjs(orderQr.order.paymentExpiredAt);
+        const diff = expireTime.diff(now, "second");
+  
+        if (diff <= 0) {
+          setTimeLeft("00:00:00");
+          clearInterval(interval);
+  
+          // 🔔 Bắn noti
+          errorMessage({
+            title: "Hết thời gian thanh toán",
+            description: "Đơn hàng đã hết hạn. Bạn sẽ được chuyển về trang chủ sau 5s.",
+          });
+  
+          // ⏳ Chờ 5 giây rồi quay về home
+          setTimeout(() => {
+            navigate("/");
+          }, 5000);
+        } else {
+          const hours = String(Math.floor(diff / 3600)).padStart(2, "0");
+          const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
+          const seconds = String(diff % 60).padStart(2, "0");
+          setTimeLeft(`${hours}:${minutes}:${seconds}`);
+        }
+      }, 1000);
+  
+      return () => clearInterval(interval);
+    }
+  }, [orderQr, selectedPayment, errorMessage, navigate]);
+  
 
   return (
     <div>
@@ -127,9 +167,14 @@ const PaymentMethod: React.FC = () => {
               </button>
             </div>
           </Form>
+          {timeLeft && (
+            <div className={styles.timerText}>
+              Thời gian còn lại: <strong>{timeLeft}</strong>
+            </div>
+          )}
           {orderQr && selectedPayment === PaymentMethodEnum.BANKING ? (
             <div className={styles.qrImageContainer}>
-              <img width={350} src={orderQr.data.qrDataURL} alt="not image" />
+              <img width={350} src={orderQr.qr.data.qrDataURL} alt="QR Code" />
             </div>
           ) : null}
         </div>

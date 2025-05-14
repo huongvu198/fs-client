@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Radio, RadioChangeEvent } from "antd";
+import { Button, Input, Radio } from "antd";
 import {
   DeleteOutlined,
   MinusOutlined,
@@ -150,6 +150,21 @@ const CartList = () => {
     };
     dispatch(acceptVoucherApi(voucherRequest));
   };
+
+  const handleDoNext= () => {
+    navigate("/shippingDetails", {
+      state: {
+        cartItems,
+        total,
+        discount,
+        voucherType,
+        selectedPoint,
+        voucherId,
+        discountAmount
+      },
+    })
+    setDiscountAmount(0)
+  }
 
   useEffect(() => {
     if (dataVoucher) {
@@ -373,18 +388,7 @@ const CartList = () => {
               block
               className={cx("checkout-button")}
               disabled={cartItems.items.length === 0}
-              onClick={() =>
-                navigate("/shippingDetails", {
-                  state: {
-                    cartItems,
-                    total,
-                    discount,
-                    voucherType,
-                    selectedPoint,
-                    voucherId,
-                  },
-                })
-              }
+              onClick={handleDoNext}
             >
               Go to Checkout <ArrowRightOutlined />
             </Button>

@@ -20,7 +20,6 @@ import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
 import { useCartContext } from "contexts/cartContext"; // Assuming you have a cartContext
 import { CartRequest } from "interfaces/cart.interface";
-import { RegisterPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 

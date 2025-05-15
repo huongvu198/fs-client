@@ -10,22 +10,28 @@ const useSocket = (
   handlers: Partial<Record<SocketEvent, EventCallback>>
 ) => {
   const socketRef = useRef<Socket | null>(null);
+  const handlersRef = useRef(handlers);
+
+  // Cập nhật ref khi handlers thay đổi
+  useEffect(() => {
+    handlersRef.current = handlers;
+  }, [handlers]);
 
   useEffect(() => {
-    const socket = io(url, {
-      transports: ["websocket"],
-    });
-
+    const socket = io(url, { transports: ["websocket"] });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("✅ Socket.IO connected:", socket.id);
     });
 
-    Object.entries(handlers).forEach(([event, handler]) => {
-      if (handler) socket.on(event, handler);
-    });
-
+    Object.keys(handlers).forEach((eventName) => {
+        socket.on(eventName, (data: any) => {
+          const handler = handlersRef.current[eventName as SocketEvent];
+          if (handler) handler(data);
+        });
+      });
+      
     socket.on("disconnect", () => {
       console.log("❌ Socket.IO disconnected");
     });
@@ -38,7 +44,6 @@ const useSocket = (
   const sendMessage = (event: SocketEvent, data: any, callback?: any) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit(event, data, (response: any) => {
-        console.log(`📥 Server acknowledged event ${event}:`, response);
         callback?.(response);
       });
     } else {

@@ -16,6 +16,11 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+if (import.meta.env.DEV) {
+  window.alert = () => {};
+}
+
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <App />

@@ -15,7 +15,9 @@ const CartExpand = () => {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const { setCart, cart } = useCartContext();
+  console.log("🚀 ~ CartExpand ~ cart:", cart)
   const dataCart = useReduxSelector((state) => state.cart.dataCart);
+  console.log("🚀 ~ CartExpand ~ dataCart:", dataCart)
 
   const showDrawer = () => {
     setVisible(true);
@@ -77,10 +79,10 @@ const CartExpand = () => {
         if (parsedCart && parsedCart.items && parsedCart.items.length > 0) {
           setCart(parsedCart);
         } else {
-          setCart(null);
+          setCart({ id: "", items: [] });
         }
       } else {
-        setCart(null);
+        setCart({ id: "", items: [] });
       }
     }
   }, [dataCart, setCart]);

@@ -10,7 +10,12 @@ import { useDispatch } from "react-redux";
 import { clearOrderState, createOrder } from "@redux/orderSlice";
 import { useReduxSelector } from "@hooks/useRedux";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import useSocket from "@hooks/useSocket";
+import { useCartContext } from "contexts/cartContext";
+import { clearCartData } from "@redux/cartSlice";
+dayjs.extend(utc);
+
 const PaymentMethod: React.FC = () => {
   const [form] = Form.useForm();
   const location = useLocation();
@@ -26,6 +31,7 @@ const PaymentMethod: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { successMessage } = useNotification();
+  const { setCart } = useCartContext();
   const { orderQr } = useReduxSelector(
     (state) => state.order
   );
@@ -58,68 +64,93 @@ const PaymentMethod: React.FC = () => {
   };
 
   const { sendMessage } = useSocket(`${import.meta.env.VITE_URL_WEB_SOCKET}`, {
-    [SocketEvent.ORDER_PAYMENT_EXPIRED]: (data: any) => {
+    [SocketEvent.ORDER_PAYMENT_EXPIRED]: async (data: any) => {
       console.log("🔥 [Handler Triggered] ORDER_PAYMENT_EXPIRED:", data);
-      alert("ORDER_PAYMENT_EXPIRED received"); // DEBUG
-      Modal.confirm({
-        centered: true,
-        title: "Đơn hàng đã hết hạn",
-        content: "Thời gian thanh toán đã kết thúc. Bạn có muốn quay lại trang chủ không?",
-        okText: "Trang chủ",
-        cancelText: "Huỷ",
-        onOk() {
-          navigate("/");
-        },
-      });
+      setTimeout(() => {
+        Modal.confirm({
+          centered: true,
+          title: "Đơn hàng đã hết hạn",
+          content: "Thời gian thanh toán đã kết thúc. Bạn có muốn quay lại trang chủ không?",
+          okText: "Trang chủ",
+          cancelText: "Huỷ",
+          onOk() {
+            dispatch(clearCartData())
+            setCart({ id: "", items: [] });
+            localStorage.removeItem("cartList");
+            navigate("/");
+            dispatch(clearOrderState());
+          },
+        });
+      }, 0);
     },
-    [SocketEvent.PAYMENT_SUCCESSFUL]: (data: any) => {
+    [SocketEvent.PAYMENT_SUCCESSFUL]: async (data: any) => {
       console.log("✅ Payment successful:", data);
-      Modal.confirm({
-        centered: true,
-        title: "Thanh toán thành công",
-        content: "Đơn hàng của bạn đã được thanh toán thành công.",
-        okText: "Xem đơn hàng",
-        cancelText: "Huỷ",
-        onOk() {
-          navigate("/");
-        },
-      });
+      setTimeout(() => {
+        Modal.confirm({
+          centered: true,
+          title: "Đơn hàng đã hết hạn",
+          content: "Thời gian thanh toán đã kết thúc. Bạn có muốn quay lại trang chủ không?",
+          okText: "Trang chủ",
+          cancelText: "Huỷ",
+          onOk() {
+            navigate("/");
+            dispatch(clearCartData())
+            setCart({ id: "", items: [] });
+            localStorage.removeItem("cartList");
+          },
+        });
+      }, 0);
     },
   });
-  
+
   useEffect(() => {
     if (
       orderQr &&
       orderQr.order.paymentExpiredAt &&
       selectedPayment === PaymentMethodEnum.BANKING
     ) {
-      const interval = setInterval(() => {
-        const now = dayjs();
+      const updateTimeLeft = () => {
+        const now = dayjs(); // không dùng utc nếu server đã trả ISO UTC
         const expireTime = dayjs(orderQr.order.paymentExpiredAt);
-        const diff = expireTime.diff(now, 'second');
-  
+        const diff = Math.ceil(expireTime.diff(now, "second")); // làm tròn lên
+
         if (diff <= 0) {
           setTimeLeft("00:00:00");
-          clearInterval(interval);
 
           sendMessage(SocketEvent.ORDER_PAYMENT_EXPIRED, {
             orderId: orderQr.order.id,
             userId: orderQr.order.userId,
           });
+
           dispatch(clearOrderState());
-          
+          return false;
         } else {
           const hours = String(Math.floor(diff / 3600)).padStart(2, "0");
           const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
           const seconds = String(diff % 60).padStart(2, "0");
+
           setTimeLeft(`${hours}:${minutes}:${seconds}`);
+          return true;
         }
-      }, 1000);
-  
-      return () => clearInterval(interval);
+      };
+
+
+      const shouldContinue = updateTimeLeft();
+      let interval: number | null = null;
+      if (shouldContinue) {
+        interval = window.setInterval(() => {
+          const keepGoing = updateTimeLeft();
+          if (!keepGoing && interval !== null) {
+            clearInterval(interval);
+          }
+        }, 1000);
+      }
+      return () => {
+        if (interval !== null) clearInterval(interval);
+      };
     }
-  }, [orderQr, selectedPayment, sendMessage]);
-  
+  }, [orderQr, selectedPayment, sendMessage, dispatch]);
+
   return (
     <div>
       <div className={styles.layout}>

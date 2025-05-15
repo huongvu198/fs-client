@@ -45,7 +45,7 @@ const ShippingDetails: React.FC = () => {
   const { userAddress, createAddressSuccess, error } = useReduxSelector(
     (state) => state.user
   );
-  const { errorMessage, successMessage } = useNotification();
+  const { errorMessage } = useNotification();
   const handleNext = async () => {
     const values = await form.validateFields();
     const selectedAddress = values.selectedAddress;

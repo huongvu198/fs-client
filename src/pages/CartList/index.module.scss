@@ -111,6 +111,18 @@
   font-size: 16px;
 }
 
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 14px;
+}
+
+.discounted-price {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+}
+
 .remove-button {
   color: #ff4d4f;
 

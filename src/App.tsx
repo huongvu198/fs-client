@@ -11,6 +11,7 @@ import { IntlProvider } from "react-intl";
 import { CartProvider } from "contexts/cartContext";
 import { AuthProvider } from "contexts/authContext";
 import { ToastContainer } from "react-toastify";
+import ChatWidget from "@components/Chat/ChatWidget";
 
 const App = () => {
   const {
@@ -44,6 +45,7 @@ const App = () => {
           </CartProvider>
         </AuthProvider>
       </ConfigProvider>
+      <ChatWidget />
       <ToastContainer draggable draggableDirection="y" />
     </Provider>
   );

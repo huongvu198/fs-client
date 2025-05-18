@@ -1,7 +1,12 @@
 import BannerComponent from "@components/Banner";
 import ProductSection from "@components/ProductCardComponent";
 import StyleBannerComponent from "@components/StyleBannerComponent";
-import { setAccessToken, setLocalRefreshToken, setLocalToken, setRefreshToken } from "@config/accessToken";
+import {
+  setAccessToken,
+  setLocalRefreshToken,
+  setLocalToken,
+  setRefreshToken,
+} from "@config/accessToken";
 import { ApiDispatch } from "@redux/index";
 import { getRefreshTokenApi } from "@redux/loginSlice";
 import {
@@ -56,32 +61,32 @@ const Home = () => {
   }, [dispatch, newArrivalsData, bestSellersData]);
 
   useEffect(() => {
-      const initApp = async () => {
-        try {
-          const resultAction = await dispatch(getRefreshTokenApi());
-  
-          if (getRefreshTokenApi.fulfilled.match(resultAction)) {
-            const { token, refreshToken, tokenExpires, refreshExpires } =
-              resultAction.payload;
-  
-            if (token && refreshToken) {
-              const tokenDate = new Date((tokenExpires ?? 0) * 1000);
-              const refreshDate = new Date((refreshExpires ?? 0) * 1000);
-              setRefreshToken(refreshToken, refreshDate);
-              setAccessToken(token, tokenDate);
-              setLocalToken(token);
-              setLocalRefreshToken(refreshToken);
-              login();
-            }
-          } else {
-            return;
+    const initApp = async () => {
+      try {
+        const resultAction = await dispatch(getRefreshTokenApi());
+
+        if (getRefreshTokenApi.fulfilled.match(resultAction)) {
+          const { token, refreshToken, tokenExpires, refreshExpires } =
+            resultAction.payload;
+
+          if (token && refreshToken) {
+            const tokenDate = new Date((tokenExpires ?? 0) * 1000);
+            const refreshDate = new Date((refreshExpires ?? 0) * 1000);
+            setRefreshToken(refreshToken, refreshDate);
+            setAccessToken(token, tokenDate);
+            setLocalToken(token);
+            setLocalRefreshToken(refreshToken);
+            login();
           }
-        } catch (error) {
+        } else {
           return;
         }
-      };
-      initApp();
-    }, []);
+      } catch (error) {
+        return;
+      }
+    };
+    initApp();
+  }, []);
 
   return (
     <div>

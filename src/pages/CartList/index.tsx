@@ -4,12 +4,10 @@ import {
   DeleteOutlined,
   MinusOutlined,
   PlusOutlined,
-  ArrowRightOutlined,
   TagOutlined,
 } from "@ant-design/icons";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
-import BreadcrumbComponent from "@components/BreadCrumbComponent";
 import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken } from "@config/accessToken";
 import { useDispatch } from "react-redux";
@@ -23,11 +21,11 @@ import useNotification from "@hooks/useNotification";
 import { FormattedNumber } from "react-intl";
 import { useReduxSelector } from "@hooks/useRedux";
 import { useNavigate } from "react-router-dom";
-import { VoucherType } from "@constants/const";
+import { ShippingDetailPath } from "@config/routerConfig";
+import { VoucherType } from "shared/enum";
 
 const cx = classNames.bind(styles);
 
-const breadCrumbItems = ["Cart"];
 const initialCartItems: ICartResponse = { id: "", items: [] };
 
 const CartList = () => {
@@ -151,8 +149,8 @@ const CartList = () => {
     dispatch(acceptVoucherApi(voucherRequest));
   };
 
-  const handleDoNext= () => {
-    navigate("/shippingDetails", {
+  const handleDoNext = () => {
+    navigate(ShippingDetailPath, {
       state: {
         cartItems,
         total,
@@ -160,11 +158,11 @@ const CartList = () => {
         voucherType,
         selectedPoint,
         voucherId,
-        discountAmount
+        discountAmount,
       },
-    })
-    setDiscountAmount(0)
-  }
+    });
+    setDiscountAmount(0);
+  };
 
   useEffect(() => {
     if (dataVoucher) {
@@ -194,9 +192,7 @@ const CartList = () => {
   return (
     <>
       <div className={cx("cart-container")}>
-        <BreadcrumbComponent items={breadCrumbItems} />
-
-        <h1 className={cx("cart-title")}>YOUR CART</h1>
+        <h1 className={cx("cart-title")}>Giỏ hàng</h1>
 
         <div className={cx("cart-content")}>
           <div className={cx("cart-items")}>
@@ -278,10 +274,10 @@ const CartList = () => {
           </div>
 
           <div className={cx("order-summary")}>
-            <h2 className={cx("summary-title")}>Order Summary</h2>
+            <h2 className={cx("summary-title")}>Đơn hàng</h2>
 
             <div className={cx("summary-row")}>
-              <span>Subtotal</span>
+              <span>Tổng cộng</span>
               <span>
                 <FormattedNumber
                   value={subtotal}
@@ -294,7 +290,7 @@ const CartList = () => {
               <div className={cx("summary-row")}>
                 {discount < 100 ? (
                   <>
-                    <span>Discount (-{discount}%)</span>
+                    <span>Giảm (-{discount}%)</span>
                     <span className={cx("discount-amount")}>
                       -
                       <FormattedNumber
@@ -306,7 +302,7 @@ const CartList = () => {
                   </>
                 ) : (
                   <>
-                    <span>Discount Price</span>
+                    <span>Giá giảm</span>
                     <span className={cx("discount-amount")}>
                       -
                       <FormattedNumber
@@ -321,7 +317,7 @@ const CartList = () => {
             ) : null}
             {selectedPoint === "point" && (
               <div className={cx("summary-row")}>
-                <span>Point Discount (1P ~ 1đ)</span>
+                <span>Point giảm giá (1P ~ 1đ)</span>
                 <span className={cx("discount-amount")}>
                   -
                   <FormattedNumber
@@ -347,7 +343,7 @@ const CartList = () => {
                 className={cx("apply-button")}
                 loading={loading}
               >
-                Apply
+                Áp dụng
               </Button>
             </div>
             <div
@@ -390,7 +386,7 @@ const CartList = () => {
               disabled={cartItems.items.length === 0}
               onClick={handleDoNext}
             >
-              Go to Checkout <ArrowRightOutlined />
+              Thanh toán
             </Button>
           </div>
         </div>

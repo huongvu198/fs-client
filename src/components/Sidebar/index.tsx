@@ -26,7 +26,7 @@ export interface SidebarRef {
   closeDrawer: () => void;
 }
 
-const Sidebar = forwardRef<SidebarRef>((props, ref) => {
+const Sidebar = forwardRef<SidebarRef>((_, ref) => {
   const [visible, setVisible] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     {

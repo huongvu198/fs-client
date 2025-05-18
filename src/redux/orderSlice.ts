@@ -1,8 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IOrderReq, IOrderResponse, Order } from "../interfaces/order.interface";
+import {
+  IOrderReq,
+  IOrderResponse,
+  Order,
+} from "../interfaces/order.interface";
 import { orderService } from "@services/order";
 import { Pagination } from "../interfaces/app.interface";
 import { parsePaginationHeaders } from "shared/common";
+import { showToast, ToastType } from "shared/toast";
+import { PaymentMethodEnum } from "shared/enum";
 
 interface OrderState {
   orderHistory: Order[] | null;
@@ -11,8 +17,9 @@ interface OrderState {
   getOrderHistorySuccess: boolean;
   cancelOrderSuccess: boolean;
   createOrderSuccess: boolean;
+  getOrderDetailSuccess: boolean;
   pagination: Pagination;
-  orderQr:  IOrderResponse | null ;
+  orderQr: IOrderResponse | null;
 }
 
 const initialState: OrderState = {
@@ -22,13 +29,14 @@ const initialState: OrderState = {
   getOrderHistorySuccess: false,
   createOrderSuccess: false,
   cancelOrderSuccess: false,
+  getOrderDetailSuccess: false,
   pagination: {
     currentPage: 1,
     totalPages: 1,
     perPage: 10,
     totalItems: 0,
   },
-  orderQr : null
+  orderQr: null,
 };
 
 // Async thunk to fetch order history with pagination
@@ -63,10 +71,22 @@ export const createOrder = createAsyncThunk(
       const response = await orderService.createOrder(orderReq);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create order"); 
+      return rejectWithValue(error.message || "Failed to create order");
     }
   }
-)
+);
+
+export const orderDetail = createAsyncThunk(
+  "order/orderDetail",
+  async ({ orderId }: { orderId: string }, { rejectWithValue }) => {
+    try {
+      const response = await orderService.orderDetail(orderId);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to create order");
+    }
+  }
+);
 
 // Slice for order state management
 const orderSlice = createSlice({
@@ -78,8 +98,30 @@ const orderSlice = createSlice({
       state.loading = false;
       state.getOrderHistorySuccess = false;
       state.cancelOrderSuccess = false;
+      state.getOrderDetailSuccess = false;
     },
     clearOrderState: () => initialState,
+    paymentSuccess: (state, action) => {
+      const orderData = action.payload.order;
+
+      state.orderQr = {
+        ...state.orderQr,
+        order: orderData,
+        type: state.orderQr?.type ?? "",
+        qr: (orderData.qr || state.orderQr?.qr) ?? null,
+      };
+    },
+
+    paymentExpire: (state, action) => {
+      const orderData = action.payload.order;
+
+      state.orderQr = {
+        ...state.orderQr,
+        order: orderData,
+        type: state.orderQr?.type ?? "",
+        qr: (orderData.qr || state.orderQr?.qr) ?? null,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -118,20 +160,56 @@ const orderSlice = createSlice({
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.cancelOrderSuccess = false;
+        state.createOrderSuccess = false;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.orderQr = action.payload;
         state.createOrderSuccess = true;
+        if (action.payload.order.paymentMethod === PaymentMethodEnum.COD) {
+          showToast(ToastType.SUCCESS, "Đặt hàng thành công");
+        }
       })
-      .addCase(createOrder.rejected, (state) => {
+      .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = "Mã QR đang xảy ra lỗi , vui lòng thử lại!";
         state.createOrderSuccess = false;
+        showToast(
+          ToastType.ERROR,
+          typeof action.payload === "string"
+            ? action.payload
+            : "Mã QR đang xảy ra lỗi , vui lòng thử lại!"
+        );
+      })
+      .addCase(orderDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.getOrderDetailSuccess = false;
+      })
+      .addCase(orderDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orderQr = action.payload;
+        console.log("orderDetail.fulfilled", action.payload);
+        state.getOrderDetailSuccess = true;
+      })
+      .addCase(orderDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = "Mã QR đang xảy ra lỗi , vui lòng thử lại!";
+        state.getOrderDetailSuccess = false;
+        showToast(
+          ToastType.ERROR,
+          typeof action.payload === "string"
+            ? action.payload
+            : "Mã QR đang xảy ra lỗi , vui lòng thử lại!"
+        );
       });
   },
 });
 
-export const { resetOrderState, clearOrderState } = orderSlice.actions;
+export const {
+  resetOrderState,
+  clearOrderState,
+  paymentSuccess,
+  paymentExpire,
+} = orderSlice.actions;
 export default orderSlice.reducer;

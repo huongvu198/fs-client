@@ -15,3 +15,10 @@ export interface PaginatedResponse<T> {
   };
   items: T[];
 }
+
+export interface DecodedToken {
+  userId: string;
+  exp?: number;
+  iat?: number;
+  [key: string]: any;
+}

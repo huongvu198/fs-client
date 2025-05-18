@@ -92,19 +92,3 @@ export const DATA_SIDEBAR = [
     slug: "/news",
   },
 ];
-
-export enum VerifyCodeEnum {
-  RESEND_CODE = "RESEND_CODE",
-  CREATE_ACCOUNT = "CREATE_ACCOUNT",
-  FORGOT_PASSWORD = "FORGOT_PASSWORD",
-}
-
-export enum VoucherType {
-  PERCENT = "PERCENT",
-  FIXED = "FIXED"
-}
-
-export enum PaymentMethodEnum {
-  COD = 'COD',
-  BANKING = 'BANKING',
-}

@@ -18,7 +18,6 @@ import { useDispatch } from "react-redux";
 import { ApiDispatch } from "@reduxjs/toolkit";
 import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
-import { useCartContext } from "contexts/cartContext"; // Assuming you have a cartContext
 import { CartRequest } from "interfaces/cart.interface";
 
 const cx = classNames.bind(styles);
@@ -29,10 +28,8 @@ const LoginRegistrationForm: React.FC = () => {
   const { data, loading, error, loginSuccess } = useReduxSelector(
     (state) => state.login
   );
-  const { dataCart } = useReduxSelector((state) => state.cart);
   const { errorMessage } = useNotification();
   const navigate = useNavigate();
-  const { setCart } = useCartContext();
 
   // Hàm format lại request giỏ hàng từ localStorage
   const formatCartRequest = (): CartRequest[] => {

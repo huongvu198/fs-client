@@ -1,22 +1,22 @@
 @import "../../styles/responsive.scss";
 
 .cart-container {
-  width: 70%;
-  margin: 0 auto;
+  width: 80%;
+  margin: auto;
   padding: 20px;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
-    @include respond("mobile") {
-        padding-bottom: 40px;
-    }
+  @include respond("mobile") {
+    padding-bottom: 40px;
+  }
 }
 
 .cart-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  text-transform: uppercase;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
 }
 
 .cart-content {
@@ -96,7 +96,7 @@
 .product-price {
   display: flex;
   align-items: center;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .original-price {
@@ -106,11 +106,22 @@
 }
 
 .discounted-price {
-  color: red; 
+  color: red;
   font-weight: bold;
   font-size: 16px;
 }
 
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 14px;
+}
+
+.discounted-price {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+}
 
 .remove-button {
   color: #ff4d4f;
@@ -167,9 +178,10 @@
 }
 
 .summary-title {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
+  margin-top: 0 !important;
 }
 
 .summary-row {
@@ -215,8 +227,7 @@
   border-radius: 20px;
   height: 40px;
 
-  &:hover
-  {
+  &:hover {
     background-color: #333;
     border-color: #333;
   }

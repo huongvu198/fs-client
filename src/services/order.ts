@@ -35,12 +35,12 @@ export const orderService = {
       throw new Error(error.message || "An error occurred during cancel order");
     }
   },
-  createOrder: async (params: IOrderReq): Promise<IOrderResponse>=> {
+  createOrder: async (params: IOrderReq): Promise<IOrderResponse> => {
     try {
       const response = await authAxios.post<IOrderResponse>(
         endPoint.ORDER.CREATE_ORDER,
-          params,
-      )
+        params
+      );
       return response.data;
     } catch (error: any) {
       if (error.response?.data?.message) {
@@ -48,5 +48,18 @@ export const orderService = {
       }
       throw new Error(error.message || "An error occurred during create order");
     }
-  }
+  },
+  orderDetail: async (orderId: string): Promise<IOrderResponse> => {
+    try {
+      const response = await authAxios.get<IOrderResponse>(
+        endPoint.ORDER.ORDER_DETAIL.replace(":orderId", orderId)
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(error.message || "An error occurred during create order");
+    }
+  },
 };

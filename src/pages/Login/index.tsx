@@ -19,6 +19,7 @@ import { ApiDispatch } from "@reduxjs/toolkit";
 import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
 import { CartRequest } from "interfaces/cart.interface";
+import { RegisterPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
 

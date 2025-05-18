@@ -18,6 +18,7 @@ import ButtonComponent from "@components/ButtonComponent";
 import { ICartResponse } from "interfaces/cart.interface";
 import { useCartContext } from "contexts/cartContext";
 import {
+  LoginPath,
   ProductsQueryPath,
   ProfilePath,
   UserOrders,
@@ -25,6 +26,7 @@ import {
 import logo from "@assets/images/logo.png";
 
 import { useAuthContext } from "contexts/authContext";
+import { removeCartList, removeTempCart } from "shared/localStoreage";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -44,8 +46,8 @@ export default function Nav({ handleShowSideBar }: Props) {
       removeRefreshToken();
       removeLocalToken();
       removeLocalRefreshToken();
-      localStorage.removeItem("tempCart");
-      localStorage.removeItem("cartList");
+      removeTempCart();
+      removeCartList();
       setCart({ id: "", items: [] });
       logout();
       navigate("/");
@@ -83,7 +85,7 @@ export default function Nav({ handleShowSideBar }: Props) {
 
   const handleLogin = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
-    navigate("/login");
+    navigate(LoginPath);
   };
 
   useEffect(() => {
@@ -111,12 +113,20 @@ export default function Nav({ handleShowSideBar }: Props) {
             className="btn-expaned-sp"
             onClick={handleShowSideBar}
           />
-          <img
-            src={logo}
-            style={{ transform: "scale(1.5)", cursor: "pointer" }}
+          <span
+            className="brand-name"
+            style={{
+              marginLeft: "10px",
+              fontSize: "28px",
+              fontWeight: 600,
+              fontFamily: "'Lobster', cursive",
+              color: "#d1567c",
+              cursor: "pointer",
+              userSelect: "none",
+              letterSpacing: "1.5px",
+            }}
             onClick={() => navigate("/")}
-          />
-          <span className="brand-name" onClick={() => navigate("/")}>
+          >
             Pinky
           </span>
         </div>

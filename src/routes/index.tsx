@@ -1,6 +1,7 @@
 import {
   CartPath,
   LoginPath,
+  PaymentDetailPath,
   PaymentMethodPath,
   ProductDetailPath,
   ProductsPath,
@@ -33,82 +34,87 @@ const ProfilePage = lazy(() => import("@pages/User/Profile"));
 const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
 const UserAddressPage = lazy(() => import("@pages/User/Address"));
 const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
+const PaymentDetailPage = lazy(() => import("pages/PaymentDetail"));
 
-  const router = createBrowserRouter([
-    {
-      element: <PublicLayout />,
-      children: [
-        {
-          path: "/",
-          element: <Home />,
-        },
-        {
-          path: ProductsPath,
-          element: <ListProduct />,
-        },
-        {
-          path: ProductDetailPath,
-          element: <ProductDetail />,
-        },
-        {
-          path: CartPath,
-          element: <CartList />,
-        },
-        {
-          path: UserPath,
-          element: <UserPage />,
-          children: [
-            {
-              path: UserOrders,
-              element: <OrdersHistoryPage />,
-            },
-            {
-              path: UserVouchers,
-              element: <UserVouchersPage />,
-            },
-            {
-              path: UserAddressPath,
-              element: <UserAddressPage />,
-            },
-            {
-              path: ProfilePath,
-              element: <ProfilePage />,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      element: <PublicLayout />,
-      children: [
-        {
-          path: LoginPath,
-          element: <Login />,
-        },
-        {
-          path: VerifyPath,
-          element: <Verify />,
-        },
-        {
-          path: RegisterPath,
-          element: <Register />,
-        },
-      ],
-    },
-    {
-      element: <AuthLayout />,
-      children: [
-        {
-          path: ShippingDetailPath,
-          element: <ShippingDetails />,
-        },
-        {
-          path: PaymentMethodPath,
-          element: <PaymentMethod />,
-        },
-      ],
-    },
-  ]);
+const router = createBrowserRouter([
+  {
+    element: <PublicLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: ProductsPath,
+        element: <ListProduct />,
+      },
+      {
+        path: ProductDetailPath,
+        element: <ProductDetail />,
+      },
+      {
+        path: CartPath,
+        element: <CartList />,
+      },
+    ],
+  },
+  {
+    element: <PublicLayout />,
+    children: [
+      {
+        path: LoginPath,
+        element: <Login />,
+      },
+      {
+        path: VerifyPath,
+        element: <Verify />,
+      },
+      {
+        path: RegisterPath,
+        element: <Register />,
+      },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [
+      {
+        path: ShippingDetailPath,
+        element: <ShippingDetails />,
+      },
+      {
+        path: PaymentMethodPath,
+        element: <PaymentMethod />,
+      },
+      {
+        path: PaymentDetailPath,
+        element: <PaymentDetailPage />,
+      },
+      {
+        path: UserPath,
+        element: <UserPage />,
+        children: [
+          {
+            path: UserOrders,
+            element: <OrdersHistoryPage />,
+          },
+          {
+            path: UserVouchers,
+            element: <UserVouchersPage />,
+          },
+          {
+            path: UserAddressPath,
+            element: <UserAddressPage />,
+          },
+          {
+            path: ProfilePath,
+            element: <ProfilePage />,
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 const Routers = () => {
   return <RouterProvider router={router} />;

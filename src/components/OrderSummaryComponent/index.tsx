@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./index.module.scss";
 import { ICartResponse } from "interfaces/cart.interface";
 import classNames from "classnames/bind";
-import { VoucherType } from "@constants/const";
+import { VoucherType } from "shared/enum";
 
 const cx = classNames.bind(styles);
 
@@ -38,7 +38,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       return 0;
     }
     const subtotal = calculateSubtotal();
-    if(!discountAmount) discountAmount = 0;
+    if (!discountAmount) discountAmount = 0;
     return subtotal - discountAmount;
   };
 
@@ -56,20 +56,19 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               {item.product.name}
             </div>
             <div className={cx("product-detail")}>
-              <span>
-                Color:{" "}
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 12,
-                    height: 12,
-                    backgroundColor: item.variant.color,
-                    borderRadius: "50%",
-                    marginRight: 4,
-                    verticalAlign: "middle",
-                  }}
-                ></span>
-              </span>{" "}
+              <span>Color: </span>{" "}
+              <span
+                className={cx("product-detail__color-circle")}
+                style={{
+                  display: "inline-block",
+                  width: 12,
+                  height: 12,
+                  backgroundColor: item.variant.color,
+                  borderRadius: "50%",
+                  marginRight: 4,
+                  verticalAlign: "middle",
+                }}
+              />
               | <span>Size: {item.size.size}</span>
             </div>
             <div className={cx("product-price")}>

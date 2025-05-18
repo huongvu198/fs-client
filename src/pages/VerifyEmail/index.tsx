@@ -6,9 +6,9 @@ import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { VerifyCodeEnum } from "@constants/const";
 import useNotification from "@hooks/useNotification";
 import { verifyEmail } from "@redux/verifySlice";
+import { VerifyCodeEnum } from "shared/enum";
 
 const cx = classNames.bind(styles);
 

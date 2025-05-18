@@ -79,7 +79,7 @@ const OrdersHistoryPage = () => {
       render: (value: string) => <DateTag date={value} />,
     },
     {
-      title: "Tiện Ích",
+      title: "Tiện ích",
       key: "action",
       align: "center",
       render: (_, record: Order) => (
@@ -246,7 +246,6 @@ const OrdersHistoryPage = () => {
                         currency="VND"
                       />
                     }
-                    ₫
                   </p>
                 </div>
               </>

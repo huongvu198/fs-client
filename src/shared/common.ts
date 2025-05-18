@@ -1,5 +1,6 @@
-import { Pagination } from "interfaces/app.interface";
+import { DecodedToken, Pagination } from "../interfaces/app.interface";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import { jwtDecode } from "jwt-decode";
 
 export const parsePaginationHeaders = (
   headers: Record<string, string | number>
@@ -55,4 +56,14 @@ export const convertSlugToUpperCase = (slug: string): string => {
     .split("-")
     .map((word) => word.toUpperCase())
     .join(" ");
+};
+
+export const getUserIdFromToken = (token: string): string | null => {
+  try {
+    const decoded = jwtDecode<DecodedToken>(token);
+    return decoded.userId || decoded.id || null;
+  } catch (error) {
+    console.error("❌ Lỗi decode token:", error);
+    return null;
+  }
 };

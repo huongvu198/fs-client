@@ -21,7 +21,7 @@ export const endPoint = {
     ADD_TO_CART_IMPORT: "/cart/import",
     DELETE_CART_ITEM: "/cart/item/{itemId}",
     GET_CART_BY_USER: "/cart",
-    ADD_VOUCHER: "/vouchers-public"
+    ADD_VOUCHER: "/vouchers-public",
   },
   USER_ADDRESS: {
     GET_USER_ADDRESS: "/user-address/addresses",
@@ -34,6 +34,7 @@ export const endPoint = {
     CREATE_ORDER: "/orders-public",
     GET_ORDER_HISTORY: "/orders-public/history",
     CANCEL_ORDER: "/orders-public/cancel/:orderId",
+    ORDER_DETAIL: "orders-public/detail/:orderId",
   },
   VOUCHER: {
     GET_VOUCHERS_BY_USER_ID: "/vouchers-public/available",

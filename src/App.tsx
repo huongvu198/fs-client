@@ -43,9 +43,9 @@ const App = () => {
               </IntlProvider>
             </NotiContext>
           </CartProvider>
+          <FloatingChatWidget />
         </AuthProvider>
       </ConfigProvider>
-      <FloatingChatWidget />
       <ToastContainer draggable draggableDirection="y" />
     </Provider>
   );

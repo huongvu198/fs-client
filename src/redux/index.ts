@@ -10,6 +10,7 @@ import orderReducer from "./orderSlice";
 import voucherReducer from "./voucherSlice";
 import userReducer from "./userSlice";
 import appReducer from "./appSlice";
+import chatReducer from "./chatSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -23,6 +24,7 @@ const rootReducer = {
   order: orderReducer,
   voucher: voucherReducer,
   app: appReducer,
+  chat: chatReducer,
 };
 
 export const store = configureStore({

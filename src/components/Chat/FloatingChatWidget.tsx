@@ -10,91 +10,55 @@ import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { CommentOutlined, CloseOutlined } from "@ant-design/icons";
 import useSocket from "@hooks/useSocket";
 import { SocketEvent } from "shared/enum";
+import { useAuthContext } from "contexts/authContext";
+import {
+  conversationSelector,
+  getConversation,
+  getMessages,
+  messagesSelector,
+} from "@redux/chatSlice";
+import { useSelector } from "react-redux";
+import { getUserIdFromToken } from "shared/common";
+import { getAccessToken } from "@config/accessToken";
+import { useRedux } from "@hooks/useRedux";
 
 const FloatingChatWidget = () => {
+  const { isAuthenticated } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: "d641f5e3-4a40-4c4b-ad86-911999d51854",
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 62,
-      content: "62HIHIH",
-      isRead: false,
-      createdAt: "2025-05-13T16:25:34.582Z",
-      sender: {
-        id: 62,
-        email: "nhatnt@newwave.com.vn",
-        fullName: "Nguyễn Tiến Nhất",
-      },
-    },
-    {
-      id: "d9a9c504-c00a-44c3-a143-b4c1f216c022",
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 62,
-      content: "62HIHIH",
-      isRead: false,
-      createdAt: "2025-05-13T16:27:34.555Z",
-      sender: {
-        id: 62,
-        email: "nhatnt@newwave.com.vn",
-        fullName: "Nguyễn Tiến Nhất",
-      },
-    },
-    {
-      id: "c8db0438-5c8e-4933-a178-26b332aa318a",
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 10,
-      content: "Hi",
-      isRead: false,
-      createdAt: "2025-05-13T16:29:07.126Z",
-      sender: {
-        id: 10,
-        email: "huongvt@newwave.com.vn",
-        fullName: "Huong Vu",
-      },
-    },
-    {
-      id: "1a8eb4cc-83ae-469e-98ce-7ea7e08ecc09",
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 62,
-      content: "Toi can sp",
-      isRead: false,
-      createdAt: "2025-05-13T16:33:14.050Z",
-      sender: {
-        id: 62,
-        email: "nhatnt@newwave.com.vn",
-        firstName: "Tiến Nhất",
-      },
-    },
-    {
-      id: "1368c09f-d497-4b6e-99b5-f8f5bf456b6f",
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 10,
-      content: "Co van de gi",
-      isRead: false,
-      createdAt: "2025-05-13T16:33:20.290Z",
-      sender: {
-        id: 10,
-        email: "huongvt@newwave.com.vn",
-        fullName: "Huong Vu",
-      },
-    },
-  ]);
-
-  console.log("messages", messages);
+  const reduxMessages = useSelector(messagesSelector);
+  const [messages, setMessages] = useState(reduxMessages);
+  const conversationId = useSelector(conversationSelector);
+  const accessToken = getAccessToken();
+  const userId = getUserIdFromToken(accessToken!);
+  const dispatch = useRedux();
 
   const { sendMessage } = useSocket({
     [SocketEvent.NEW_MESSAGE]: (data) => {
-      console.log("data", data);
       setMessages((prev) => [...prev, data]);
     },
   });
 
   useEffect(() => {
-    sendMessage(SocketEvent.JOIN_CONVERSATION, {
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-    });
-  }, [sendMessage]);
+    setMessages(reduxMessages);
+  }, [reduxMessages]);
+
+  useEffect(() => {
+    dispatch(getConversation());
+  }, []);
+
+  useEffect(() => {
+    if (conversationId) {
+      dispatch(getMessages(conversationId));
+    }
+  }, [conversationId]);
+
+  useEffect(() => {
+    if (conversationId) {
+      sendMessage(SocketEvent.JOIN_CONVERSATION, {
+        conversationId: conversationId,
+      });
+    }
+  }, [sendMessage, conversationId]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -102,24 +66,15 @@ const FloatingChatWidget = () => {
 
   const handleSend = (message: any) => {
     const newMessage = {
-      id: crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).substr(2, 9),
-      conversationId: "7cab5070-4726-4e7c-98e2-205757e59457",
-      senderId: 62,
+      conversationId: conversationId,
+      senderId: userId,
       content: message,
       isRead: false,
-      createdAt: new Date().toISOString(),
-      sender: {
-        id: 62,
-        email: "nhatnt@newwave.com.vn",
-        fullName: "Nguyễn Tiến Nhất",
-      },
     };
     sendMessage(SocketEvent.SEND_MESSAGE, newMessage);
   };
 
-  return (
+  return isAuthenticated ? (
     <div>
       <div className="floating-button" onClick={toggleChat}>
         <CommentOutlined style={{ fontSize: 32, color: "#fff" }} />
@@ -139,7 +94,7 @@ const FloatingChatWidget = () => {
                     key={msg.id}
                     model={{
                       message: msg.content,
-                      sender: msg.sender.fullName || msg.sender.firstName || "",
+                      sender: msg.senderName || "",
                       direction: msg.senderId === 62 ? "outgoing" : "incoming",
                       position: "single",
                     }}
@@ -157,52 +112,52 @@ const FloatingChatWidget = () => {
       )}
 
       <style>{`
-        .floating-button {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          width: 50px;
-          height: 50px;
-          background-color: #007bff;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      .floating-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .chat-window {
-          position: fixed;
-          bottom: 80px;
-          right: 20px;
-          width: 300px;
-          height: 400px;
-          background-color: #fff;
-          border-radius: 10px;
-          box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-          overflow: hidden;
-          z-index: 1000;
-          display: flex;
-          flex-direction: column;
-        }
+      .chat-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+      }
 
-        .chat-header {
-          background-color: #007bff;
-          color: #fff;
-          padding: 10px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-weight: bold;
-        }
+      .chat-header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+      }
 
-        .close-icon {
-          cursor: pointer;
-        }
-      `}</style>
+      .close-icon {
+        cursor: pointer;
+      }
+    `}</style>
     </div>
-  );
+  ) : null;
 };
 
 export default FloatingChatWidget;

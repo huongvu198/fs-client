@@ -42,4 +42,8 @@ export const endPoint = {
   MASTER_DATA: {
     GET: `/masters-data`,
   },
+  CHAT: {
+    GET_CONVERSATION: "/chat/conversation",
+    GET_MESSAGES: "/chat/:id/messages",
+  },
 };

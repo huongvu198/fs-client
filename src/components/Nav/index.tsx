@@ -23,7 +23,6 @@ import {
   ProfilePath,
   UserOrders,
 } from "@config/routerConfig";
-import logo from "@assets/images/logo.png";
 
 import { useAuthContext } from "contexts/authContext";
 import { removeCartList, removeTempCart } from "shared/localStoreage";

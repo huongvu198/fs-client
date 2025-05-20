@@ -43,8 +43,10 @@ const FloatingChatWidget = () => {
   }, [reduxMessages]);
 
   useEffect(() => {
-    dispatch(getConversation());
-  }, []);
+    if (userId) {
+      dispatch(getConversation());
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (conversationId) {
@@ -95,7 +97,10 @@ const FloatingChatWidget = () => {
                     model={{
                       message: msg.content,
                       sender: msg.senderName || "",
-                      direction: msg.senderId === 62 ? "outgoing" : "incoming",
+                      direction:
+                        msg.senderId === Number(userId!)
+                          ? "outgoing"
+                          : "incoming",
                       position: "single",
                     }}
                   />

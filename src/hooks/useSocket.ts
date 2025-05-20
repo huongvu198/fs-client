@@ -1,4 +1,3 @@
-// useSocket.ts
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { config } from "@config/appConfig";
@@ -12,29 +11,26 @@ const { socketURL } = config.server;
 const useSocket = (handlers: Partial<Record<SocketEvent, EventCallback>>) => {
   const socketRef = useRef<Socket | null>(null);
   const handlersRef = useRef(handlers);
+
   const accessToken = getAccessToken();
   const userId = getUserIdFromToken(accessToken!);
 
+  // Cập nhật handler mỗi khi thay đổi
   useEffect(() => {
     handlersRef.current = handlers;
   }, [handlers]);
 
+  // Khởi tạo kết nối socket chỉ 1 lần
   useEffect(() => {
     const socket = io(socketURL, {
       transports: ["websocket"],
       query: { userId },
     });
+
     socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("✅ Socket.IO connected:", socket.id);
-    });
-
-    Object.keys(handlers).forEach((eventName) => {
-      socket.on(eventName, (data: any) => {
-        const handler = handlersRef.current[eventName as SocketEvent];
-        if (handler) handler(data);
-      });
     });
 
     socket.on("disconnect", () => {
@@ -44,11 +40,34 @@ const useSocket = (handlers: Partial<Record<SocketEvent, EventCallback>>) => {
     return () => {
       socket.disconnect();
     };
-  }, [socketURL]);
+  }, [socketURL, userId]);
 
-  const sendMessage = (event: SocketEvent, data: any, callback?: any) => {
-    if (socketRef.current?.connected) {
-      socketRef.current.emit(event, data, (response: any) => {
+  // Đăng ký và huỷ listener mỗi khi handlers thay đổi
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const entries = Object.entries(handlers) as [SocketEvent, EventCallback][];
+
+    for (const [eventName, handler] of entries) {
+      socket.on(eventName, handler);
+    }
+
+    return () => {
+      for (const [eventName, handler] of entries) {
+        socket.off(eventName, handler);
+      }
+    };
+  }, [handlers]);
+
+  const sendMessage = (
+    event: SocketEvent,
+    data: any,
+    callback?: (response: any) => void
+  ) => {
+    const socket = socketRef.current;
+    if (socket?.connected) {
+      socket.emit(event, data, (response: any) => {
         callback?.(response);
       });
     } else {

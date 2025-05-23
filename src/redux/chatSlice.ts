@@ -1,4 +1,4 @@
-import { authAxios, unauthAxios } from "@config/axiosConfig";
+import { authAxios } from "@config/axiosConfig";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { endPoint } from "@services/endPoint";
 import { Conversation, Message } from "interfaces/chat.interface";

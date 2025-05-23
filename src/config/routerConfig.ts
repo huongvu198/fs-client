@@ -35,3 +35,4 @@ export const CartPath = "/cart";
 export const ShippingDetailPath = "/shipping-details";
 export const PaymentMethodPath = "/payment-method";
 export const PaymentDetailPath = "/payment-detail/:id";
+export const NewPath = "/news";

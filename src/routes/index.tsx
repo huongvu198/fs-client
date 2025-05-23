@@ -1,6 +1,7 @@
 import {
   CartPath,
   LoginPath,
+  NewPath,
   PaymentDetailPath,
   PaymentMethodPath,
   ProductDetailPath,
@@ -35,6 +36,7 @@ const OrdersHistoryPage = lazy(() => import("@pages/User/Orders"));
 const UserAddressPage = lazy(() => import("@pages/User/Address"));
 const UserVouchersPage = lazy(() => import("@pages/User/Vouchers"));
 const PaymentDetailPage = lazy(() => import("pages/PaymentDetail"));
+const NewPage = lazy(() => import("pages/News"));
 
 const router = createBrowserRouter([
   {
@@ -55,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: CartPath,
         element: <CartList />,
+      },
+      {
+        path: NewPath,
+        element: <NewPage />,
       },
     ],
   },

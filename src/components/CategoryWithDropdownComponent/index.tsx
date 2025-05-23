@@ -1,7 +1,7 @@
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Menu, Space } from "antd";
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import { DATA_SIDEBAR } from "@constants/const";
@@ -9,12 +9,12 @@ import { DATA_SIDEBAR } from "@constants/const";
 const cx = classNames.bind(styles);
 
 const CategoryWithDropdownComponent = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  // const handleNavigate = (slug: string) => {
-  //   if (slug) navigate(slug);
-  // };
+  const handleNavigate = (slug: string) => {
+    if (slug) navigate(slug);
+  };
 
   const menu = (
     <Menu>
@@ -49,7 +49,7 @@ const CategoryWithDropdownComponent = () => {
           <div
             key={item.key}
             className={cx("category-item")}
-            // onClick={() => handleNavigate(item.slug)}
+            onClick={() => handleNavigate(item.slug)}
           >
             {item.label.toUpperCase()}
           </div>

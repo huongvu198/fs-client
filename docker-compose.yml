@@ -1,0 +1,11 @@
+version: "3.4"
+
+services:
+  fs-client:
+    image: fs-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fs-client
+    ports:
+      - 3002:3002

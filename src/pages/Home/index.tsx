@@ -40,6 +40,7 @@ const Home = () => {
   const bestSellersData = useSelector(bestSellers);
   const navigate = useNavigate();
   const { login } = useAuthContext();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setStats((prevStats) =>
@@ -54,11 +55,9 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (!newArrivalsData.length || !bestSellersData.length) {
-      dispatch(getNewArrivals());
-      dispatch(getBestSellers());
-    }
-  }, [dispatch, newArrivalsData, bestSellersData]);
+    dispatch(getNewArrivals());
+    dispatch(getBestSellers());
+  }, [dispatch]);
 
   useEffect(() => {
     const initApp = async () => {

@@ -63,32 +63,3 @@ export const MENU_TYPE = {
   USER: "user",
   ADMIN: "admin",
 };
-
-export const DATA_SIDEBAR = [
-  {
-    key: "famale",
-    label: "Nữ",
-    slug: "/female",
-    hasDropdown: true,
-    subItems: [
-      { key: "pant", label: "Pant", slug: "/pant" },
-      { key: "shirt", label: "Shirt", slug: "/shirt" },
-      { key: "t-shirt", label: "T-Shirt", slug: "/tShirt" },
-    ],
-  },
-  {
-    key: "male",
-    label: "Nam",
-    slug: "/male",
-  },
-  // {
-  //   key: "about",
-  //   label: "Về chúng tôi",
-  //   slug: "/about",
-  // },
-  {
-    key: "news",
-    label: "Tin tức",
-    slug: "/news",
-  },
-];

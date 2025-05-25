@@ -195,7 +195,7 @@ const ProductSection = ({
                 )
               }
             >
-              View All
+              Xem tất cả
             </ButtonComponent>
           )}
         </div>

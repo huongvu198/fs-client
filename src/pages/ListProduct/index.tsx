@@ -1,4 +1,3 @@
-import BreadcrumbComponent from "@components/BreadCrumbComponent";
 import { useNavigate } from "react-router-dom";
 import MenuComponent from "@components/MenuComponent";
 import classNames from "classnames/bind";
@@ -6,15 +5,13 @@ import styles from "./index.module.scss";
 import ButtonComponent from "@components/ButtonComponent";
 import ProductSection from "@components/ProductCardComponent";
 import PaginationComponent from "@components/PaginationComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useQuery from "@hooks/useQuery";
 import { getProductWithCondition } from "@redux/productSlice";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { convertSlugToUpperCase } from "shared/common";
+import { ProductsQueryPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
-
-const breadCrumbItems = ["Nữ", "Áo", "Áo Thun"];
 
 const ListProduct = () => {
   const navigate = useNavigate();
@@ -45,6 +42,55 @@ const ListProduct = () => {
     if (masterData?.pantsSizes) setPantsSizes(masterData.pantsSizes);
   }, [masterData]);
 
+  useEffect(() => {
+    const queryTag = query.get("tag");
+    const querySearch = query.get("search");
+
+    setTag(queryTag);
+    setSearch(querySearch);
+
+    if (queryTag || querySearch) {
+      const filterConditions: any = {
+        page: 1,
+        perPage: 12,
+      };
+      if (querySearch) {
+        filterConditions.search = querySearch;
+      } else if (queryTag) {
+        filterConditions.tag = queryTag;
+      }
+      dispatch(getProductWithCondition(filterConditions));
+    }
+  }, [query, dispatch]);
+
+  const handleFilter = useCallback(
+    (page = 1, perPage = 12) => {
+      const filterConditions: any = {
+        page,
+        perPage,
+      };
+
+      if (selectedSizes.length > 0) filterConditions.size = selectedSizes;
+      if (selectedColors.length > 0) filterConditions.color = selectedColors;
+
+      const queryParams: { search?: string; tag?: string } = {};
+
+      if (search) {
+        filterConditions.search = search;
+        queryParams.search = search;
+      } else if (tag) {
+        filterConditions.tag = tag;
+        queryParams.tag = tag;
+      }
+
+      const queryPath = ProductsQueryPath(queryParams);
+      navigate(queryPath, { replace: true });
+
+      dispatch(getProductWithCondition(filterConditions));
+    },
+    [selectedSizes, selectedColors, search, tag, dispatch, navigate]
+  );
+
   const handleSizeSelect = (size: string) => {
     setSelectedSizes((prev) =>
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
@@ -57,43 +103,29 @@ const ListProduct = () => {
     );
   };
 
-  const handleFilter = (page = 1, perPage = 12) => {
-    const filterConditions: any = {
-      page,
-      perPage,
-    };
-
-    if (selectedSizes.length > 0) filterConditions.size = selectedSizes;
-    if (selectedColors.length > 0) filterConditions.color = selectedColors;
-
-    if (search) {
-      filterConditions.search = search;
-    } else if (tag) {
-      filterConditions.tag = tag;
-    }
-
-    dispatch(getProductWithCondition(filterConditions));
-  };
-
   const handleChange = (page: number, pageSize?: number) => {
     handleFilter(page, pageSize);
   };
 
-  useEffect(() => {
-    const queryTag = query.get("tag");
-    const querySearch = query.get("search");
-    setTag(queryTag);
-    setSearch(querySearch);
-  }, [query]);
+  const handleClearFilter = () => {
+    setSelectedSizes([]);
+    setSelectedColors([]);
+    setSearch(null);
+    setTag(null);
+    navigate("/products", { replace: true });
 
-  useEffect(() => {
-    handleFilter();
-  }, [tag, search]);
+    dispatch(
+      getProductWithCondition({
+        page: 1,
+        perPage: 12,
+      })
+    );
+  };
 
   const menuItems = [
     {
       key: "size",
-      label: "Size",
+      label: "Kích cỡ",
       children: [
         {
           key: "shirt-size-menu",
@@ -167,7 +199,6 @@ const ListProduct = () => {
 
   return (
     <div className={cx("list-product-container")}>
-      {!search ? <BreadcrumbComponent items={breadCrumbItems} /> : null}
       <section className={cx("section-list-product")}>
         <div className={cx("menu-container")}>
           <h2 className={cx("menu-title")}>Lọc sản phẩm</h2>
@@ -182,12 +213,26 @@ const ListProduct = () => {
               Áp dụng
             </ButtonComponent>
           </div>
+          <div
+            className={cx("filter-button-container")}
+            style={{ marginTop: 8 }}
+          >
+            {(search ||
+              tag ||
+              selectedColors.length > 0 ||
+              selectedSizes.length > 0) && (
+              <ButtonComponent
+                htmlType="button"
+                className={cx("menu-clear-filter-button")}
+                onClick={handleClearFilter}
+              >
+                Xóa bộ lọc
+              </ButtonComponent>
+            )}
+          </div>
         </div>
         <div className={cx("content-container")}>
-          <h1 className={cx("content-title")}>
-            {tag && convertSlugToUpperCase(tag)}
-            {search && convertSlugToUpperCase(`Kết quả tìm kiếm: ${search}`)}
-          </h1>
+          <h1 style={{ marginTop: 0 }}>DANH SÁCH SẢN PHẨM</h1>
           <div className={cx("product-card-container")}>
             <ProductSection
               justifyContent="flex-start"

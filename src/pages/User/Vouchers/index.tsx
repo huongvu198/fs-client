@@ -45,7 +45,7 @@ const UserVouchersPage = () => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
-                    flex: "0 0 30%",
+                    flex: "0 0 25%",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",

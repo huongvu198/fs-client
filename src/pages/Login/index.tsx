@@ -4,11 +4,8 @@ import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useReduxSelector } from "@hooks/useRedux";
-import useNotification from "@hooks/useNotification";
 import { useNavigate } from "react-router-dom";
 import {
-  hasAccessToken,
-  hasLocalAccessToken,
   setAccessToken,
   setLocalRefreshToken,
   setLocalToken,

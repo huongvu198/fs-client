@@ -49,4 +49,7 @@ export const endPoint = {
   NEW: {
     GET: "/news",
   },
+  SEGMENT: {
+    LIST: `products-public/segments`,
+  },
 };

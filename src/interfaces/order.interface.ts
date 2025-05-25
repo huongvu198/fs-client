@@ -1,3 +1,5 @@
+import { OrderStatusEnum } from "shared/enum";
+
 export interface VariantImage {
   id: string;
   url: string;
@@ -102,7 +104,7 @@ export interface Order {
   subtotal: string;
   discount: string;
   total: string;
-  status: string;
+  status: OrderStatusEnum;
   paymentMethod: string;
   paymentStatus: string;
   note: string | null;

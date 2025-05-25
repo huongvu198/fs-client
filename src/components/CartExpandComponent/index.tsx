@@ -94,7 +94,7 @@ const CartExpand = () => {
       <Badge size="small" count={cart?.items.length}>
         <Button
           type="text"
-          icon={<ShoppingCartOutlined />}
+          icon={<ShoppingCartOutlined style={{ fontSize: 10 }} />}
           onClick={showDrawer}
           className={cx("cart-button")}
           size="large"

@@ -13,8 +13,8 @@
 
 .style-banner-heading {
   text-align: center;
-  font-size: 32px;
-  font-weight: 900;
+  font-size: 28px;
+  font-weight: 500;
   margin-bottom: 40px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -31,10 +31,18 @@
     "a a b b b b"
     "c c c c d d";
 
-  & > :nth-child(1) { grid-area: a; }
-  & > :nth-child(2) { grid-area: b; }
-  & > :nth-child(3) { grid-area: c; }
-  & > :nth-child(4) { grid-area: d; }
+  & > :nth-child(1) {
+    grid-area: a;
+  }
+  & > :nth-child(2) {
+    grid-area: b;
+  }
+  & > :nth-child(3) {
+    grid-area: c;
+  }
+  & > :nth-child(4) {
+    grid-area: d;
+  }
 
   @include respond("mobile") {
     grid-template-columns: 1fr;
@@ -42,7 +50,7 @@
       "a"
       "b"
       "c"
-      "d"
+      "d";
   }
 }
 
@@ -89,26 +97,21 @@
 }
 
 .image-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .category-image {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.5s ease;
-  }
-  
-  .category-card:nth-child(1) .category-image,
-.category-card:nth-child(2) .category-image {
-  transform: scaleX(-1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
 }

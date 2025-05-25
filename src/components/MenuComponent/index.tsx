@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
 
@@ -47,7 +46,7 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
       openKeys={openKeys}
       onOpenChange={handleOpenChange}
       theme="light"
-      expandIcon={({ isOpen }) => (isOpen ? <UpOutlined /> : <DownOutlined />)}
+      // expandIcon={({ isOpen }) => (isOpen ? <UpOutlined /> : <DownOutlined />)}
       className={cx("menu-container")}
     >
       {items.map((item) =>
@@ -57,9 +56,9 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
             icon={item.icon}
             title={item.label}
             className={cx("submenu-container")}
-            expandIcon={({ isOpen }) =>
-              isOpen ? <UpOutlined /> : <DownOutlined />
-            }
+            // expandIcon={({ isOpen }) =>
+            //   isOpen ? <UpOutlined /> : <DownOutlined />
+            // }
           >
             {item.children.map((child) =>
               child.children ? (
@@ -67,9 +66,9 @@ const MenuComponent = ({ items, selectedKey }: CustomMenuProps) => {
                   key={child.key}
                   icon={child.icon}
                   title={child.label}
-                  expandIcon={({ isOpen }) =>
-                    isOpen ? <UpOutlined /> : <DownOutlined />
-                  }
+                  // expandIcon={({ isOpen }) =>
+                  //   isOpen ? <UpOutlined /> : <DownOutlined />
+                  // }
                   className={cx("submenu-container")}
                 >
                   {child.children.map((subChild) => (

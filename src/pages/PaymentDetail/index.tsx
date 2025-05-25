@@ -7,7 +7,7 @@ import { orderDetail, paymentSuccess } from "@redux/orderSlice";
 import { useReduxSelector } from "@hooks/useRedux";
 import { OrderStatusEnum, PaymentMethodEnum, SocketEvent } from "shared/enum";
 import dayjs from "dayjs";
-import { Col, Modal, Row } from "antd";
+import { Col, Row } from "antd";
 import utc from "dayjs/plugin/utc";
 import useSocket from "@hooks/useSocket";
 import { useCountdown } from "@hooks/useCountDown";

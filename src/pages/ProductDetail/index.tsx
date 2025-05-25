@@ -1,6 +1,5 @@
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
-import BreadcrumbComponent from "@components/BreadCrumbComponent";
 import { useEffect, useState } from "react";
 import RadioComponent from "@components/RadioComponent";
 import { Button, InputNumber, Spin } from "antd";
@@ -327,16 +326,9 @@ const ProductDetail = () => {
     }
   };
 
-  const breadCrumbItems = [
-    productData.segment.name,
-    productData.segment.category.name,
-    productData.segment.category.subCategory.name,
-  ];
   return (
     <>
       <div className={cx("product-detail-page")}>
-        <BreadcrumbComponent items={breadCrumbItems} />
-
         <div className={cx("product-detail-container")}>
           <div className={cx("product-image-gallery")}>
             <div className={cx("product-thumnails")}>

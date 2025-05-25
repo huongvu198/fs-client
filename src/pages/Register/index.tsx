@@ -13,7 +13,6 @@ import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { registerUserApi, resetRegisterState } from "@redux/registerSlice";
-import useNotification from "@hooks/useNotification";
 import Spinner from "@components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { LoginPath } from "@config/routerConfig";
@@ -28,7 +27,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
   const [form] = Form.useForm();
   const dispatch = useRedux();
   const nagigate = useNavigate();
-  const { loading, error, registerSuccess } = useReduxSelector(
+  const { loading, registerSuccess } = useReduxSelector(
     (state) => state.register
   );
   const handleSubmit = (values: any) => {

@@ -13,6 +13,7 @@ import { getUserApi } from "@redux/userSlice";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
 import { getMasterData } from "@redux/appSlice";
 import { Spin } from "antd";
+import { getSegments } from "@redux/segmentSlice";
 
 const cx = classNames.bind(styles);
 
@@ -23,7 +24,7 @@ const PublicLayout = () => {
   const navigate = useNavigate();
   const dispatch = useRedux();
   const { getUserSuccess } = useReduxSelector((state) => state.getUser);
-  const { masterData } = useReduxSelector((state) => state.app);
+
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();
@@ -54,9 +55,8 @@ const PublicLayout = () => {
   }, [location, navigate, dispatch, getUserSuccess]);
 
   useEffect(() => {
-    if (!masterData) {
-      dispatch(getMasterData());
-    }
+    dispatch(getMasterData());
+    dispatch(getSegments());
   }, [dispatch]);
 
   return (

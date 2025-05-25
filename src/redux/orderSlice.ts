@@ -150,7 +150,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.orderHistory = action.payload.items;
         state.cancelOrderSuccess = true;
-        state.pagination = parsePaginationHeaders(action.payload.headers);
+        showToast(ToastType.SUCCESS, "Huỷ đơn hàng thành công");
       })
       .addCase(cancelOrder.rejected, (state) => {
         state.loading = false;

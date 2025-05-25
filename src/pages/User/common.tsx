@@ -1,7 +1,7 @@
 import { Tag } from "antd";
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
-  PENDING: "Chờ xác nhận",
+  PENDING: "Chờ thanh toán",
   CONFIRMED: "Đã xác nhận",
   PROCESSING: "Đang xử lý",
   SHIPPING: "Đang giao",

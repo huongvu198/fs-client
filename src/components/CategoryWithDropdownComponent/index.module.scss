@@ -3,14 +3,14 @@
 
 .category-container {
   display: flex;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .category-item {
   padding: 8px 12px;
   transition: border-color 0.1s ease-in-out;
-  font-size: 14px;
+  font-size: 13px;
   font-family:
     system-ui,
     -apple-system,
@@ -37,5 +37,12 @@
 
   .category-item {
     padding: 6px;
+  }
+}
+
+:global {
+  .custom-dropdown,
+  .custom-dropdown .ant-dropdown-menu-submenu .ant-dropdown-menu {
+    min-width: 200px !important;
   }
 }

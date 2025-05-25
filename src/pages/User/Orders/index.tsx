@@ -1,21 +1,38 @@
 import { useEffect, useState } from "react";
-import { Table, Modal, Image, Button } from "antd";
+import { Table, Modal, Button, Card, Col, Layout, Row } from "antd";
 import { FormattedNumber } from "react-intl";
 import {
   ORDER_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
-  PAYMENT_STATUS_LABELS,
   renderTag,
 } from "../common";
-import { ColumnsType } from "antd/es/table";
+import { ColumnsType, TableProps } from "antd/es/table";
 import { EyeOutlined } from "@ant-design/icons";
 import { cancelOrder, getOrderHistory } from "@redux/orderSlice";
 import { useDispatch } from "react-redux";
 import { ApiDispatch } from "@redux/index";
 import { useReduxSelector } from "@hooks/useRedux";
-import { Order } from "../../../interfaces/order.interface";
+import { Order, OrderItem } from "../../../interfaces/order.interface";
 import DateTag from "@components/Common/DateTagProps";
-import { OrderStatusEnum } from "shared/enum";
+import {
+  OrderStatusEnum,
+  PaymentMethodEnum,
+  PaymentStatusEnum,
+  VoucherType,
+} from "shared/enum";
+import { Content } from "antd/es/layout/layout";
+import Sider from "antd/es/layout/Sider";
+import { formatDateToVietnamese, formatPhoneInternal } from "shared/common";
+import StatusTag from "@components/Common/StatusTag";
+import PaymentMethodTag from "@components/Common/PaymentMethodTag";
+import PaymentStatusTag from "@components/Common/PaymentStatusTag";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import { PaymentDetailPath } from "@config/routerConfig";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const OrdersHistoryPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -26,6 +43,7 @@ const OrdersHistoryPage = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const navigate = useNavigate();
 
   const handleViewDetail = (order: Order) => {
     setSelectedOrder(order);
@@ -45,13 +63,13 @@ const OrdersHistoryPage = () => {
       align: "center",
       render: (value: string) => renderTag(value, ORDER_STATUS_LABELS),
     },
-    {
-      title: "TT Thanh toán",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-      align: "center",
-      render: (value: string) => renderTag(value, PAYMENT_STATUS_LABELS),
-    },
+    // {
+    //   title: "TT Thanh toán",
+    //   dataIndex: "paymentStatus",
+    //   key: "paymentStatus",
+    //   align: "center",
+    //   render: (value: string) => renderTag(value, PAYMENT_STATUS_LABELS),
+    // },
     {
       title: "HT Thanh toán",
       dataIndex: "paymentMethod",
@@ -88,6 +106,66 @@ const OrdersHistoryPage = () => {
     },
   ];
 
+  const columnsItem: TableProps<OrderItem>["columns"] = [
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "productName",
+      key: "productName",
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "productName",
+      key: "productName",
+    },
+    {
+      title: "Kích cỡ",
+      dataIndex: "sizeValue",
+      key: "sizeValue",
+      align: "center",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "price",
+      key: "price",
+      align: "center",
+
+      render: (_, record) => (
+        <FormattedNumber
+          value={Number(record?.product.price)}
+          style="currency"
+          currency="VND"
+        />
+      ),
+    },
+    {
+      title: "Giảm giá",
+      dataIndex: "price",
+      key: "price",
+      align: "center",
+
+      render: (_, record) => `${record?.product?.discount}%`,
+    },
+    {
+      title: "Tổng Tiền",
+      dataIndex: "subtotal",
+      key: "subtotal",
+      align: "center",
+      render: (_, record) => (
+        <FormattedNumber
+          value={Number(record?.subtotal)}
+          style="currency"
+          currency="VND"
+        />
+      ),
+    },
+  ];
+
   useEffect(() => {
     dispatch(getOrderHistory({ page: currentPage, perPage: pageSize }));
   }, [dispatch, currentPage, pageSize]);
@@ -97,8 +175,27 @@ const OrdersHistoryPage = () => {
     setPageSize(pagination.pageSize);
   };
 
-  const handleCancelOrder = (orderId: string) => {
-    dispatch(cancelOrder(orderId));
+  const handleCancelOrder = async (orderId: string) => {
+    const resultAction = await dispatch(cancelOrder(orderId));
+
+    if (cancelOrder.fulfilled.match(resultAction)) {
+      setIsModalVisible(false);
+    }
+  };
+
+  console.log("selectedOrder", selectedOrder);
+
+  console.log(
+    "Check",
+    dayjs(selectedOrder?.paymentExpiredAt)
+      .tz(dayjs.tz.guess())
+      .diff(dayjs(), "day")
+  );
+
+  const isPaymentStillValid = (expiredAt: string | Date): boolean => {
+    const localExpiredAt = dayjs(expiredAt).tz(dayjs.tz.guess());
+    const now = dayjs();
+    return now.isBefore(localExpiredAt);
   };
 
   return (
@@ -119,139 +216,295 @@ const OrdersHistoryPage = () => {
       />
 
       <Modal
-        title={`Chi tiết đơn hàng ${selectedOrder?.id}`}
+        title={
+          <div style={{ textAlign: "center", width: "100%" }}>
+            Chi tiết đơn hàng
+          </div>
+        }
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
-        width={800}
-        footer={
-          selectedOrder?.status === OrderStatusEnum.PROCESSING ? (
-            <Button danger onClick={() => handleCancelOrder(selectedOrder.id)}>
+        width={1300}
+        // bodyStyle={{
+        //   minHeight: 600,
+        // }}
+        footer={[
+          selectedOrder?.status === OrderStatusEnum.PROCESSING && (
+            <Button
+              key="cancel"
+              danger
+              onClick={() => handleCancelOrder(selectedOrder.id)}
+            >
               Hủy đơn hàng
             </Button>
-          ) : null
-        }
+          ),
+          selectedOrder?.status === OrderStatusEnum.PENDING &&
+            selectedOrder.paymentMethod === PaymentMethodEnum.BANKING &&
+            isPaymentStillValid(selectedOrder.paymentExpiredAt) && (
+              <Button
+                key="pay"
+                type="primary"
+                onClick={() =>
+                  navigate(PaymentDetailPath.replace(":id", selectedOrder.id))
+                }
+              >
+                Thanh toán
+              </Button>
+            ),
+        ]}
       >
-        {selectedOrder && (
-          <div style={{ paddingTop: 10 }}>
-            <div style={{ marginBottom: 16 }}>
-              <p>
-                <strong>Trạng thái đơn hàng:</strong>{" "}
-                {renderTag(selectedOrder.status, ORDER_STATUS_LABELS)}
-                {renderTag(selectedOrder.paymentStatus, PAYMENT_STATUS_LABELS)}
-              </p>
-              <p>
-                <strong>Thanh toán:</strong>{" "}
-                {renderTag(selectedOrder.paymentMethod, PAYMENT_METHOD_LABELS)}
-              </p>
-              <p>
-                <strong>Tổng tiền:</strong>{" "}
-                <FormattedNumber
-                  value={Number(selectedOrder.total)}
-                  style="currency"
-                  currency="VND"
-                />
-              </p>
-              <p>
-                <strong>Ngày đặt:</strong>{" "}
-                {<DateTag date={selectedOrder.createdAt} />}
-              </p>
-            </div>
-
-            <h4>Sản phẩm</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {selectedOrder.items.map((item) => (
+        <Layout
+          style={{ background: "white", display: "flex", minHeight: "100%" }}
+        >
+          <Content style={{ marginRight: 16 }}>
+            <Card
+              type="inner"
+              title={`Đơn hàng: ${selectedOrder?.id?.toUpperCase()}`}
+              extra={<StatusTag status={selectedOrder?.status!} />}
+              bodyStyle={{ background: "rgba(0, 0, 0, 0.02)", padding: 12 }}
+              headStyle={{ borderBottom: "none", padding: 12 }}
+            >
+              Thời gian đặt hàng:{" "}
+              {selectedOrder?.createdAt &&
+                formatDateToVietnamese(selectedOrder.createdAt)}
+            </Card>
+            <Row gutter={16} style={{ marginTop: 16 }}>
+              <Col span={24}>
                 <div
-                  key={item.id}
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Card
+                    type="inner"
+                    title="NGƯỜI NHẬN"
+                    headStyle={{ color: "rgba(0, 0, 0, 0.50)", padding: 12 }}
+                    style={{ flex: 1 }}
+                    bodyStyle={{ padding: 12 }}
+                  >
+                    <h5
+                      style={{
+                        marginBottom: 8,
+                        fontWeight: 600,
+                        fontSize: 14,
+                        marginTop: 0,
+                      }}
+                    >
+                      {selectedOrder?.address?.fullName}
+                    </h5>
+                    <p style={{ marginBottom: 8, fontSize: 14 }}>
+                      {selectedOrder &&
+                        formatPhoneInternal(selectedOrder?.address?.phone)}
+                    </p>
+                    <p style={{ marginBottom: 0, fontSize: 14 }}>
+                      {[
+                        selectedOrder?.address?.street,
+                        selectedOrder?.address?.ward,
+                        selectedOrder?.address?.district,
+                        selectedOrder?.address?.city,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  </Card>
+                </div>
+              </Col>
+            </Row>
+            <Table
+              bordered={true}
+              columns={columnsItem}
+              dataSource={selectedOrder?.items}
+              style={{ marginTop: 16 }}
+              pagination={false}
+            />
+          </Content>
+          <Sider
+            width="25%"
+            style={{
+              background: "white",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Card
+              type="inner"
+              title="THANH TOÁN"
+              headStyle={{ color: "rgba(0, 0, 0, 0.50)", padding: 12 }}
+              bodyStyle={{ padding: 12 }}
+            >
+              <div>
+                <div
                   style={{
                     display: "flex",
-                    gap: 16,
-                    padding: 12,
-                    border: "1px solid #eee",
-                    borderRadius: 8,
-                    background: "#fafafa",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
                   }}
                 >
-                  <Image
-                    width={110}
-                    height={110}
-                    style={{
-                      objectFit: "cover",
-                      borderRadius: 4,
-                    }}
-                    src={item.variant?.images?.[0]?.url}
-                    alt={item.productName}
-                    preview={true}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ marginBottom: 4 }}>{item.productName}</h4>
-                    <p style={{ margin: 0 }}>Size: {item.sizeValue}</p>
-                    <p style={{ margin: 0 }}>Số lượng: {item.quantity}</p>
-                    <p style={{ margin: 0 }}>
-                      Giá sản phẩm:{" "}
-                      {
-                        <FormattedNumber
-                          value={Number(item.price)}
-                          style="currency"
-                          currency="VND"
-                        />
-                      }
-                    </p>
-                    <p style={{ margin: 0 }}>
-                      Thành tiền:{" "}
-                      {
-                        <FormattedNumber
-                          value={Number(item.subtotal)}
-                          style="currency"
-                          currency="VND"
-                        />
-                      }
-                    </p>
-                  </div>
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Thanh toán
+                  </span>
+                  <span>
+                    <PaymentMethodTag
+                      method={selectedOrder?.paymentMethod as PaymentMethodEnum}
+                    />
+                  </span>
                 </div>
-              ))}
-            </div>
-
-            {selectedOrder.transactions && (
-              <>
-                <h4 style={{ marginTop: 24 }}>Giao dịch</h4>
                 <div
                   style={{
-                    background: "#f6ffed",
-                    padding: 12,
-                    borderRadius: 6,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
                   }}
                 >
-                  <p>
-                    <strong>Mã giao dịch:</strong>{" "}
-                    {selectedOrder.transactions.data.code}
-                  </p>
-                  <p>
-                    <strong>Ngân hàng:</strong>{" "}
-                    {selectedOrder.transactions.data.gateway}
-                  </p>
-                  <p>
-                    <strong>Số tài khoản:</strong>{" "}
-                    {selectedOrder.transactions.data.accountNumber}
-                  </p>
-                  <p>
-                    <strong>Ngày giao dịch:</strong>{" "}
-                    {selectedOrder.transactions.data.transactionDate}
-                  </p>
-                  <p>
-                    <strong>Số tiền:</strong>{" "}
-                    {
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Trạng thái
+                  </span>
+                  <span>
+                    <PaymentStatusTag
+                      status={selectedOrder?.paymentStatus as PaymentStatusEnum}
+                    />
+                  </span>
+                </div>
+              </div>
+            </Card>
+            {selectedOrder?.voucher ? (
+              <Card
+                type="inner"
+                headStyle={{ color: "rgba(0, 0, 0, 0.50)", padding: 12 }}
+                bodyStyle={{ padding: 12 }}
+                style={{ marginTop: 16 }}
+              >
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Mã giảm giá
+                    </span>
+                    <span>
+                      {selectedOrder?.voucher?.type === VoucherType.FIXED ? (
+                        <FormattedNumber
+                          value={selectedOrder?.voucher?.discount}
+                          style="currency"
+                          currency="VND"
+                        />
+                      ) : (
+                        `${selectedOrder?.voucher?.discount}%`
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+            ) : null}
+            {selectedOrder?.paymentMethod === PaymentMethodEnum.BANKING &&
+            selectedOrder.paymentStatus === PaymentStatusEnum.PAID ? (
+              <Card
+                type="inner"
+                headStyle={{ color: "rgba(0, 0, 0, 0.50)", padding: 12 }}
+                bodyStyle={{ padding: 12 }}
+                style={{ marginTop: 16 }}
+              >
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Mã giao dịch
+                    </span>
+                    <span>{selectedOrder?.transactions?.data.code}</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Ngân hàng
+                    </span>
+                    <span>{selectedOrder?.transactions?.data.gateway}</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Số tài khoản
+                    </span>
+                    <span>
+                      {selectedOrder?.transactions?.data.accountNumber}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Ngày giao dịch
+                    </span>
+                    <span>
+                      {formatDateToVietnamese(
+                        selectedOrder?.transactions?.data.transactionDate!
+                      )}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      justifyContent: "space-between",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                      Số tiền
+                    </span>
+                    <span>
                       <FormattedNumber
-                        value={selectedOrder.transactions.data.transferAmount}
+                        value={Number(
+                          selectedOrder?.transactions?.data.transferAmount
+                        )}
                         style="currency"
                         currency="VND"
                       />
-                    }
-                  </p>
+                    </span>
+                  </div>
                 </div>
-              </>
-            )}
-          </div>
-        )}
+              </Card>
+            ) : null}
+          </Sider>
+        </Layout>
       </Modal>
     </>
   );

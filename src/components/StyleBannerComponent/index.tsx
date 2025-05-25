@@ -5,7 +5,6 @@ const cx = classNames.bind(styles);
 
 interface StyleCategory {
   id: string;
-  name: string;
   image: string;
 }
 
@@ -13,27 +12,23 @@ const StyleBannerComponent = () => {
   const styleCategories: StyleCategory[] = [
     {
       id: "casual",
-      name: "Casual",
       image:
-        "https://hauterhub.gagmat.com/admin/storage/media/61/catalogue/Hauter-hub-tshirt-(1).webp",
+        "https://cotton4u.vn/files/news/2025/05/20/fb15f725740de048428eaeabb74efa41.webp",
     },
     {
       id: "formal",
-      name: "Formal",
       image:
-        "https://citycenterone.hr/zagreb-west/wp-content/uploads/sites/2/2021/02/Galileo_2.jpg",
+        "https://cotton4u.vn/files/news/2025/04/15/63fbae2cbd8adde79d504aafcfe92eee.webp",
     },
     {
       id: "party",
-      name: "Party",
       image:
-        "https://www.notbin.com/wp-content/uploads/2024/08/product-20-1.jpg",
+        "https://cotton4u.vn/files/news/2025/04/23/0cd827900f8d75840487982c44506798.webp",
     },
     {
       id: "gym",
-      name: "Gym",
       image:
-        "https://img.freepik.com/free-photo/portrait-young-man-holding-dumbbell_144627-21871.jpg",
+        "https://cotton4u.vn/files/news/2025/04/23/b3a784188300166658c479d859c18f69.webp",
     },
   ];
 
@@ -45,11 +40,10 @@ const StyleBannerComponent = () => {
         {styleCategories.map((category) => (
           <div key={category.id} className={cx("category-card")}>
             <div className={cx("category-content")}>
-              <h3 className={cx("category-name")}>{category.name}</h3>
               <div className={cx("image-container")}>
                 <img
                   src={category.image}
-                  alt={`${category.name} style`}
+                  alt={`${category} style`}
                   className={cx("category-image")}
                 />
               </div>

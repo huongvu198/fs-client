@@ -11,6 +11,7 @@ import voucherReducer from "./voucherSlice";
 import userReducer from "./userSlice";
 import appReducer from "./appSlice";
 import chatReducer from "./chatSlice";
+import segmentReducer from "./segmentSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -25,6 +26,7 @@ const rootReducer = {
   voucher: voucherReducer,
   app: appReducer,
   chat: chatReducer,
+  segment: segmentReducer,
 };
 
 export const store = configureStore({

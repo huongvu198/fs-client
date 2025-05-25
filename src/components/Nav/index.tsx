@@ -26,6 +26,9 @@ import {
 
 import { useAuthContext } from "contexts/authContext";
 import { removeCartList, removeTempCart } from "shared/localStoreage";
+import { useSelector } from "react-redux";
+import { getUserPoint } from "@redux/userSlice";
+import { FormattedNumber } from "react-intl";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -38,6 +41,7 @@ export default function Nav({ handleShowSideBar }: Props) {
   const [, setCartItems] = useState<ICartResponse | null>(null);
   const { setCart } = useCartContext();
   const { isAuthenticated, logout } = useAuthContext();
+  const pointRedux = useSelector(getUserPoint);
 
   const Logout = () => {
     const handleLogout = () => {
@@ -54,12 +58,28 @@ export default function Nav({ handleShowSideBar }: Props) {
     return (
       <div onClick={handleLogout}>
         <LoginOutlined style={{ marginRight: "10px" }} />
-        <span>Logout</span>
+        <span>Đăng xuất</span>
       </div>
     );
   };
 
   const items: MenuProps["items"] = [
+    {
+      label: (
+        <>
+          SD:{" "}
+          <FormattedNumber
+            value={Number(pointRedux)}
+            currency="VND"
+            style="currency"
+          />
+        </>
+      ),
+      key: "-1",
+    },
+    {
+      type: "divider",
+    },
     {
       label: <Link to={ProfilePath}>Tài khoản của tôi</Link>,
       key: "0",

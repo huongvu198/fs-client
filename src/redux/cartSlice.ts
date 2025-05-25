@@ -1,11 +1,11 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-  isAnyOf,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { cartService, ICartId } from "@services/cart";
-import { CartRequest, ICartResponse, IVoucherRequest, IVoucherResponse } from "interfaces/cart.interface";
+import {
+  CartRequest,
+  ICartResponse,
+  IVoucherRequest,
+  IVoucherResponse,
+} from "interfaces/cart.interface";
 
 interface CartState {
   loading: boolean;
@@ -13,6 +13,11 @@ interface CartState {
   dataCart: ICartResponse | null;
   dataVoucher: IVoucherResponse | null;
   success: boolean;
+  loadingAppyVoucher: boolean;
+  pointUsed: {
+    amount: number;
+    selected: boolean;
+  };
 }
 
 const initialState: CartState = {
@@ -21,6 +26,11 @@ const initialState: CartState = {
   loading: false,
   error: null,
   success: false,
+  loadingAppyVoucher: false,
+  pointUsed: {
+    amount: 0,
+    selected: false,
+  },
 };
 
 // 1. Các API
@@ -77,8 +87,8 @@ export const getCartByUserApi = createAsyncThunk<
 });
 
 export const acceptVoucherApi = createAsyncThunk<
-IVoucherResponse,
-IVoucherRequest,
+  IVoucherResponse,
+  IVoucherRequest,
   { rejectValue: string }
 >("cart/acceptVoucherApi", async (voucherRequest, { rejectWithValue }) => {
   try {
@@ -95,31 +105,27 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     clearCartData: () => initialState,
+    setReduxPointUsed: (
+      state,
+      action: PayloadAction<{ amount: number; selected: any }>
+    ) => {
+      state.pointUsed = {
+        amount: action.payload.amount,
+        selected: action.payload.selected,
+      };
+    },
   },
   extraReducers: (builder) => {
+    builder;
     builder
-      // 2.1 Pending chung
-      .addMatcher(
-        isAnyOf(
-          addToCartApi.pending,
-          addToCartImportApi.pending,
-          deleteCartItemApi.pending,
-          getCartByUserApi.pending,
-          acceptVoucherApi.pending
-        ),
-        (state) => {
-          state.loading = true;
-          state.error = null;
-        }
-      )
-      // 2.2 Fulfilled chung
-      .addMatcher(
-        isAnyOf(
-          addToCartApi.fulfilled,
-          addToCartImportApi.fulfilled,
-          deleteCartItemApi.fulfilled,
-          getCartByUserApi.fulfilled
-        ),
+      // addToCartApi
+      .addCase(addToCartApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        // Nếu có state riêng biệt cho apply voucher, có thể bỏ hoặc giữ tùy
+      })
+      .addCase(
+        addToCartApi.fulfilled,
         (state, action: PayloadAction<ICartResponse>) => {
           state.loading = false;
           state.dataCart = action.payload;
@@ -127,33 +133,94 @@ const cartSlice = createSlice({
           state.success = true;
         }
       )
-      .addMatcher(
-        isAnyOf(
-          acceptVoucherApi.fulfilled,
-        ),
-        (state, action: PayloadAction<IVoucherResponse>) => {
+      .addCase(addToCartApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Có lỗi xảy ra";
+      })
+
+      // addToCartImportApi
+      .addCase(addToCartImportApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        addToCartImportApi.fulfilled,
+        (state, action: PayloadAction<ICartResponse>) => {
           state.loading = false;
-          state.dataVoucher = action.payload;
+          state.dataCart = action.payload;
           state.error = null;
           state.success = true;
         }
       )
-      // 2.3 Rejected chung
-      .addMatcher(
-        isAnyOf(
-          addToCartApi.rejected,
-          addToCartImportApi.rejected,
-          deleteCartItemApi.rejected,
-          getCartByUserApi.rejected,
-          acceptVoucherApi.rejected
-        ),
-        (state, action) => {
+      .addCase(addToCartImportApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Có lỗi xảy ra";
+      })
+
+      // deleteCartItemApi
+      .addCase(deleteCartItemApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        deleteCartItemApi.fulfilled,
+        (state, action: PayloadAction<ICartResponse>) => {
           state.loading = false;
-          state.error = action.payload || "Có lỗi xảy ra";
+          state.dataCart = action.payload;
+          state.error = null;
+          state.success = true;
         }
-      );
+      )
+      .addCase(deleteCartItemApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Có lỗi xảy ra";
+      })
+
+      // getCartByUserApi
+      .addCase(getCartByUserApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        getCartByUserApi.fulfilled,
+        (state, action: PayloadAction<ICartResponse>) => {
+          state.loading = false;
+          state.dataCart = action.payload;
+          state.error = null;
+          state.success = true;
+        }
+      )
+      .addCase(getCartByUserApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Có lỗi xảy ra";
+      })
+
+      // acceptVoucherApi
+      .addCase(acceptVoucherApi.pending, (state) => {
+        state.loading = true;
+        state.loadingAppyVoucher = true;
+        state.error = null;
+      })
+      .addCase(
+        acceptVoucherApi.fulfilled,
+        (state, action: PayloadAction<IVoucherResponse>) => {
+          state.dataVoucher = action.payload;
+          state.error = null;
+          state.success = true;
+          state.loadingAppyVoucher = false;
+        }
+      )
+      .addCase(acceptVoucherApi.rejected, (state, action) => {
+        state.loadingAppyVoucher = false;
+        state.error = action.payload || "Có lỗi xảy ra";
+      });
   },
 });
 
-export const { clearCartData } = cartSlice.actions;
+export const { clearCartData, setReduxPointUsed } = cartSlice.actions;
+export const getPointAmount = (state: { cart: CartState }) =>
+  state.cart.pointUsed.amount;
+export const getPointSelect = (state: { cart: CartState }) =>
+  state.cart.pointUsed.selected;
+
 export default cartSlice.reducer;

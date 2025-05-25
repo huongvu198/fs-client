@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
@@ -26,11 +26,16 @@ const cx = classNames.bind(styles);
 const LoginRegistrationForm: React.FC = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<ApiDispatch>();
-  const { data, loading, error, loginSuccess } = useReduxSelector(
+  const { data, loading, loginSuccess } = useReduxSelector(
     (state) => state.login
   );
-  const { errorMessage } = useNotification();
   const navigate = useNavigate();
+
+  const prevPathRef = useRef("");
+
+  useEffect(() => {
+    prevPathRef.current = location.pathname;
+  }, [location]);
 
   // Hàm format lại request giỏ hàng từ localStorage
   const formatCartRequest = (): CartRequest[] => {
@@ -79,7 +84,11 @@ const LoginRegistrationForm: React.FC = () => {
       // Sau khi thêm cart xong thì mới gọi getCartByUserApi
       await dispatch(getCartByUserApi());
 
-      navigate("/");
+      if (prevPathRef.current === RegisterPath) {
+        navigate("/");
+      } else {
+        navigate(-1);
+      }
       localStorage.removeItem("tempCart");
     };
 
@@ -87,18 +96,6 @@ const LoginRegistrationForm: React.FC = () => {
       handleLoginSuccess();
     }
   }, [loginSuccess, dispatch, form, data]);
-
-  useEffect(() => {
-    if (hasAccessToken() || hasLocalAccessToken()) {
-      navigate("/");
-    }
-  }, [hasAccessToken(), hasLocalAccessToken()]);
-
-  useEffect(() => {
-    if (error) {
-      errorMessage({ description: error });
-    }
-  }, [error]);
 
   // // Khi lấy giỏ hàng thành công, update context
   // useEffect(() => {
@@ -110,7 +107,11 @@ const LoginRegistrationForm: React.FC = () => {
   return (
     <>
       <div className={cx("login-container")}>
-        <Row gutter={[32, 32]} className={cx("login-form-row")}>
+        <Row
+          gutter={[32, 32]}
+          className={cx("login-form-row")}
+          justify="center"
+        >
           <Col xs={24} md={12} className={cx("login-form-col")}>
             <div className={cx("login-form-container")}>
               <h2 className={cx("login-title")}>Bạn đã có tài khoản</h2>
@@ -170,18 +171,7 @@ const LoginRegistrationForm: React.FC = () => {
                   </ButtonComponent>
                 </Form.Item>
               </Form>
-            </div>
-          </Col>
-
-          <Col xs={24} md={12} className={cx("login-form-col")}>
-            <div className={cx("login-form-container")}>
-              <h2 className={cx("login-title")}>Khách hàng mới</h2>
-              <p className={cx("login-description")}>
-                Nếu bạn chưa có tài khoản, hãy sử dụng tùy chọn này để truy cập
-                biểu mẫu đăng ký.
-              </p>
               <ButtonComponent
-                type="primary"
                 className={cx("register-button")}
                 block
                 onClick={() => navigate(RegisterPath)}

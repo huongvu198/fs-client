@@ -29,6 +29,7 @@ export interface UserResponse {
   fullName: string;
   provider: string;
   socialId: string | null;
+  point: number | string;
   createdAt?: string;
   updatedAt?: string;
   role: IRole;

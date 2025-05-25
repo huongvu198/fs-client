@@ -26,6 +26,8 @@ const PaymentMethod: React.FC = () => {
   const discountPercent = location.state?.discountPercent;
   const selectedAddress = location.state?.selectedAddress;
   const voucherId = location.state?.voucherId;
+  const totalPayment = location.state?.totalPayment;
+  const pointUsed = location.state?.pointUsed || 0;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { setCart } = useCartContext();
@@ -37,7 +39,7 @@ const PaymentMethod: React.FC = () => {
         createOrder({
           addressId: selectedAddress,
           paymentMethod: values.paymentMethod,
-          point: selectedPoint === "point" ? "point" : "",
+          ...(selectedPoint ? { point: String(pointUsed) } : {}),
           ...(voucherId ? { voucherId } : {}),
         })
       ).unwrap();
@@ -102,7 +104,7 @@ const PaymentMethod: React.FC = () => {
                   >
                     <Radio
                       value={PaymentMethodEnum.BANKING}
-                      disabled={selectedPoint === "point" ? true : false}
+                      disabled={totalPayment <= 0}
                     >
                       <div>
                         <div className={styles.paymentTitle}>Banking</div>
@@ -141,6 +143,8 @@ const PaymentMethod: React.FC = () => {
               discount={discountPercent}
               discountAmount={discountAmount}
               selectedPoint={selectedPoint}
+              totalPayment={totalPayment}
+              pointUsed={pointUsed}
             />
           </div>
         </div>

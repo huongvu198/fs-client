@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { getUserIdFromToken } from "shared/common";
 import { getAccessToken } from "@config/accessToken";
 import { useRedux } from "@hooks/useRedux";
+import { getIsOpenChat, setIsOpenChat } from "@redux/appSlice";
 
 const FloatingChatWidget = () => {
   const { isAuthenticated } = useAuthContext();
@@ -31,6 +32,11 @@ const FloatingChatWidget = () => {
   const accessToken = getAccessToken();
   const userId = getUserIdFromToken(accessToken!);
   const dispatch = useRedux();
+  const isOpenRedux = useSelector(getIsOpenChat);
+
+  useEffect(() => {
+    setIsOpen(isOpenRedux);
+  }, [isOpenRedux]);
 
   const { sendMessage } = useSocket({
     [SocketEvent.NEW_MESSAGE]: (data) => {
@@ -64,6 +70,7 @@ const FloatingChatWidget = () => {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    dispatch(setIsOpenChat(!isOpen));
   };
 
   const handleSend = (message: any) => {

@@ -6,7 +6,6 @@ import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import useNotification from "@hooks/useNotification";
 import { verifyEmail } from "@redux/verifySlice";
 import { VerifyCodeEnum } from "shared/enum";
 
@@ -21,11 +20,10 @@ const VerifyEmail: React.FC = () => {
     Array(6).fill("")
   );
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
-  const { verifysuccess, error, loading } = useReduxSelector(
+  const { verifysuccess, loading } = useReduxSelector(
     (state) => state.verifyEmail
   );
   const navigate = useNavigate();
-  const { errorMessage, successMessage } = useNotification();
   const handleInputChange = (index: number, value: string) => {
     if (value.length <= 1) {
       const newCode = [...verificationCode];
@@ -72,7 +70,6 @@ const VerifyEmail: React.FC = () => {
 
   useEffect(() => {
     if (verifysuccess) {
-      successMessage({ description: "Verify success!!" });
       const timer = setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -80,12 +77,6 @@ const VerifyEmail: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [verifysuccess]);
-
-  useEffect(() => {
-    if (error) {
-      errorMessage({ description: error });
-    }
-  }, [error]);
 
   return (
     <div className={cx("verification-container")}>

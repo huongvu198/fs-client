@@ -31,7 +31,6 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
   const { loading, error, registerSuccess } = useReduxSelector(
     (state) => state.register
   );
-  const { errorMessage, successMessage } = useNotification();
   const handleSubmit = (values: any) => {
     const { email, firstName, lastName, password } = values;
     dispatch(
@@ -48,19 +47,9 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
     if (registerSuccess) {
       form.resetFields();
       dispatch(resetRegisterState());
-      successMessage({
-        title: "Đăng ký thành công",
-        description: "Đăng ký tài khoản thành công và vui lòng đăng nhập",
-      });
       nagigate(LoginPath);
     }
   }, [registerSuccess, dispatch, form]);
-
-  useEffect(() => {
-    if (error) {
-      errorMessage({ description: error });
-    }
-  }, [error]);
 
   return (
     <>

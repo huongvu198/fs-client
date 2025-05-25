@@ -74,7 +74,7 @@
 }
 
 .product-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   margin: 0 0 5px 0;
   @include respond("mobile") {
@@ -90,7 +90,7 @@
 .product-color {
   margin: 3px 0;
   font-size: 14px;
-  color: #666;
+  color: #000;
 }
 
 .product-price {
@@ -108,7 +108,7 @@
 .discounted-price {
   color: red;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .original-price {
@@ -120,7 +120,7 @@
 .discounted-price {
   color: red;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .remove-button {
@@ -188,7 +188,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .discount-amount {

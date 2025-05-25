@@ -3,6 +3,7 @@ import verifyService, {
   VerifyEmailRequest,
   VerifyEmailResponse,
 } from "../services/verify";
+import { showToast, ToastType } from "shared/toast";
 
 interface VerifyEmailState {
   data: VerifyEmailResponse | null;
@@ -56,12 +57,14 @@ const verifyEmailSlice = createSlice({
           state.data = action.payload;
           state.verifysuccess = true;
           state.error = null;
+          showToast(ToastType.ERROR, "Xác thực thành công");
         }
       )
       .addCase(verifyEmail.rejected, (state, action) => {
         state.loading = false;
         state.verifysuccess = false;
         state.error = action.payload || "Verification failed";
+        showToast(ToastType.ERROR, String(action.payload));
       });
   },
 });

@@ -116,16 +116,16 @@ const ProductSection = ({
 }: ProductProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
-  const isLaptop = useMediaQuery({ minWidth: 1024, maxWidth: 1439 });
-  const isSmallPC = useMediaQuery({ minWidth: 1440, maxWidth: 1720 });
-  const isLargePC = useMediaQuery({ minWidth: 1721 });
+  const isLaptop = useMediaQuery({ minWidth: 1024, maxWidth: 1300 });
+  const isSmallPC = useMediaQuery({ minWidth: 1301, maxWidth: 1699 });
+  const isLargePC = useMediaQuery({ minWidth: 1700 });
 
   let slidesToShow = 4;
   if (isMobile) slidesToShow = 1;
   else if (isTablet) slidesToShow = 2;
   else if (isLaptop) slidesToShow = 3;
   else if (isSmallPC) slidesToShow = 4;
-  else if (isLargePC) slidesToShow = 4;
+  else if (isLargePC) slidesToShow = 5;
 
   slidesToShow = Math.min(slidesToShow, products.length);
 

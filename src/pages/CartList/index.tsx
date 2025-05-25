@@ -10,19 +10,24 @@ import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken } from "@config/accessToken";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCartContext } from "contexts/cartContext";
 import {
   acceptVoucherApi,
   addToCartApi,
   deleteCartItemApi,
+  getPointAmount,
+  getPointSelect,
+  setReduxPointUsed,
 } from "@redux/cartSlice";
-import useNotification from "@hooks/useNotification";
 import { FormattedNumber } from "react-intl";
 import { useReduxSelector } from "@hooks/useRedux";
 import { useNavigate } from "react-router-dom";
 import { ShippingDetailPath } from "@config/routerConfig";
 import { VoucherType } from "shared/enum";
+import { showToast, ToastType } from "shared/toast";
+import { getColors } from "@redux/appSlice";
+import { getUserPoint } from "@redux/userSlice";
 
 const cx = classNames.bind(styles);
 
@@ -35,17 +40,25 @@ const CartList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { setCart } = useCartContext();
-  const { successMessage } = useNotification();
 
   const [subtotal, setSubtotal] = useState<number>(0);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
-  const { dataVoucher, loading } = useReduxSelector((state) => state.cart);
+  const [pointUsed, setPointUsed] = useState<number>(
+    useSelector(getPointAmount)
+  );
+  const { dataVoucher, loadingAppyVoucher } = useReduxSelector(
+    (state) => state.cart
+  );
   const [voucherType, setVoucherType] = useState<string>("");
-  const [selectedPoint, setSelectePoint] = React.useState("");
+  const [selectedPoint, setSelectePoint] = React.useState(
+    useSelector(getPointSelect)
+  );
   const [voucherId, setVoucherId] = React.useState("");
-  const [isDisableInputVoucher, setIsDisableInputVoucher] =
-    useState<boolean>(false);
+
+  const colorRedux = useReduxSelector(getColors);
+  const pointRedux = useReduxSelector(getUserPoint);
+  const [totalPayment, setTotalPayment] = useState<number>(0);
+
   useEffect(() => {
     const calcSubtotal = cartItems.items.reduce(
       (sum, item) => sum + item.product.discountPrice * item.quantity,
@@ -64,11 +77,26 @@ const CartList = () => {
         calcTotal = calcSubtotal - discount;
       }
     }
+
+    if (selectedPoint) {
+      const tempCalcTotal = calcTotal;
+      calcTotal = calcTotal - Number(pointRedux);
+      if (calcTotal <= 0) {
+        calcTotal = 0;
+        setPointUsed(tempCalcTotal);
+      } else {
+        calcTotal = calcTotal;
+        setPointUsed(Number(pointRedux));
+      }
+    } else {
+      calcTotal = calcTotal;
+      setPointUsed(0);
+    }
     setVoucherType(dataVoucher?.type);
     setSubtotal(calcSubtotal);
     setDiscountAmount(calcDiscountAmount);
-    setTotal(calcTotal);
-  }, [cartItems, discount, dataVoucher]);
+    setTotalPayment(calcTotal);
+  }, [cartItems, discount, dataVoucher, selectedPoint]);
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -131,9 +159,9 @@ const CartList = () => {
         const updatedCart = await dispatch(deleteCartItemApi({ id })).unwrap();
         setCart(updatedCart);
         setCartItems(updatedCart);
-        successMessage({ title: "Giỏ hàng", description: "Xóa thành công!" });
+        showToast(ToastType.SUCCESS, "Xóa thành công!");
       } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", error);
+        showToast(ToastType.ERROR, "Lỗi khi xóa sản phẩm khỏi giỏ hàng!");
       }
     }
   };
@@ -153,21 +181,30 @@ const CartList = () => {
     navigate(ShippingDetailPath, {
       state: {
         cartItems,
-        total,
+        totalPayment,
+        pointUsed,
+        selectedPoint,
         discount,
         voucherType,
-        selectedPoint,
         voucherId,
         discountAmount,
       },
     });
+    dispatch(setReduxPointUsed({ amount: pointUsed, selected: selectedPoint }));
     setDiscountAmount(0);
   };
 
   useEffect(() => {
     if (dataVoucher) {
-      setVoucherId(dataVoucher.id);
-      setDiscount(dataVoucher.discount);
+      if (dataVoucher.status) {
+        setVoucherId(dataVoucher.id);
+        setDiscount(dataVoucher.discount);
+      } else {
+        showToast(
+          ToastType.INFO,
+          dataVoucher.message || "Voucher không hợp lệ"
+        );
+      }
     }
   }, [dataVoucher]);
 
@@ -204,9 +241,16 @@ const CartList = () => {
 
                 <div className={cx("product-details")}>
                   <h3 className={cx("product-name")}>{item.product.name}</h3>
-                  <p className={cx("product-size")}>Size: {item.size.size}</p>
+                  <p className={cx("product-size")}>
+                    Kích cỡ: {item.size.size}
+                  </p>
                   <p className={cx("product-color")}>
-                    Color: {item.variant.color}
+                    Màu sắc:{" "}
+                    {colorRedux?.find(
+                      (color: any) =>
+                        color.code.toLowerCase() ===
+                        item.variant.color.toLowerCase()
+                    )?.name || item.variant.color}
                   </p>
                   <p className={cx("product-price")}>
                     {item.product.discount > 0 ? (
@@ -290,7 +334,7 @@ const CartList = () => {
               <div className={cx("summary-row")}>
                 {discount < 100 ? (
                   <>
-                    <span>Giảm (-{discount}%)</span>
+                    <span>Voucher giảm giá ({discount}%)</span>
                     <span className={cx("discount-amount")}>
                       -
                       <FormattedNumber
@@ -302,7 +346,7 @@ const CartList = () => {
                   </>
                 ) : (
                   <>
-                    <span>Giá giảm</span>
+                    <span>Voucher giảm giá</span>
                     <span className={cx("discount-amount")}>
                       -
                       <FormattedNumber
@@ -315,54 +359,55 @@ const CartList = () => {
                 )}
               </div>
             ) : null}
-            {selectedPoint === "point" && (
+            {selectedPoint && (
               <div className={cx("summary-row")}>
                 <span>Point giảm giá (1P ~ 1đ)</span>
                 <span className={cx("discount-amount")}>
                   -
                   <FormattedNumber
-                    value={total}
+                    value={pointUsed}
                     currency="VND"
                     style="currency"
                   />
                 </span>
               </div>
             )}
+
             <div className={cx("promoCode-container")}>
               <Input
                 prefix={<TagOutlined />}
-                placeholder="Add promo code"
+                placeholder="Nhập code giảm giá"
                 value={promoCode}
                 onChange={handlePromoCodeChange}
                 className={cx("promo-input")}
-                disabled={isDisableInputVoucher}
+                style={{ flex: 1, marginRight: 8 }}
               />
               <Button
                 type="primary"
                 onClick={applyPromoCode}
                 className={cx("apply-button")}
-                loading={loading}
+                loading={loadingAppyVoucher}
               >
                 Áp dụng
               </Button>
             </div>
+
             <div
               className={`${cx("point-option")} ${
-                selectedPoint === "point" ? "selected" : ""
+                selectedPoint === true ? "selected" : ""
               }`}
               onClick={() => {
-                if (selectedPoint === "point") {
-                  setSelectePoint("");
-                  setIsDisableInputVoucher(false);
+                if (selectedPoint) {
+                  setSelectePoint(false);
                 } else {
-                  setSelectePoint("point");
-                  setIsDisableInputVoucher(true);
+                  setSelectePoint(true);
                 }
               }}
             >
-              <Radio checked={selectedPoint === "point"}>
-                <div>
-                  <div className={cx("point-title")}>Sử dụng Point</div>
+              <Radio checked={selectedPoint}>
+                <div>Sử dụng Point</div>
+                <div style={{ fontSize: 12 }}>
+                  {pointRedux.toLocaleString("vi-VN")} P
                 </div>
               </Radio>
             </div>
@@ -371,7 +416,7 @@ const CartList = () => {
               <span>Total</span>
               <span>
                 <FormattedNumber
-                  value={selectedPoint === "point" ? 0 : total}
+                  value={totalPayment}
                   currency="VND"
                   style="currency"
                 />

@@ -18,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import { IOrderResponse } from "interfaces/order.interface";
 import COD from "@assets/images/COD.jpg";
+import { setIsOpenChat } from "@redux/appSlice";
 
 dayjs.extend(utc);
 
@@ -37,12 +38,6 @@ const PaymentDetail = () => {
   useSocket({
     [SocketEvent.ORDER_PAYMENT_EXPIRED]: async (data: any) => {
       await dispatch(orderDetail({ orderId: data.order.id }));
-      Modal.confirm({
-        centered: true,
-        title: "Đơn hàng đã hết hạn",
-        content: "Thời gian thanh toán đã kết thúc.",
-        okText: "Xác nhận",
-      });
     },
     [SocketEvent.PAYMENT_SUCCESSFUL]: async (data: any) => {
       await dispatch(paymentSuccess(data));
@@ -110,8 +105,8 @@ const PaymentDetail = () => {
                 `Đơn hàng ${order.id.toUpperCase()} đang chờ thanh toán. Vui lòng hoàn tất thanh toán trước khi hết hạn.`
               ) : (
                 <>
-                  Đã xảy ra lỗi trong quá trình thanh toán. Nếu bạn chưa thành
-                  toán vui lòng thực hiện{" "}
+                  Đã xảy ra lỗi trong quá trình thanh toán. Thời gian thanh toán
+                  đã hết hạn. Vui lòng{" "}
                   <Link
                     to="/"
                     onClick={(e) => {
@@ -124,6 +119,7 @@ const PaymentDetail = () => {
                   <Link
                     to="#"
                     onClick={(e) => {
+                      dispatch(setIsOpenChat(true));
                       e.preventDefault();
                     }}
                   >
@@ -179,13 +175,18 @@ const PaymentDetail = () => {
               {orderQr &&
               timeLeft &&
               orderQr.order.paymentMethod === PaymentMethodEnum.BANKING ? (
-                <>
+                <div className={styles.qrWrapper}>
                   <div className={styles.qrImageContainer}>
                     <img
-                      className={styles.qrImage}
+                      className={`${styles.qrImage} ${
+                        timeLeft === "00:00:00" ? styles.qrBlurred : ""
+                      }`}
                       src={orderQr.qr.data.qrDataURL}
                       alt="QR Code"
                     />
+                    {timeLeft === "00:00:00" && (
+                      <div className={styles.qrOverlay} />
+                    )}
                   </div>
                   <div
                     className={`${styles.timerText} ${
@@ -194,7 +195,7 @@ const PaymentDetail = () => {
                   >
                     Thời gian còn lại: <strong>{timeLeft}</strong>
                   </div>
-                </>
+                </div>
               ) : null}
             </Col>
 

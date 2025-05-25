@@ -8,6 +8,7 @@
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 20px;
+    margin-top: 0 !important;
   }
 
   .summary-product-item {
@@ -48,7 +49,8 @@
       }
 
       .product-price {
-        color: #333;
+        margin-top: 6px;
+        color: #000;
       }
     }
   }

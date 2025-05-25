@@ -337,4 +337,6 @@ const userSlice = createSlice({
 });
 
 export const { resetUserState, clearUserData } = userSlice.actions;
+export const getUserPoint = (state: { user: UserState }) =>
+  state.user.data?.point || 0;
 export default userSlice.reducer;

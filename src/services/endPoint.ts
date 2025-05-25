@@ -34,7 +34,7 @@ export const endPoint = {
     CREATE_ORDER: "/orders-public",
     GET_ORDER_HISTORY: "/orders-public/history",
     CANCEL_ORDER: "/orders-public/cancel/:orderId",
-    ORDER_DETAIL: "orders-public/detail/:orderId",
+    ORDER_DETAIL: "/orders-public/detail/:orderId",
   },
   VOUCHER: {
     GET_VOUCHERS_BY_USER_ID: "/vouchers-public/available",
@@ -45,5 +45,8 @@ export const endPoint = {
   CHAT: {
     GET_CONVERSATION: "/chat/conversation",
     GET_MESSAGES: "/chat/:id/messages",
+  },
+  NEW: {
+    GET: "/news",
   },
 };

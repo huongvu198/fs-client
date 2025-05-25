@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import registerService, { RegisterRequest, RegisterResponse } from "../services/register";
+import registerService, {
+  RegisterRequest,
+  RegisterResponse,
+} from "../services/register";
+import { showToast, ToastType } from "shared/toast";
 
 interface RegisterState {
   data: RegisterResponse | null;
@@ -17,17 +21,18 @@ const initialState: RegisterState = {
 };
 
 // Create async thunk for registration
-export const registerUserApi = createAsyncThunk<RegisterResponse, RegisterRequest, { rejectValue: string }>(
-  "register/registerUser",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await registerService.register(userData);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
-  },
-);
+export const registerUserApi = createAsyncThunk<
+  RegisterResponse,
+  RegisterRequest,
+  { rejectValue: string }
+>("register/registerUser", async (userData, { rejectWithValue }) => {
+  try {
+    const response = await registerService.register(userData);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
 
 // Create register slice
 const registerSlice = createSlice({
@@ -47,16 +52,21 @@ const registerSlice = createSlice({
         state.error = null;
         state.registerSuccess = false;
       })
-      .addCase(registerUserApi.fulfilled, (state, action: PayloadAction<RegisterResponse>) => {
-        state.loading = false;
-        state.data = action.payload;
-        state.registerSuccess = true;
-        state.error = null;
-      })
+      .addCase(
+        registerUserApi.fulfilled,
+        (state, action: PayloadAction<RegisterResponse>) => {
+          state.loading = false;
+          state.data = action.payload;
+          state.registerSuccess = true;
+          state.error = null;
+          showToast(ToastType.ERROR, "Đăng ký thất thành công!");
+        }
+      )
       .addCase(registerUserApi.rejected, (state, action) => {
         state.loading = false;
         state.registerSuccess = false;
         state.error = action.payload || "Registration failed";
+        showToast(ToastType.ERROR, "Đăng ký thất bại!");
       });
   },
 });

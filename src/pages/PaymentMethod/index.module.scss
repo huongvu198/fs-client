@@ -1,8 +1,8 @@
 @import "../../styles/variables.scss";
 .layout {
-  width: 70%;
+  width: 80%;
   margin: auto;
-  padding: 24px;
+  padding: 20px;
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -127,7 +127,7 @@
 .timerText {
   text-align: center;
   margin-top: 12px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: #e53935;
 }

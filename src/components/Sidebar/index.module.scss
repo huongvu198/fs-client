@@ -1,12 +1,11 @@
 @import "../../styles/variables.scss";
 @import "../../styles/responsive.scss";
 
-
 .menu-button {
   font-size: 20px;
   padding: 0;
   height: auto;
-  
+
   svg {
     font-size: 20px;
   }
@@ -28,16 +27,17 @@
 
 .login-button {
   margin: 0 16px 16px;
-  
+
   button {
     background-color: #222;
     border-radius: 40px;
     height: 44px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     border: none;
-    
-    &:hover, &:focus {
+
+    &:hover,
+    &:focus {
       background-color: #444;
     }
   }
@@ -50,7 +50,7 @@
 
 .menu-item {
   border-bottom: 1px solid #f0f0f0;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -62,7 +62,7 @@
   align-items: center;
   padding: 16px;
   cursor: pointer;
-  
+
   &.menu-hightlight {
     .menuLabel {
       color: #f5222d;
@@ -78,7 +78,7 @@
 .expand-button {
   padding: 0;
   font-size: 12px;
-  
+
   svg {
     color: #666;
   }
@@ -94,7 +94,7 @@
   font-size: 14px;
   color: #666;
   border-bottom: 1px solid #f0f0f0;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -114,7 +114,7 @@
   align-items: center;
   font-size: 12px;
   color: #666;
-  
+
   svg {
     font-size: 20px;
     margin-bottom: 4px;

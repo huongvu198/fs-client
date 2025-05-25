@@ -125,16 +125,15 @@ export interface QRCode {
 export interface QR {
   code: string;
   desc: string;
-  data: QRCode
+  data: QRCode;
 }
 
 export interface IOrderReq {
   addressId: string;
   voucherId?: string;
   paymentMethod: string;
-  point: string;
+  point?: string;
 }
-
 
 export interface IOrderResponse {
   type: string;

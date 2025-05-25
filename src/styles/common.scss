@@ -6,7 +6,7 @@ html,
 body,
 #root {
   font-family: "Roboto", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   margin: 0;
   overscroll-behavior: none;
   background: #ffffff;
@@ -126,4 +126,16 @@ input {
     border-color: #444;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
   }
+}
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
 }

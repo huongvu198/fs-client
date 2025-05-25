@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Form, Input, Select, Radio, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Radio, Button } from "antd";
 import styles from "./index.module.scss";
 import OrderSummary from "@components/OrderSummaryComponent";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,14 +11,12 @@ import {
   resetUserState,
 } from "@redux/userSlice";
 import { Address } from "interfaces/user.interface";
-import useNotification from "@hooks/useNotification";
 import { PaymentMethodPath } from "@config/routerConfig";
-
-const { Option } = Select;
+import { showToast, ToastType } from "shared/toast";
+import { formatPhoneInternal } from "shared/common";
 
 interface ShippingFormData {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   address: string;
   country: string;
   district: string;
@@ -27,11 +25,12 @@ interface ShippingFormData {
   selectedAddress: string;
   street: string;
   ward: string;
+  pointUsed: string;
 }
 
 const ShippingDetails: React.FC = () => {
   const [form] = Form.useForm<ShippingFormData>();
-  const [selectedAddress, setSelectedAddress] = React.useState("address-1");
+  const [selectedAddress, setSelectedAddress] = React.useState(null);
   const [isAddNewAddress, setIsAddNewAddress] = React.useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -42,14 +41,20 @@ const ShippingDetails: React.FC = () => {
   const voucherType = location.state?.voucherType;
   const selectedPoint = location.state?.selectedPoint;
   const voucherId = location.state?.voucherId;
+  const totalPayment = location.state?.totalPayment;
+  const pointUsed = location.state?.pointUsed || 0;
   const cart = cartItems;
   const { userAddress, createAddressSuccess, error } = useReduxSelector(
     (state) => state.user
   );
-  const { errorMessage } = useNotification();
+  const [prevAddresses, setPrevAddresses] = useState<Address[]>([]);
+
   const handleNext = async () => {
+    if (!selectedAddress || selectedAddress === "add") {
+      return showToast(ToastType.ERROR, "Vui lòng chọn địa chỉ nhận hàng");
+    }
     const values = await form.validateFields();
-    const selectedAddress = values.selectedAddress;
+    const selectedAddressValue = values.selectedAddress;
     navigate(PaymentMethodPath, {
       state: {
         cart,
@@ -57,8 +62,10 @@ const ShippingDetails: React.FC = () => {
         voucherType,
         selectedPoint,
         discountPercent,
-        selectedAddress,
+        selectedAddress: selectedAddressValue,
         voucherId,
+        totalPayment,
+        pointUsed,
       },
     });
   };
@@ -69,9 +76,10 @@ const ShippingDetails: React.FC = () => {
 
   const handleAddNewAddress = async () => {
     const values = await form.validateFields();
+
     if (values.selectedAddress === "add") {
       const formDataCreateAddress = {
-        fullName: values.firstName + " " + values.lastName,
+        fullName: values.fullName,
         phone: values.phoneNumber,
         street: values.street,
         city: values.city,
@@ -79,7 +87,28 @@ const ShippingDetails: React.FC = () => {
         ward: values.ward,
         country: values.country,
       };
-      dispatch(createAddress(formDataCreateAddress));
+      setPrevAddresses(userAddress.addresses || []);
+
+      try {
+        const res = await dispatch(
+          createAddress(formDataCreateAddress)
+        ).unwrap();
+
+        const newAddress = res?.addresses?.find(
+          (addr: Address) => !prevAddresses.some((old) => old.id === addr.id)
+        );
+
+        if (newAddress) {
+          setSelectedAddress(newAddress.id);
+          form.setFieldsValue({ selectedAddress: newAddress.id });
+          setIsAddNewAddress(false);
+        }
+      } catch (error) {
+        showToast(
+          ToastType.ERROR,
+          "Thêm địa chỉ thất bại, vui lòng thử lại sau."
+        );
+      }
     }
   };
 
@@ -109,7 +138,7 @@ const ShippingDetails: React.FC = () => {
     }
 
     if (error) {
-      errorMessage({ description: error });
+      showToast(ToastType.ERROR, error);
     }
 
     if (createAddressSuccess || error) {
@@ -148,17 +177,16 @@ const ShippingDetails: React.FC = () => {
                     >
                       <Radio value={address.id}>
                         <div>
+                          <div className={styles.addressDetails}>
+                            {address.fullName} |{" "}
+                            {formatPhoneInternal(address.phone)}
+                          </div>
                           <div className={styles.addressTitle}>
                             {address.street}
                           </div>
                           <div className={styles.addressDetails}>
                             {`${address.ward}, ${address.district}, ${address.city}, ${address.country}`}
                           </div>
-                          {address.phone && (
-                            <div className={styles.addressDetails}>
-                              Phone: {address.phone}
-                            </div>
-                          )}
                         </div>
                       </Radio>
                     </div>
@@ -181,35 +209,18 @@ const ShippingDetails: React.FC = () => {
                 <>
                   <div className={styles.formRow}>
                     <Form.Item
-                      name="firstName"
-                      label="First Name"
+                      name="fullName"
+                      label="Họ và tên"
                       rules={[
                         {
                           required: isAddNewAddress,
-                          message: "Please enter your first name",
+                          message: "Vui lòng nhập tên của bạn",
                         },
                       ]}
                       className={styles.formItem}
                     >
                       <Input
-                        placeholder="First Name"
-                        disabled={isInputDisabled}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      name="lastName"
-                      label="Last Name"
-                      rules={[
-                        {
-                          required: isAddNewAddress,
-                          message: "Please enter your last name",
-                        },
-                      ]}
-                      className={styles.formItem}
-                    >
-                      <Input
-                        placeholder="Last Name"
+                        placeholder="Vu Thi Huong"
                         disabled={isInputDisabled}
                       />
                     </Form.Item>
@@ -284,28 +295,8 @@ const ShippingDetails: React.FC = () => {
                       />
                     </Form.Item>
 
-                    <Form.Item
-                      name="country"
-                      label="Quốc gia"
-                      rules={[
-                        {
-                          required: isAddNewAddress,
-                          message: "Hãy chọn quốc gia",
-                        },
-                      ]}
-                      className={styles.formItem}
-                    >
-                      <Select
-                        style={{ height: "44.5px" }}
-                        placeholder="Quốc gia"
-                        disabled={isInputDisabled}
-                      >
-                        <Option value="us">United States</Option>
-                        <Option value="ca">Canada</Option>
-                        <Option value="uk">United Kingdom</Option>
-                        <Option value="au">Australia</Option>
-                        <Option value="vn">Vietnam</Option>
-                      </Select>
+                    <Form.Item name="country" initialValue="Việt Nam" hidden>
+                      <Input />
                     </Form.Item>
                   </div>
 
@@ -364,6 +355,8 @@ const ShippingDetails: React.FC = () => {
               discount={discountPercent}
               discountAmount={discountAmount}
               selectedPoint={selectedPoint}
+              totalPayment={totalPayment}
+              pointUsed={pointUsed}
             />
           </div>
         </div>

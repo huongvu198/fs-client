@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import loginService, { LoginRequest, LoginResponse } from "@services/login";
+import { showToast, ToastType } from "shared/toast";
 
 interface LoginState {
   data: LoginResponse | null;
@@ -78,6 +79,7 @@ const loginSlice = createSlice({
         state.loading = false;
         state.loginSuccess = false;
         state.error = action.payload || "Login failed";
+        showToast(ToastType.ERROR, "Đăng nhập thất bại!");
       })
       // getRefreshTokenApi
       .addCase(getRefreshTokenApi.pending, (state) => {

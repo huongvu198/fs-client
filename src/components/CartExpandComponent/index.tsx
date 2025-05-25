@@ -9,6 +9,7 @@ import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
 import { useCartContext } from "contexts/cartContext";
 import { useReduxSelector } from "@hooks/useRedux";
 import { CartPath, LoginPath } from "@config/routerConfig";
+import { getColors } from "@redux/appSlice";
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +18,7 @@ const CartExpand = () => {
   const navigate = useNavigate();
   const { setCart, cart } = useCartContext();
   const dataCart = useReduxSelector((state) => state.cart.dataCart);
+  const colorRedux = useReduxSelector(getColors);
 
   const showDrawer = () => {
     setVisible(true);
@@ -114,7 +116,6 @@ const CartExpand = () => {
         footer={
           <div className={cx("drawer-footer")}>
             <ButtonComponent
-              type="primary"
               block
               onClick={goToCart}
               className={cx("view-cart-button")}
@@ -142,8 +143,14 @@ const CartExpand = () => {
               <div className={cx("product-details")}>
                 <h4>{item.product.name}</h4>
                 <p className={cx("product-meta")}>
-                  Màu sắc: {item.variant.color} &nbsp; Size: {item.size.size}
+                  Màu sắc:{" "}
+                  {colorRedux?.find(
+                    (color: any) =>
+                      color.code.toLowerCase() ===
+                      item.variant.color.toLowerCase()
+                  )?.name || item.variant.color}{" "}
                 </p>
+                <p className={cx("product-meta")}>Kích cỡ: {item.size.size}</p>
                 <div className={cx("quantity-control")}>
                   <InputNumber
                     min={1}

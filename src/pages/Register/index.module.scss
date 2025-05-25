@@ -1,164 +1,168 @@
 @import "../../styles/responsive.scss";
 
 .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    @include respond("mobile") {
-        padding-bottom: 2rem;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  @include respond("mobile") {
+    padding-bottom: 2rem;
   }
-  
-  .register-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 700px;
-  }
-  
-  .register-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 24px;
-  }
-  
-  .account-type-toggle {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 24px;
-  }
-  
-  .register-radio-group {
-    display: flex;
-    width: 100%;
-    max-width: 300px;
-    
-    :global {
-      .ant-radio-button-wrapper {
-        width: 50%;
-        text-align: center;
-        border-radius: 0;
-        
-        &:first-child {
-          border-radius: 4px 0 0 4px;
-        }
-        
-        &:last-child {
-          border-radius: 0 4px 4px 0;
-        }
-        
-        &.ant-radio-button-wrapper-checked {
-          background-color: #fff;
-          border-color: #31d5c8;
-          color: #31d5c8;
-          
-          &::before {
-            background-color: #31d5c8;
-          }
+}
+
+.register-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 700px;
+}
+
+.register-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.account-type-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.register-radio-group {
+  display: flex;
+  width: 100%;
+  max-width: 300px;
+
+  :global {
+    .ant-radio-button-wrapper {
+      width: 50%;
+      text-align: center;
+      border-radius: 0;
+
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+
+      &.ant-radio-button-wrapper-checked {
+        background-color: #fff;
+        border-color: #31d5c8;
+        color: #31d5c8;
+
+        &::before {
+          background-color: #31d5c8;
         }
       }
     }
   }
-  
-  .register-radio-button {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.register-radio-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-radio-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-right: 4px;
+  font-size: 12px;
+
+  .register-radio-group :global(.ant-radio-button-wrapper-checked) & {
+    background-color: #31d5c8;
+    color: white;
   }
-  
-  .register-radio-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    margin-right: 4px;
-    font-size: 12px;
-    
-    .register-radio-group :global(.ant-radio-button-wrapper-checked) & {
-      background-color: #31d5c8;
-      color: white;
-    }
-    
-    .register-radio-group :global(.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked)) & {
-      background-color: #bbb;
-      color: white;
-    }
+
+  .register-radio-group
+    :global(.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked))
+    & {
+    background-color: #bbb;
+    color: white;
   }
-  
-  .register-form {
-    width: 100%;
+}
+
+.register-form {
+  width: 100%;
+}
+
+.register-form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 5px;
+
+  @include respond("mobile") {
+    flex-direction: column;
+    gap: 0;
   }
-  
-  .register-form-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 5px;
-    
-    @include respond("mobile") {
-      flex-direction: column;
-      gap: 0;
-    }
+}
+
+.register-form-item {
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.register-input {
+  height: 40px;
+
+  &:hover,
+  &:focus {
+    border-color: #31d5c8;
   }
-  
-  .register-form-item {
-    flex: 1;
-    margin-bottom: 16px;
-  }
-  
-  .register-input {
-    height: 40px;
-    
-    &:hover, &:focus {
-      border-color: #31d5c8;
-    }
-    
-    :global(.ant-input-prefix) {
-      margin-right: 8px;
-      color: #bbb;
-    }
-  }
-  
-  .register-input-icon {
+
+  :global(.ant-input-prefix) {
+    margin-right: 8px;
     color: #bbb;
   }
-  
-  .register-checkbox-item {
-    margin-bottom: 20px;
-  }
-  
-  .register-checkbox {
-    a {
-      font-weight: bold;
-      text-decoration: underline;
-      color: black;
-      &:hover {
-        color: #616161;
-      }
+}
+
+.register-input-icon {
+  color: #bbb;
+}
+
+.register-checkbox-item {
+  margin-bottom: 20px;
+}
+
+.register-checkbox {
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+    color: black;
+    &:hover {
+      color: #616161;
     }
   }
-  
-  .register-submit-item {
-    text-align: center;
-    margin-bottom: 0;
+}
+
+.register-submit-item {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.register-submit-button {
+  height: 40px;
+  min-width: 120px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+
+  &:hover,
+  &:focus {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid black;
   }
-  
-  .register-submit-button {
-    height: 40px;
-    min-width: 120px;
-    border-radius: 20px;
-    font-size: 16px;
-    font-weight: 500;
-    
-    &:hover, &:focus {
-      background-color: white !important;
-      color: black !important;
-      border: 1px solid black;
-    }
-  }
+}

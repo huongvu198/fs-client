@@ -18,7 +18,6 @@ const UserAddressPage: React.FC = () => {
   const { userAddress, setAddressDefaultSuccess, error } = useReduxSelector(
     (state) => state.user
   );
-  console.log("🚀 ~ userAddress:", userAddress)
 
   const [open, setOpen] = useState<{
     isOpen: boolean;

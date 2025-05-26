@@ -8,7 +8,7 @@ import {
 } from "@config/accessToken";
 import { Avatar, Dropdown, Space, type MenuProps } from "antd";
 import classNames from "classnames/bind";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import SearchComponent from "@components/SearchComponent";
 import CategoryWithDropdownComponent from "@components/CategoryWithDropdownComponent";
@@ -28,7 +28,8 @@ import { useAuthContext } from "contexts/authContext";
 import { removeCartList, removeTempCart } from "shared/localStoreage";
 import { useSelector } from "react-redux";
 import { getUserPoint } from "@redux/userSlice";
-import { FormattedNumber } from "react-intl";
+import { useRedux } from "@hooks/useRedux";
+import { clearCartData } from "@redux/cartSlice";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -38,10 +39,12 @@ const cx = classNames.bind(styles);
 
 export default function Nav({ handleShowSideBar }: Props) {
   const navigate = useNavigate();
+  const dispatch = useRedux();
   const [, setCartItems] = useState<ICartResponse | null>(null);
   const { setCart } = useCartContext();
   const { isAuthenticated, logout } = useAuthContext();
   const pointRedux = useSelector(getUserPoint);
+  const location = useLocation();
 
   const Logout = () => {
     const handleLogout = () => {
@@ -52,6 +55,7 @@ export default function Nav({ handleShowSideBar }: Props) {
       removeTempCart();
       removeCartList();
       setCart({ id: "", items: [] });
+      dispatch(clearCartData());
       logout();
       navigate("/");
     };
@@ -66,14 +70,9 @@ export default function Nav({ handleShowSideBar }: Props) {
   const items: MenuProps["items"] = [
     {
       label: (
-        <>
-          SD:{" "}
-          <FormattedNumber
-            value={Number(pointRedux)}
-            currency="VND"
-            style="currency"
-          />
-        </>
+        <div style={{ cursor: "default" }}>
+          {Number(pointRedux).toLocaleString("vi-VN")} Point
+        </div>
       ),
       key: "-1",
     },
@@ -104,7 +103,7 @@ export default function Nav({ handleShowSideBar }: Props) {
 
   const handleLogin = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
-    navigate(LoginPath);
+    navigate(LoginPath, { state: { path: location.pathname } });
   };
 
   useEffect(() => {

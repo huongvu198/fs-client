@@ -59,7 +59,7 @@ const registerSlice = createSlice({
           state.data = action.payload;
           state.registerSuccess = true;
           state.error = null;
-          showToast(ToastType.ERROR, "Đăng ký thất thành công!");
+          showToast(ToastType.SUCCESS, "Đăng ký thành công!");
         }
       )
       .addCase(registerUserApi.rejected, (state, action) => {

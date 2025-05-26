@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Space } from "antd";
+import { Button, Card, Empty, Space } from "antd";
 import { EPopupMode } from "shared/enum";
 import { formatPhoneInternal } from "shared/common";
 import { useDispatch } from "react-redux";
@@ -65,7 +65,7 @@ const UserAddressPage: React.FC = () => {
         {!userAddress ||
         !userAddress.addresses ||
         userAddress.addresses.length === 0 ? (
-          <p>Không có địa chỉ nào được tìm thấy.</p>
+          <Empty description="Không có địa chỉ" />
         ) : (
           userAddress.addresses.map((address: Address) => (
             <Card

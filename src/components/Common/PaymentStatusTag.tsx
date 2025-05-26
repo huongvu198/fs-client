@@ -33,7 +33,11 @@ const PAYMENT_STATUS_MAP: Record<
 
 const PaymentStatusTag = ({ status }: Props) => {
   const { color, label } = PAYMENT_STATUS_MAP[status];
-  return <Tag color={color}>{label}</Tag>;
+  return (
+    <Tag style={{ marginInlineEnd: 0 }} color={color}>
+      {label}
+    </Tag>
+  );
 };
 
 export default PaymentStatusTag;

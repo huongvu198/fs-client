@@ -9,6 +9,7 @@ import { Pagination } from "../interfaces/app.interface";
 import { parsePaginationHeaders } from "shared/common";
 import { showToast, ToastType } from "shared/toast";
 import { PaymentMethodEnum } from "shared/enum";
+import { setUserPoint } from "./userSlice";
 
 interface OrderState {
   orderHistory: Order[] | null;
@@ -66,9 +67,13 @@ export const cancelOrder = createAsyncThunk(
 
 export const createOrder = createAsyncThunk(
   "order/createOrder",
-  async (orderReq: IOrderReq, { rejectWithValue }) => {
+  async (orderReq: IOrderReq, { rejectWithValue, dispatch }) => {
     try {
       const response = await orderService.createOrder(orderReq);
+      if (response.type === PaymentMethodEnum.COD) {
+        showToast(ToastType.SUCCESS, "Đặt hàng thành công");
+        dispatch(setUserPoint(response.order.pointUsed || 0));
+      }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to create order");
@@ -148,7 +153,24 @@ const orderSlice = createSlice({
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.orderHistory = action.payload.items;
+        const updatedOrder = action.payload;
+        if (state.orderHistory) {
+          const index = state.orderHistory.findIndex(
+            (order) => order.id === updatedOrder.id
+          );
+
+          if (index !== -1) {
+            state.orderHistory[index] = {
+              ...state.orderHistory[index],
+              ...updatedOrder,
+            };
+          } else {
+            state.orderHistory.push(updatedOrder);
+          }
+        } else {
+          // Nếu orderHistory null, khởi tạo lại mảng
+          state.orderHistory = [updatedOrder];
+        }
         state.cancelOrderSuccess = true;
         showToast(ToastType.SUCCESS, "Huỷ đơn hàng thành công");
       })
@@ -166,9 +188,6 @@ const orderSlice = createSlice({
         state.loading = false;
         state.orderQr = action.payload;
         state.createOrderSuccess = true;
-        if (action.payload.order.paymentMethod === PaymentMethodEnum.COD) {
-          showToast(ToastType.SUCCESS, "Đặt hàng thành công");
-        }
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;

@@ -19,7 +19,11 @@ const StatusTag = ({ status }: { status: OrderStatusEnum }) => {
     color: "default",
   };
 
-  return <Tag color={color}>{label}</Tag>;
+  return (
+    <Tag style={{ marginInlineEnd: 0 }} color={color}>
+      {label}
+    </Tag>
+  );
 };
 
 export default StatusTag;

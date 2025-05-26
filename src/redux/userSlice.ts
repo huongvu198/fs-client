@@ -169,6 +169,12 @@ const userSlice = createSlice({
       state.changePasswordSuccess = false;
     },
     clearUserData: () => initialState,
+    setUserPoint: (state, action) => {
+      if (state.data) {
+        state.data.point =
+          (Number(state.data.point) || 0) - Number(action.payload);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -336,7 +342,8 @@ const userSlice = createSlice({
   },
 });
 
-export const { resetUserState, clearUserData } = userSlice.actions;
+export const { resetUserState, clearUserData, setUserPoint } =
+  userSlice.actions;
 export const getUserPoint = (state: { user: UserState }) =>
   state.user.data?.point || 0;
 export default userSlice.reducer;

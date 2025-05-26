@@ -19,6 +19,7 @@ import {
 import { IOrderResponse } from "interfaces/order.interface";
 import COD from "@assets/images/COD.jpg";
 import { setIsOpenChat } from "@redux/appSlice";
+import { setUserPoint } from "@redux/userSlice";
 
 dayjs.extend(utc);
 
@@ -41,9 +42,9 @@ const PaymentDetail = () => {
     },
     [SocketEvent.PAYMENT_SUCCESSFUL]: async (data: any) => {
       await dispatch(paymentSuccess(data));
+      dispatch(setUserPoint(data.order.pointUsed || 0));
     },
   });
-  console.log("orderQr", orderQr);
 
   const PaymentStatusIcon = ({
     status,

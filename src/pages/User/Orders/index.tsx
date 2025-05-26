@@ -183,15 +183,6 @@ const OrdersHistoryPage = () => {
     }
   };
 
-  console.log("selectedOrder", selectedOrder);
-
-  console.log(
-    "Check",
-    dayjs(selectedOrder?.paymentExpiredAt)
-      .tz(dayjs.tz.guess())
-      .diff(dayjs(), "day")
-  );
-
   const isPaymentStillValid = (expiredAt: string | Date): boolean => {
     const localExpiredAt = dayjs(expiredAt).tz(dayjs.tz.guess());
     const now = dayjs();
@@ -346,9 +337,43 @@ const OrdersHistoryPage = () => {
                   <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
                     Thanh toán
                   </span>
+                  <PaymentMethodTag
+                    method={selectedOrder?.paymentMethod as PaymentMethodEnum}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Trạng thái thanh toán
+                  </span>
+                  <PaymentStatusTag
+                    status={selectedOrder?.paymentStatus as PaymentStatusEnum}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Tổng hóa đơn:
+                  </span>
                   <span>
-                    <PaymentMethodTag
-                      method={selectedOrder?.paymentMethod as PaymentMethodEnum}
+                    <FormattedNumber
+                      value={Number(selectedOrder?.subtotal)}
+                      style="currency"
+                      currency="VND"
                     />
                   </span>
                 </div>
@@ -362,11 +387,58 @@ const OrdersHistoryPage = () => {
                   }}
                 >
                   <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
-                    Trạng thái
+                    Voucher giảm giá :
                   </span>
                   <span>
-                    <PaymentStatusTag
-                      status={selectedOrder?.paymentStatus as PaymentStatusEnum}
+                    <FormattedNumber
+                      value={Number(
+                        Number(selectedOrder?.subtotal ?? 0) -
+                          Number(selectedOrder?.pointUsed ?? 0) -
+                          Number(selectedOrder?.total ?? 0)
+                      )}
+                      style="currency"
+                      currency="VND"
+                    />
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Point giảm giá (1P ~ 1đ):
+                  </span>
+                  <span>
+                    <FormattedNumber
+                      value={Number(selectedOrder?.pointUsed || 0)}
+                      style="currency"
+                      currency="VND"
+                    />
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span style={{ color: "rgba(0, 0, 0, 0.50)" }}>
+                    Tổng thanh toán:
+                  </span>
+                  <span>
+                    <FormattedNumber
+                      value={Number(selectedOrder?.total)}
+                      style="currency"
+                      currency="VND"
                     />
                   </span>
                 </div>

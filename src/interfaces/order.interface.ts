@@ -117,6 +117,7 @@ export interface Order {
   voucher: Voucher | null;
   address: any | null;
   transactions: Transaction | null;
+  pointUsed: number;
 }
 
 export interface QRCode {

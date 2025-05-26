@@ -102,4 +102,6 @@ const loginSlice = createSlice({
 });
 
 export const { resetLoginState, clearLoginData } = loginSlice.actions;
+export const getLoginSuccess = (state: { login: LoginState }) =>
+  state.login.loginSuccess;
 export default loginSlice.reducer;

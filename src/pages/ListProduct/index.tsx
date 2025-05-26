@@ -10,6 +10,7 @@ import useQuery from "@hooks/useQuery";
 import { getProductWithCondition } from "@redux/productSlice";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { ProductsQueryPath } from "@config/routerConfig";
+import { Empty } from "antd";
 
 const cx = classNames.bind(styles);
 
@@ -233,22 +234,39 @@ const ListProduct = () => {
         </div>
         <div className={cx("content-container")}>
           <h1 style={{ marginTop: 0 }}>DANH SÁCH SẢN PHẨM</h1>
-          <div className={cx("product-card-container")}>
-            <ProductSection
-              justifyContent="flex-start"
-              isViewAll={false}
-              isSlider={false}
-              products={products}
-              navigate={navigate}
-            />
-          </div>
-          <div className={cx("pagination-container")}>
-            <PaginationComponent
-              pagination={pagination}
-              onPageChange={handleChange}
-            />
-          </div>
+
+          {products && products.length > 0 ? (
+            <>
+              <div className={cx("product-card-container")}>
+                <ProductSection
+                  justifyContent="flex-start"
+                  isViewAll={false}
+                  isSlider={false}
+                  products={products}
+                  navigate={navigate}
+                />
+              </div>
+              <div className={cx("pagination-container")}>
+                <PaginationComponent
+                  pagination={pagination}
+                  onPageChange={handleChange}
+                />
+              </div>
+            </>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "40px 0",
+                color: "#999",
+                fontSize: 18,
+              }}
+            >
+              <Empty description="Không có sản phẩm" />
+            </div>
+          )}
         </div>
+        ;
       </section>
     </div>
   );

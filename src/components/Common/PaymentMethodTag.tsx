@@ -21,7 +21,11 @@ const PAYMENT_METHOD_MAP: Record<
 
 const PaymentMethodTag = ({ method }: Props) => {
   const { color, label } = PAYMENT_METHOD_MAP[method];
-  return <Tag color={color}>{label}</Tag>;
+  return (
+    <Tag style={{ marginInlineEnd: 0 }} color={color}>
+      {label}
+    </Tag>
+  );
 };
 
 export default PaymentMethodTag;

@@ -8,8 +8,7 @@ import { useWindowSize } from "@hooks/useWindowSize";
 import { BREAKPOINT_SCREEN } from "@constants/const";
 import Footer from "@components/FooterComponent";
 import { hasAccessToken } from "@config/accessToken";
-import { useRedux, useReduxSelector } from "@hooks/useRedux";
-import { getUserApi } from "@redux/userSlice";
+import { useRedux } from "@hooks/useRedux";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
 import { getMasterData } from "@redux/appSlice";
 import { Spin } from "antd";
@@ -23,7 +22,6 @@ const PublicLayout = () => {
   const resize = useWindowSize();
   const navigate = useNavigate();
   const dispatch = useRedux();
-  const { getUserSuccess } = useReduxSelector((state) => state.getUser);
 
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
@@ -44,15 +42,11 @@ const PublicLayout = () => {
     const publicPaths = ["/login", "/register", "/verify"];
 
     if (token) {
-      if (!getUserSuccess) {
-        dispatch(getUserApi());
-      }
-
       if (publicPaths.includes(location.pathname)) {
         navigate("/", { replace: true });
       }
     }
-  }, [location, navigate, dispatch, getUserSuccess]);
+  }, [location, navigate, dispatch]);
 
   useEffect(() => {
     dispatch(getMasterData());

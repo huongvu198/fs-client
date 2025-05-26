@@ -102,11 +102,7 @@ const CartExpand = () => {
       </Badge>
 
       <Drawer
-        title={
-          <div className={cx("drawer-title")}>
-            Giỏ hàng <Badge count={cart?.items.length} />
-          </div>
-        }
+        title={<div className={cx("drawer-title")}>Giỏ hàng</div>}
         placement="right"
         closable
         onClose={onClose}

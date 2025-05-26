@@ -14,7 +14,7 @@ import ButtonComponent from "@components/ButtonComponent";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { registerUserApi, resetRegisterState } from "@redux/registerSlice";
 import Spinner from "@components/Spinner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LoginPath } from "@config/routerConfig";
 
 const cx = classNames.bind(styles);
@@ -30,6 +30,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
   const { loading, registerSuccess } = useReduxSelector(
     (state) => state.register
   );
+  const location = useLocation();
   const handleSubmit = (values: any) => {
     const { email, firstName, lastName, password } = values;
     dispatch(
@@ -46,7 +47,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
     if (registerSuccess) {
       form.resetFields();
       dispatch(resetRegisterState());
-      nagigate(LoginPath);
+      nagigate(LoginPath, { state: { path: location.pathname } });
     }
   }, [registerSuccess, dispatch, form]);
 

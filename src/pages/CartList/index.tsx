@@ -407,7 +407,7 @@ const CartList = () => {
               <Radio checked={selectedPoint}>
                 <div>Sử dụng Point</div>
                 <div style={{ fontSize: 12 }}>
-                  {pointRedux.toLocaleString("vi-VN")} P
+                  {pointRedux.toLocaleString("vi-VN")} Point
                 </div>
               </Radio>
             </div>

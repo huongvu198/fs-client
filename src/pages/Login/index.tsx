@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Row, Col, Form, Input, Checkbox } from "antd";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
 import ButtonComponent from "@components/ButtonComponent";
 import { useReduxSelector } from "@hooks/useRedux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   setAccessToken,
   setLocalRefreshToken,
@@ -17,6 +17,7 @@ import { loginUserApi, resetLoginState } from "@redux/loginSlice";
 import { addToCartImportApi, getCartByUserApi } from "@redux/cartSlice";
 import { CartRequest } from "interfaces/cart.interface";
 import { RegisterPath } from "@config/routerConfig";
+import { getUserApi } from "@redux/userSlice";
 
 const cx = classNames.bind(styles);
 
@@ -27,12 +28,7 @@ const LoginRegistrationForm: React.FC = () => {
     (state) => state.login
   );
   const navigate = useNavigate();
-
-  const prevPathRef = useRef("");
-
-  useEffect(() => {
-    prevPathRef.current = location.pathname;
-  }, [location]);
+  const location = useLocation();
 
   // Hàm format lại request giỏ hàng từ localStorage
   const formatCartRequest = (): CartRequest[] => {
@@ -48,14 +44,14 @@ const LoginRegistrationForm: React.FC = () => {
     }));
   };
 
-  const onLogin = (values: any) => {
+  const onLogin = async (values: any) => {
     const { email, password } = values;
-    dispatch(
-      loginUserApi({
-        email: email,
-        password: password,
-      })
-    );
+
+    const loginResult = await dispatch(loginUserApi({ email, password }));
+
+    if (loginUserApi.fulfilled.match(loginResult)) {
+      await dispatch(getUserApi());
+    }
   };
 
   useEffect(() => {
@@ -81,7 +77,7 @@ const LoginRegistrationForm: React.FC = () => {
       // Sau khi thêm cart xong thì mới gọi getCartByUserApi
       await dispatch(getCartByUserApi());
 
-      if (prevPathRef.current === RegisterPath) {
+      if (location.state?.path === RegisterPath) {
         navigate("/");
       } else {
         navigate(-1);

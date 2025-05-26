@@ -1,5 +1,13 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { hasAccessToken } from "@config/accessToken";
+import { useSelector } from "react-redux";
+import { getLoginSuccess } from "@redux/loginSlice";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -11,10 +19,11 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const loginSucess = useSelector(getLoginSuccess);
 
   useEffect(() => {
     setIsAuthenticated(hasAccessToken());
-  }, []);
+  }, [loginSucess]);
 
   const login = () => {
     setIsAuthenticated(true);

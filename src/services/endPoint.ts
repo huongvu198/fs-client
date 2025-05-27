@@ -52,4 +52,7 @@ export const endPoint = {
   SEGMENT: {
     LIST: `products-public/segments`,
   },
+  CATEGORY: {
+    LIST: "/products-public/categories",
+  },
 };

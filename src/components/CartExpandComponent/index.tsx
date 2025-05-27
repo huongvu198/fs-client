@@ -91,13 +91,18 @@ const CartExpand = () => {
 
   return (
     <div className={cx("cart-container")}>
+      <style>{`
+        .ant-btn-variant-text:not(:disabled):not(.ant-btn-disabled):hover {
+          background-color: transparent !important;
+        }
+      `}</style>
       <Badge size="small" count={cart?.items.length}>
         <Button
           type="text"
-          icon={<ShoppingCartOutlined style={{ fontSize: 10 }} />}
+          icon={<ShoppingCartOutlined />}
           onClick={showDrawer}
           className={cx("cart-button")}
-          size="large"
+          size="small"
         />
       </Badge>
 

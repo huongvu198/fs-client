@@ -170,7 +170,7 @@ export default function Nav({ handleShowSideBar }: Props) {
               trigger={["click"]}
             >
               <Space>
-                <Avatar src="" icon={<UserOutlined />} />
+                <Avatar icon={<UserOutlined />} />
               </Space>
             </Dropdown>
           ) : (

@@ -15,4 +15,17 @@ export const masterDataService = {
       );
     }
   },
+  getCategories: async () => {
+    try {
+      const response = await unauthAxios.get(endPoint.CATEGORY.LIST);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(
+        error.message || "An error occurred during get categories"
+      );
+    }
+  },
 };

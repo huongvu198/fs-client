@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { masterDataService } from "@services/masterdata";
 import { newService } from "@services/new";
 import { New } from "interfaces/new.interface";
+import { CategoryItem } from "interfaces/segment.interface";
 
 interface AppState {
   isLoading: boolean;
@@ -11,6 +12,7 @@ interface AppState {
   defaultPerPage: number;
   newData: New | null;
   isOpenChat: boolean;
+  categories: CategoryItem[];
 }
 
 const initialState: AppState = {
@@ -21,6 +23,7 @@ const initialState: AppState = {
   defaultPerPage: 10,
   newData: null,
   isOpenChat: false,
+  categories: [],
 };
 
 // Thunk để fetch master data từ API
@@ -31,6 +34,11 @@ export const getMasterData = createAsyncThunk("app/getMasterData", async () => {
 
 export const getNew = createAsyncThunk("app/new", async () => {
   const response = await newService.getNewData();
+  return response;
+});
+
+export const getCategories = createAsyncThunk("app/categories", async () => {
+  const response = await masterDataService.getCategories();
   return response;
 });
 
@@ -64,6 +72,16 @@ export const appSlice = createSlice({
       })
       .addCase(getNew.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(getCategories.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCategories.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.categories = action.payload;
+      })
+      .addCase(getCategories.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
@@ -74,5 +92,6 @@ export const getColors = (state: { app: AppState }) =>
   state.app.masterData?.colors;
 
 export const getIsOpenChat = (state: { app: AppState }) => state.app.isOpenChat;
-
+export const getCategoriesRedux = (state: { app: AppState }) =>
+  state.app.categories;
 export default appSlice.reducer;

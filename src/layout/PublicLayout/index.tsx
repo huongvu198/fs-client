@@ -10,7 +10,7 @@ import Footer from "@components/FooterComponent";
 import { hasAccessToken } from "@config/accessToken";
 import { useRedux } from "@hooks/useRedux";
 import ScrollOnTop from "@components/ScrollOnTop/scrollOnTop";
-import { getMasterData } from "@redux/appSlice";
+import { getCategories, getMasterData } from "@redux/appSlice";
 import { Spin } from "antd";
 import { getSegments } from "@redux/segmentSlice";
 
@@ -51,6 +51,7 @@ const PublicLayout = () => {
   useEffect(() => {
     dispatch(getMasterData());
     dispatch(getSegments());
+    dispatch(getCategories());
   }, [dispatch]);
 
   return (

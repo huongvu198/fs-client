@@ -46,3 +46,13 @@
     min-width: 200px !important;
   }
 }
+
+.nodeTitle {
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+
+  &:hover {
+    color: red;
+  }
+}

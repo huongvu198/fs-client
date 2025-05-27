@@ -126,3 +126,14 @@ export interface UpdateSubCategoryResponse {
   updatedAt: string;
   deletedAt: string | null; // Null nếu chưa bị xóa
 }
+
+interface ChildItem {
+  id: string;
+  name: string;
+}
+
+export interface CategoryItem {
+  id: string;
+  name: string;
+  children: ChildItem[];
+}

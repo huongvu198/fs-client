@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MainContainer,
   ChatContainer,
@@ -34,6 +34,29 @@ const FloatingChatWidget = () => {
   const dispatch = useRedux();
   const isOpenRedux = useSelector(getIsOpenChat);
 
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatWindowRef.current &&
+        !chatWindowRef.current.contains(event.target as Node)
+      ) {
+        toggleChat(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     setIsOpen(isOpenRedux);
   }, [isOpenRedux]);
@@ -68,9 +91,14 @@ const FloatingChatWidget = () => {
     }
   }, [sendMessage, conversationId]);
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    dispatch(setIsOpenChat(!isOpen));
+  const toggleChat = (value: boolean) => {
+    if (value !== undefined) {
+      setIsOpen(value);
+      dispatch(setIsOpenChat(value));
+    } else {
+      setIsOpen(!isOpen);
+      dispatch(setIsOpenChat(!isOpen));
+    }
   };
 
   const handleSend = (message: any) => {
@@ -85,15 +113,18 @@ const FloatingChatWidget = () => {
 
   return isAuthenticated ? (
     <div>
-      <div className="floating-button" onClick={toggleChat}>
+      <div className="floating-button" onClick={() => toggleChat(true)}>
         <CommentOutlined style={{ fontSize: 32, color: "#fff" }} />
       </div>
 
       {isOpen && (
-        <div className="chat-window">
+        <div className="chat-window" ref={chatWindowRef}>
           <div className="chat-header">
             <span>Chat với chúng tôi</span>
-            <CloseOutlined className="close-icon" onClick={toggleChat} />
+            <CloseOutlined
+              className="close-icon"
+              onClick={() => toggleChat(false)}
+            />
           </div>
           <MainContainer>
             <ChatContainer>

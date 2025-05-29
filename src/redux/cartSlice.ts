@@ -6,6 +6,7 @@ import {
   IVoucherRequest,
   IVoucherResponse,
 } from "interfaces/cart.interface";
+import { showToast, ToastType } from "shared/toast";
 
 interface CartState {
   loading: boolean;
@@ -114,6 +115,9 @@ const cartSlice = createSlice({
         selected: action.payload.selected,
       };
     },
+    clearVoucher: (state) => {
+      state.dataVoucher = null;
+    },
   },
   extraReducers: (builder) => {
     builder;
@@ -136,6 +140,7 @@ const cartSlice = createSlice({
       .addCase(addToCartApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Có lỗi xảy ra";
+        showToast(ToastType.ERROR, String(action.payload));
       })
 
       // addToCartImportApi
@@ -217,7 +222,8 @@ const cartSlice = createSlice({
   },
 });
 
-export const { clearCartData, setReduxPointUsed } = cartSlice.actions;
+export const { clearCartData, setReduxPointUsed, clearVoucher } =
+  cartSlice.actions;
 export const getPointAmount = (state: { cart: CartState }) =>
   state.cart.pointUsed.amount;
 export const getPointSelect = (state: { cart: CartState }) =>

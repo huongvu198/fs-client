@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Drawer, Button, InputNumber, Divider, Badge } from "antd";
+import { Drawer, Button, InputNumber, Divider, Badge, Empty } from "antd";
 import { ShoppingCartOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
@@ -10,6 +10,7 @@ import { useCartContext } from "contexts/cartContext";
 import { useReduxSelector } from "@hooks/useRedux";
 import { CartPath, LoginPath } from "@config/routerConfig";
 import { getColors } from "@redux/appSlice";
+import NoDataIcon from "@components/Icon/NoData";
 
 const cx = classNames.bind(styles);
 
@@ -136,38 +137,44 @@ const CartExpand = () => {
         }
       >
         <div className={cx("cart-content")}>
-          {cart?.items.map((item) => (
-            <div key={item.id} className={cx("cart-item")}>
-              <div className={cx("product-image")}>
-                <img src={item.variant.image} alt={item.product.name} />
-              </div>
-              <div className={cx("product-details")}>
-                <h4>{item.product.name}</h4>
-                <p className={cx("product-meta")}>
-                  Màu sắc:{" "}
-                  {colorRedux?.find(
-                    (color: any) =>
-                      color.code.toLowerCase() ===
-                      item.variant.color.toLowerCase()
-                  )?.name || item.variant.color}{" "}
-                </p>
-                <p className={cx("product-meta")}>Kích cỡ: {item.size.size}</p>
-                <div className={cx("quantity-control")}>
-                  <InputNumber
-                    min={1}
-                    max={item.size.inventory}
-                    value={item.quantity}
-                    onChange={(value) => handleQuantityChange(item.id, value)}
-                    controls
-                    className={cx("quantity-input")}
-                  />
-                  <span className={cx("cart-price")}>
-                    {formatPrice(item.product.discountPrice)}
-                  </span>
+          {cart?.items && cart.items.length > 0 ? (
+            cart.items.map((item) => (
+              <div key={item.id} className={cx("cart-item")}>
+                <div className={cx("product-image")}>
+                  <img src={item.variant.image} alt={item.product.name} />
+                </div>
+                <div className={cx("product-details")}>
+                  <h4>{item.product.name}</h4>
+                  <p className={cx("product-meta")}>
+                    Màu sắc:{" "}
+                    {colorRedux?.find(
+                      (color: any) =>
+                        color.code.toLowerCase() ===
+                        item.variant.color.toLowerCase()
+                    )?.name || item.variant.color}{" "}
+                  </p>
+                  <p className={cx("product-meta")}>
+                    Kích cỡ: {item.size.size}
+                  </p>
+                  <div className={cx("quantity-control")}>
+                    <InputNumber
+                      min={1}
+                      max={item.size.inventory}
+                      value={item.quantity}
+                      onChange={(value) => handleQuantityChange(item.id, value)}
+                      controls
+                      className={cx("quantity-input")}
+                    />
+                    <span className={cx("cart-price")}>
+                      {formatPrice(item.product.discountPrice)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <Empty description="Không có sản phẩm" image={<NoDataIcon />} />
+          )}
         </div>
 
         <Divider />

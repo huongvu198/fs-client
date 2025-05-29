@@ -64,4 +64,6 @@ const voucherSlice = createSlice({
 });
 
 export const { resetVoucherState, clearVoucherState } = voucherSlice.actions;
+export const getVoucherRedux = (state: { voucher: VoucherState }) =>
+  state.voucher.vouchers;
 export default voucherSlice.reducer;

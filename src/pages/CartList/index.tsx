@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Radio } from "antd";
+import { Button, Empty, Radio, Select, Tag } from "antd";
 import {
   DeleteOutlined,
   MinusOutlined,
@@ -15,6 +15,7 @@ import { useCartContext } from "contexts/cartContext";
 import {
   acceptVoucherApi,
   addToCartApi,
+  clearVoucher,
   deleteCartItemApi,
   getPointAmount,
   getPointSelect,
@@ -23,11 +24,14 @@ import {
 import { FormattedNumber } from "react-intl";
 import { useReduxSelector } from "@hooks/useRedux";
 import { useNavigate } from "react-router-dom";
-import { ShippingDetailPath } from "@config/routerConfig";
-import { VoucherType } from "shared/enum";
+import { ProductDetailPath, ShippingDetailPath } from "@config/routerConfig";
+import { DiscountType, VoucherType } from "shared/enum";
 import { showToast, ToastType } from "shared/toast";
 import { getColors } from "@redux/appSlice";
 import { getUserPoint } from "@redux/userSlice";
+import NoDataIcon from "@components/Icon/NoData";
+import { getVoucherAvailable, getVoucherRedux } from "@redux/voucherSlice";
+import { Voucher } from "interfaces/order.interface";
 
 const cx = classNames.bind(styles);
 
@@ -35,7 +39,7 @@ const initialCartItems: ICartResponse = { id: "", items: [] };
 
 const CartList = () => {
   const [cartItems, setCartItems] = useState<ICartResponse>(initialCartItems);
-  const [promoCode, setPromoCode] = useState<string>("");
+  const [promoCode, setPromoCode] = useState<string | null>(null);
   const [discount, setDiscount] = useState<number>(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -49,6 +53,7 @@ const CartList = () => {
   const { dataVoucher, loadingAppyVoucher } = useReduxSelector(
     (state) => state.cart
   );
+  const voucherRedux = useSelector(getVoucherRedux);
   const [voucherType, setVoucherType] = useState<string>("");
   const [selectedPoint, setSelectePoint] = React.useState(
     useSelector(getPointSelect)
@@ -58,6 +63,7 @@ const CartList = () => {
   const colorRedux = useReduxSelector(getColors);
   const pointRedux = useReduxSelector(getUserPoint);
   const [totalPayment, setTotalPayment] = useState<number>(0);
+  const [vouchers, setVoucher] = useState<Voucher[]>([]);
 
   useEffect(() => {
     const calcSubtotal = cartItems.items.reduce(
@@ -98,7 +104,12 @@ const CartList = () => {
     setTotalPayment(calcTotal);
   }, [cartItems, discount, dataVoucher, selectedPoint]);
 
-  const handleQuantityChange = async (id: string, newQuantity: number) => {
+  const handleQuantityChange = async (
+    id: string,
+    quantity: number,
+    quantityChange: number
+  ) => {
+    const newQuantity = quantity + quantityChange;
     if (newQuantity < 1) return;
 
     const item = cartItems.items.find((i) => i.id === id);
@@ -127,7 +138,7 @@ const CartList = () => {
           productId: item.product.id,
           sizeId: item.size.id,
           variantId: item.variant.id,
-          quantity: newQuantity,
+          quantity: quantityChange,
         };
 
         const updatedCart = await dispatch(addToCartApi(payload)).unwrap();
@@ -166,15 +177,24 @@ const CartList = () => {
     }
   };
 
-  const handlePromoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPromoCode(e.target.value);
+  const handlePromoCodeSelectChange = (value: string) => {
+    if (!value) {
+      setPromoCode(null);
+      setVoucherType("");
+      setDiscount(0);
+      dispatch(clearVoucher());
+    } else {
+      setPromoCode(value);
+    }
   };
 
-  const applyPromoCode = async () => {
-    const voucherRequest = {
-      code: promoCode,
-    };
-    dispatch(acceptVoucherApi(voucherRequest));
+  const applyPromoCode = async (value: string) => {
+    if (value) {
+      const voucherRequest = {
+        code: value,
+      };
+      dispatch(acceptVoucherApi(voucherRequest));
+    }
   };
 
   const handleDoNext = () => {
@@ -201,7 +221,7 @@ const CartList = () => {
         setDiscount(dataVoucher.discount);
       } else {
         showToast(
-          ToastType.INFO,
+          ToastType.ERROR,
           dataVoucher.message || "Voucher không hợp lệ"
         );
       }
@@ -222,9 +242,36 @@ const CartList = () => {
         }
       }
     };
-
+    dispatch(getVoucherAvailable());
     loadCart();
   }, []);
+
+  useEffect(() => {
+    setVoucher(voucherRedux || []);
+  }, [voucherRedux]);
+
+  const options = vouchers?.map((v: Voucher) => ({
+    label: (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span>{v.code}</span>
+        <Tag
+          color={v.type === DiscountType.PERCENT ? "blue" : "green"}
+          style={{ marginLeft: 8 }}
+        >
+          {v.type === DiscountType.PERCENT
+            ? `-${v.discount}%`
+            : `-${v.discount.toLocaleString()}₫`}
+        </Tag>
+      </div>
+    ),
+    value: v.code,
+  }));
 
   return (
     <>
@@ -235,12 +282,28 @@ const CartList = () => {
           <div className={cx("cart-items")}>
             {cartItems.items.map((item) => (
               <div key={item.id} className={cx("cart-item")}>
-                <div className={cx("product-image")}>
+                <div
+                  className={cx("product-image")}
+                  onClick={() =>
+                    navigate(ProductDetailPath.replace(":id", item.product.id))
+                  }
+                  style={{ cursor: "pointer" }}
+                >
                   <img src={item.variant.image} alt={item.product.name} />
                 </div>
 
                 <div className={cx("product-details")}>
-                  <h3 className={cx("product-name")}>{item.product.name}</h3>
+                  <h3
+                    className={cx("product-name")}
+                    onClick={() =>
+                      navigate(
+                        ProductDetailPath.replace(":id", item.product.id)
+                      )
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    {item.product.name}
+                  </h3>
                   <p className={cx("product-size")}>
                     Kích cỡ: {item.size.size}
                   </p>
@@ -280,18 +343,11 @@ const CartList = () => {
                   </p>
                 </div>
 
-                <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  className={cx("remove-button")}
-                  onClick={() => handleRemoveItem(item.id)}
-                />
                 <div className={cx("quantity-controls")}>
                   <Button
                     icon={<MinusOutlined />}
                     onClick={() =>
-                      handleQuantityChange(item.id, item.quantity - 1)
+                      handleQuantityChange(item.id, item.quantity, -1)
                     }
                     disabled={item.quantity <= 1}
                     className={cx("quantity-button")}
@@ -300,19 +356,29 @@ const CartList = () => {
                     {item.quantity}
                   </span>
                   <Button
-                    icon={<PlusOutlined />}
+                    icon={<PlusOutlined style={{ fontSize: 18 }} />}
                     onClick={() =>
-                      handleQuantityChange(item.id, item.quantity + 1)
+                      handleQuantityChange(item.id, item.quantity, 1)
                     }
                     className={cx("quantity-button")}
                   />
                 </div>
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  className={cx("remove-button")}
+                  onClick={() => handleRemoveItem(item.id)}
+                />
               </div>
             ))}
 
             {cartItems.items.length === 0 && (
               <div className={cx("empty-cart")}>
-                <p>Your cart is empty</p>
+                <Empty
+                  description="Giỏ hàng của bạn trống"
+                  image={<NoDataIcon />}
+                />
               </div>
             )}
           </div>
@@ -374,17 +440,21 @@ const CartList = () => {
             )}
 
             <div className={cx("promoCode-container")}>
-              <Input
-                prefix={<TagOutlined />}
-                placeholder="Nhập code giảm giá"
-                value={promoCode}
-                onChange={handlePromoCodeChange}
-                className={cx("promo-input")}
+              <Select
                 style={{ flex: 1, marginRight: 8 }}
+                placeholder="Chọn code giảm giá"
+                value={promoCode}
+                onChange={handlePromoCodeSelectChange}
+                options={options}
+                allowClear
+                prefix={
+                  <TagOutlined style={{ paddingRight: 2, fontSize: 16 }} />
+                }
+                className={cx("promo-input")}
               />
               <Button
                 type="primary"
-                onClick={applyPromoCode}
+                onClick={() => applyPromoCode(promoCode!)}
                 className={cx("apply-button")}
                 loading={loadingAppyVoucher}
               >

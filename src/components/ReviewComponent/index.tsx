@@ -11,6 +11,7 @@ import {
   getReviewsRedux,
 } from "@redux/reviewSlice";
 import { useSelector } from "react-redux";
+import { formatDateToVietnamese } from "shared/common";
 const cx = classNames.bind(styles);
 const { Option } = Select;
 
@@ -103,7 +104,7 @@ const Reviews = ({ id, dispatch }: ReviewsProps) => {
 
               <div
                 className={cx("rating-selection")}
-                style={{ marginBottom: 8 }}
+                style={{ marginBottom: 4 }}
               >
                 <Rate disabled defaultValue={review.rating} allowHalf />
               </div>
@@ -114,7 +115,7 @@ const Reviews = ({ id, dispatch }: ReviewsProps) => {
 
               <div className={cx("review-footer")}>
                 <span className={cx("review-date")}>
-                  Posted on {review.createdAt}
+                  Posted on {formatDateToVietnamese(review.createdAt)}
                 </span>
               </div>
             </div>

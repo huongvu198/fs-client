@@ -12,6 +12,7 @@ import {
 } from "@redux/userSlice";
 import { Address } from "interfaces/user.interface";
 import UserAddressModal from "@components/UserProfile/Popup";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const UserAddressPage: React.FC = () => {
   const dispatch = useDispatch<ApiDispatch>();
@@ -83,7 +84,9 @@ const UserAddressPage: React.FC = () => {
                       })
                     }
                   >
-                    Cập nhật
+                    <EditOutlined
+                      style={{ fontSize: 16, marginLeft: 4, marginRight: 4 }}
+                    />
                   </a>
                   {!address.isDefault && (
                     <a
@@ -96,7 +99,9 @@ const UserAddressPage: React.FC = () => {
                         })
                       }
                     >
-                      Xoá
+                      <DeleteOutlined
+                        style={{ fontSize: 16, marginLeft: 4, marginRight: 4 }}
+                      />
                     </a>
                   )}
                 </Space>

@@ -69,18 +69,7 @@ export const createReview = createAsyncThunk(
 export const reviewSlice = createSlice({
   name: "review",
   initialState,
-  reducers: {
-    setUpdateReview(state, action) {
-      const updatedItem = action.payload;
-
-      const index = state.reviews.findIndex(
-        (item) => item.id === updatedItem.id
-      );
-      if (index !== -1) {
-        state.reviews[index] = updatedItem;
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getReviewByProductId.pending, (state) => {
@@ -106,9 +95,17 @@ export const reviewSlice = createSlice({
         state.isLoading = false;
         state.reviews = action.payload;
         showToast(ToastType.SUCCESS, "Đánh giá sản phẩm thành công");
+        const updatedItem = action.payload;
+        const index = state.reviews.findIndex(
+          (item) => item.id === updatedItem.id
+        );
+        if (index !== -1) {
+          state.reviews[index] = updatedItem;
+        }
       })
-      .addCase(createReview.rejected, (state) => {
+      .addCase(createReview.rejected, (state, action) => {
         state.isLoading = false;
+        showToast(ToastType.ERROR, action.payload as string);
       });
   },
 });
@@ -118,6 +115,6 @@ export const getReviewsRedux = (state: { review: ReviewState }) =>
 export const getReviewPaging = (state: { review: ReviewState }) =>
   state.review.pagination;
 
-export const { setUpdateReview } = reviewSlice.actions;
+export const {} = reviewSlice.actions;
 
 export default reviewSlice.reducer;

@@ -42,7 +42,7 @@ import { useNavigate } from "react-router-dom";
 import { PaymentDetailPath } from "@config/routerConfig";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { createReview, setUpdateReview } from "@redux/reviewSlice";
+import { createReview } from "@redux/reviewSlice";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -61,6 +61,7 @@ const OrdersHistoryPage = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
   const [comments, setComments] = useState<Record<string, string>>({});
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [history, setHistory] = useState<Order[]>([]);
 
   const handleViewDetail = (order: Order) => {
     setSelectedOrder(order);
@@ -83,6 +84,10 @@ const OrdersHistoryPage = () => {
       setComments(initialComments);
     }
   }, [selectedOrder]);
+
+  useEffect(() => {
+    setHistory(orderHistory);
+  }, [orderHistory, dispatch]);
 
   const handleRateChange = (id: string, value: number) => {
     setRatings((prev) => ({ ...prev, [id]: value }));
@@ -107,7 +112,6 @@ const OrdersHistoryPage = () => {
       ).unwrap();
 
       setSelectedOrder(updatedReview);
-      dispatch(setUpdateReview(updatedReview));
     } catch (error) {
       console.error("Failed to submit review:", error);
     }
@@ -211,6 +215,12 @@ const OrdersHistoryPage = () => {
     },
   ];
 
+  const hasDelivered = selectedOrder?.status === OrderStatusEnum.DELIVERED;
+
+  const columnsItemWithFilter = hasDelivered
+    ? columnsItem
+    : columnsItem.filter((col) => col.key !== "rating");
+
   useEffect(() => {
     dispatch(getOrderHistory({ page: currentPage, perPage: pageSize }));
   }, [dispatch, currentPage, pageSize]);
@@ -238,7 +248,7 @@ const OrdersHistoryPage = () => {
     <>
       <Table
         bordered
-        dataSource={orderHistory}
+        dataSource={history}
         columns={columns}
         rowKey="id"
         loading={loading}
@@ -260,6 +270,7 @@ const OrdersHistoryPage = () => {
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         width={1300}
+        footer={null}
       >
         <Layout
           style={{ background: "white", display: "flex", minHeight: "100%" }}
@@ -322,7 +333,7 @@ const OrdersHistoryPage = () => {
             </Row>
             <Table
               bordered
-              columns={columnsItem}
+              columns={columnsItemWithFilter}
               dataSource={selectedOrder?.items}
               pagination={false}
               rowKey="id"

@@ -170,6 +170,10 @@ const PaymentDetail = () => {
   ) => {
     switch (paymentMethod) {
       case PaymentMethodEnum.BANKING:
+        const isPaymentSuccess =
+          orderQr.order.status === OrderStatusEnum.PROCESSING;
+        const isQrBlurred = timeLeft === "00:00:00" || isPaymentSuccess;
+
         return (
           <Row gutter={[16, 16]} className={styles.borderedRow}>
             <Col span={8} className={styles.borderedCol}>
@@ -179,22 +183,21 @@ const PaymentDetail = () => {
                 <div className={styles.qrWrapper}>
                   <div className={styles.qrImageContainer}>
                     <img
-                      className={`${styles.qrImage} ${
-                        timeLeft === "00:00:00" ? styles.qrBlurred : ""
-                      }`}
+                      className={`${styles.qrImage} ${isQrBlurred ? styles.qrBlurred : ""}`}
                       src={orderQr.qr.data.qrDataURL}
                       alt="QR Code"
                     />
-                    {timeLeft === "00:00:00" && (
-                      <div className={styles.qrOverlay} />
-                    )}
+                    {isQrBlurred && <div className={styles.qrOverlay} />}
                   </div>
                   <div
                     className={`${styles.timerText} ${
-                      timeLeft === "00:00:00" ? styles.timeOut : styles.timeLeft
+                      isQrBlurred ? styles.timeOut : styles.timeLeft
                     }`}
                   >
-                    Thời gian còn lại: <strong>{timeLeft}</strong>
+                    {isPaymentSuccess
+                      ? "Thanh toán thành công"
+                      : `Thời gian còn lại: `}
+                    {!isPaymentSuccess && <strong>{timeLeft}</strong>}
                   </div>
                 </div>
               ) : null}

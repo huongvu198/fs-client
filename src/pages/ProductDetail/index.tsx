@@ -15,7 +15,7 @@ import {
 } from "@redux/productSlice";
 import { calculateDiscountedPrice } from "shared/common";
 import ProductSection from "@components/ProductCardComponent";
-// import Reviews from "@components/ReviewComponent";
+import Reviews from "@components/ReviewComponent";
 import { FormattedNumber } from "react-intl";
 import { ICartResponse } from "interfaces/cart.interface";
 import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
@@ -26,111 +26,111 @@ import { showToast, ToastType } from "shared/toast";
 
 const cx = classNames.bind(styles);
 
-// const initialReviews = [
-//   {
-//     id: "1",
-//     author: "Nguyễn Thị Lan",
-//     rating: 4.5,
-//     verified: true,
-//     content:
-//       "Tôi thực sự yêu chiếc áo phông này! Thiết kế rất độc đáo và vải rất thoải mái. Là một nhà thiết kế, tôi đánh giá cao sự chú ý đến chi tiết. Đây đã trở thành chiếc áo yêu thích của tôi.",
-//     date: "14 tháng 8, 2025",
-//   },
-//   {
-//     id: "2",
-//     author: "Trần Minh Tú",
-//     rating: 5,
-//     verified: true,
-//     content:
-//       "Chiếc áo này đã vượt quá mong đợi của tôi! Màu sắc rất sống động và chất lượng in ấn tuyệt vời. Là một nhà thiết kế UI/UX, tôi rất kỹ tính về thẩm mỹ, và chiếc áo này chắc chắn xứng đáng nhận sự đồng ý của tôi.",
-//     date: "15 tháng 8, 2025",
-//   },
-//   {
-//     id: "3",
-//     author: "Lê Văn Hòa",
-//     rating: 3.5,
-//     verified: true,
-//     content:
-//       "Chiếc áo phông này là món đồ không thể thiếu đối với ai yêu thích thiết kế tốt. Họa tiết tối giản nhưng phong cách đã thu hút sự chú ý của tôi, và form dáng rất vừa vặn. Tôi có thể thấy dấu ấn của nhà thiết kế trong từng chi tiết của chiếc áo này.",
-//     date: "16 tháng 8, 2025",
-//   },
-//   {
-//     id: "4",
-//     author: "Phan Thị Thu",
-//     rating: 5,
-//     verified: true,
-//     content:
-//       "Là một người yêu thích UI/UX, tôi rất coi trọng sự đơn giản và tính chức năng. Chiếc áo này không chỉ thể hiện những nguyên tắc đó mà còn cảm giác rất thoải mái khi mặc. Có thể thấy rằng nhà thiết kế đã dành rất nhiều sáng tạo để làm chiếc áo này nổi bật.",
-//     date: "17 tháng 8, 2025",
-//   },
-//   {
-//     id: "5",
-//     author: "Vũ Quang Huy",
-//     rating: 4,
-//     verified: true,
-//     content:
-//       "Chiếc áo phông này là sự kết hợp giữa sự thoải mái và sự sáng tạo. Vải rất mềm mại và thiết kế nói lên tài năng của nhà thiết kế. Nó giống như mặc một tác phẩm nghệ thuật phản ánh đam mê của tôi đối với thiết kế và thời trang.",
-//     date: "18 tháng 8, 2025",
-//     highlighted: true,
-//   },
-//   {
-//     id: "6",
-//     author: "Nguyễn Thị Mai",
-//     rating: 4.5,
-//     verified: true,
-//     content:
-//       "Tôi không chỉ mặc một chiếc áo phông; tôi đang mặc một tác phẩm của triết lý thiết kế. Những chi tiết tinh xảo và bố cục thiết kế đầy suy nghĩ khiến chiếc áo này trở thành một chủ đề trò chuyện.",
-//     date: "19 tháng 8, 2025",
-//   },
-// ];
+const initialReviews = [
+  {
+    id: "1",
+    author: "Nguyễn Thị Lan",
+    rating: 4.5,
+    verified: true,
+    content:
+      "Tôi thực sự yêu chiếc áo phông này! Thiết kế rất độc đáo và vải rất thoải mái. Là một nhà thiết kế, tôi đánh giá cao sự chú ý đến chi tiết. Đây đã trở thành chiếc áo yêu thích của tôi.",
+    date: "14 tháng 8, 2025",
+  },
+  {
+    id: "2",
+    author: "Trần Minh Tú",
+    rating: 5,
+    verified: true,
+    content:
+      "Chiếc áo này đã vượt quá mong đợi của tôi! Màu sắc rất sống động và chất lượng in ấn tuyệt vời. Là một nhà thiết kế UI/UX, tôi rất kỹ tính về thẩm mỹ, và chiếc áo này chắc chắn xứng đáng nhận sự đồng ý của tôi.",
+    date: "15 tháng 8, 2025",
+  },
+  {
+    id: "3",
+    author: "Lê Văn Hòa",
+    rating: 3.5,
+    verified: true,
+    content:
+      "Chiếc áo phông này là món đồ không thể thiếu đối với ai yêu thích thiết kế tốt. Họa tiết tối giản nhưng phong cách đã thu hút sự chú ý của tôi, và form dáng rất vừa vặn. Tôi có thể thấy dấu ấn của nhà thiết kế trong từng chi tiết của chiếc áo này.",
+    date: "16 tháng 8, 2025",
+  },
+  {
+    id: "4",
+    author: "Phan Thị Thu",
+    rating: 5,
+    verified: true,
+    content:
+      "Là một người yêu thích UI/UX, tôi rất coi trọng sự đơn giản và tính chức năng. Chiếc áo này không chỉ thể hiện những nguyên tắc đó mà còn cảm giác rất thoải mái khi mặc. Có thể thấy rằng nhà thiết kế đã dành rất nhiều sáng tạo để làm chiếc áo này nổi bật.",
+    date: "17 tháng 8, 2025",
+  },
+  {
+    id: "5",
+    author: "Vũ Quang Huy",
+    rating: 4,
+    verified: true,
+    content:
+      "Chiếc áo phông này là sự kết hợp giữa sự thoải mái và sự sáng tạo. Vải rất mềm mại và thiết kế nói lên tài năng của nhà thiết kế. Nó giống như mặc một tác phẩm nghệ thuật phản ánh đam mê của tôi đối với thiết kế và thời trang.",
+    date: "18 tháng 8, 2025",
+    highlighted: true,
+  },
+  {
+    id: "6",
+    author: "Nguyễn Thị Mai",
+    rating: 4.5,
+    verified: true,
+    content:
+      "Tôi không chỉ mặc một chiếc áo phông; tôi đang mặc một tác phẩm của triết lý thiết kế. Những chi tiết tinh xảo và bố cục thiết kế đầy suy nghĩ khiến chiếc áo này trở thành một chủ đề trò chuyện.",
+    date: "19 tháng 8, 2025",
+  },
+];
 
-// const additionalReviews = [
-//   {
-//     id: "7",
-//     author: "Hoàng Đức Nam",
-//     rating: 5,
-//     verified: true,
-//     content:
-//       "Sự chú ý đến chi tiết trên chiếc áo này thật tuyệt vời. Chất liệu vải xuất sắc và thiết kế vừa hợp thời trang vừa trường tồn. Chắc chắn xứng đáng với từng đồng bỏ ra!",
-//     date: "20 tháng 8, 2025",
-//   },
-//   {
-//     id: "8",
-//     author: "Trương Thanh Tâm",
-//     rating: 4,
-//     verified: true,
-//     content:
-//       "Tôi đã nhận được rất nhiều lời khen khi mặc chiếc áo này. Thiết kế rất độc đáo và vải rất mềm mại. Nó đã trở thành chiếc áo yêu thích của tôi cho cả dịp thường ngày và bán chính thức.",
-//     date: "21 tháng 8, 2025",
-//   },
-//   {
-//     id: "9",
-//     author: "Đặng Tiến Mạnh",
-//     rating: 3.5,
-//     verified: false,
-//     content:
-//       "Chất lượng và thiết kế nhìn chung khá tốt. Form áo hơi rộng hơn mong đợi, nhưng chất liệu vải cảm giác cao cấp. Mực in vẫn giữ được sau vài lần giặt.",
-//     date: "22 tháng 8, 2025",
-//   },
-//   {
-//     id: "10",
-//     author: "Nguyễn Thị Kim Anh",
-//     rating: 5,
-//     verified: true,
-//     content:
-//       "Chiếc áo này hoàn hảo khi cân bằng giữa phong cách và sự thoải mái. Thiết kế tinh tế nhưng nổi bật, khiến nó trở nên linh hoạt cho nhiều dịp khác nhau. Tôi đã lên kế hoạch mua thêm các màu khác!",
-//     date: "23 tháng 8, 2025",
-//   },
-//   {
-//     id: "11",
-//     author: "Lê Quang Minh",
-//     rating: 4.5,
-//     verified: true,
-//     content:
-//       "Là người coi trọng cả thẩm mỹ và tính năng, tôi rất ấn tượng với chiếc áo này. Vải thấm hút mồ hôi tốt khi tập luyện, và thiết kế giữ được độ sáng màu ngay cả sau nhiều lần giặt.",
-//     date: "24 tháng 8, 2025",
-//   },
-// ];
+const additionalReviews = [
+  {
+    id: "7",
+    author: "Hoàng Đức Nam",
+    rating: 5,
+    verified: true,
+    content:
+      "Sự chú ý đến chi tiết trên chiếc áo này thật tuyệt vời. Chất liệu vải xuất sắc và thiết kế vừa hợp thời trang vừa trường tồn. Chắc chắn xứng đáng với từng đồng bỏ ra!",
+    date: "20 tháng 8, 2025",
+  },
+  {
+    id: "8",
+    author: "Trương Thanh Tâm",
+    rating: 4,
+    verified: true,
+    content:
+      "Tôi đã nhận được rất nhiều lời khen khi mặc chiếc áo này. Thiết kế rất độc đáo và vải rất mềm mại. Nó đã trở thành chiếc áo yêu thích của tôi cho cả dịp thường ngày và bán chính thức.",
+    date: "21 tháng 8, 2025",
+  },
+  {
+    id: "9",
+    author: "Đặng Tiến Mạnh",
+    rating: 3.5,
+    verified: false,
+    content:
+      "Chất lượng và thiết kế nhìn chung khá tốt. Form áo hơi rộng hơn mong đợi, nhưng chất liệu vải cảm giác cao cấp. Mực in vẫn giữ được sau vài lần giặt.",
+    date: "22 tháng 8, 2025",
+  },
+  {
+    id: "10",
+    author: "Nguyễn Thị Kim Anh",
+    rating: 5,
+    verified: true,
+    content:
+      "Chiếc áo này hoàn hảo khi cân bằng giữa phong cách và sự thoải mái. Thiết kế tinh tế nhưng nổi bật, khiến nó trở nên linh hoạt cho nhiều dịp khác nhau. Tôi đã lên kế hoạch mua thêm các màu khác!",
+    date: "23 tháng 8, 2025",
+  },
+  {
+    id: "11",
+    author: "Lê Quang Minh",
+    rating: 4.5,
+    verified: true,
+    content:
+      "Là người coi trọng cả thẩm mỹ và tính năng, tôi rất ấn tượng với chiếc áo này. Vải thấm hút mồ hôi tốt khi tập luyện, và thiết kế giữ được độ sáng màu ngay cả sau nhiều lần giặt.",
+    date: "24 tháng 8, 2025",
+  },
+];
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -144,6 +144,8 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [mainImage, setMainImage] = useState<string>("");
+  const [isSelectedColorActive, setIsSelectedColorActive] =
+    useState<boolean>(false);
   const { setCart } = useCartContext();
   useEffect(() => {
     if (!id) return;
@@ -153,13 +155,10 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (!productData) return;
-    const firstActiveVariant = productData.variants.find(
-      (variant) => variant.isActive === true
-    );
-
-    if (firstActiveVariant) {
-      setSelectorColor(firstActiveVariant.id);
-      setMainImage(firstActiveVariant.images?.[0]?.url || "");
+    if (productData) {
+      const initialColorId = productData.variants[0]?.id || "";
+      setSelectorColor(initialColorId);
+      setMainImage(productData.variants[0]?.images[0]?.url || "");
     }
   }, [productData]);
 
@@ -169,11 +168,13 @@ const ProductDetail = () => {
     );
     if (!variant) return [];
 
+    const isColorActive = variant.isActive;
+
     return variant.sizes.map((sizeData) => ({
       id: sizeData.id,
       label: sizeData.size,
       inventory: sizeData.inventory,
-      isActive: sizeData.isActive,
+      isActive: sizeData.isActive && isColorActive,
     }));
   };
 
@@ -182,13 +183,7 @@ const ProductDetail = () => {
     setAvailableSize(sizes);
 
     if (sizes.length > 0 && !sizes.some((size) => size.id === selectedSize)) {
-      const firstAvailableSize = sizes.find(
-        (s) => s.inventory! > 0 && s.isActive === true
-      );
-
-      if (firstAvailableSize) {
-        setSelectedSize(firstAvailableSize.id);
-      }
+      setSelectedSize(sizes[0].id);
     }
 
     if (!productData) return;
@@ -196,6 +191,9 @@ const ProductDetail = () => {
     const selectedVariant = productData.variants.find(
       (variant) => variant.id === selectorColor
     );
+
+    setIsSelectedColorActive(selectedVariant?.isActive ?? false);
+
     if (
       selectedVariant &&
       selectedVariant.images &&
@@ -283,20 +281,21 @@ const ProductDetail = () => {
     };
 
     if (hasAccessToken() || hasLocalAccessToken()) {
-      const resultAction = await dispatch(
-        addToCartApi({
-          productId: productData.id,
-          variantId: selectedColorObj.id,
-          sizeId: selectedSizeObj.id,
-          quantity: quantity,
-        })
-      );
+      try {
+        const resultAction = await dispatch(
+          addToCartApi({
+            productId: productData.id,
+            variantId: selectedColorObj.id,
+            sizeId: selectedSizeObj.id,
+            quantity: quantity,
+          })
+        );
 
-      if (addToCartApi.fulfilled.match(resultAction)) {
-        showToast(ToastType.SUCCESS, "Đã thêm sản phẩm vào giỏ hàng!");
-        localStorage.setItem("cartList", JSON.stringify(resultAction.payload));
-      } else {
-        throw new Error();
+        if (addToCartApi.fulfilled.match(resultAction)) {
+          showToast(ToastType.SUCCESS, "Đã thêm sản phẩm vào giỏ hàng!");
+        }
+      } catch (error) {
+        showToast(ToastType.ERROR, "Thêm giỏ hàng thất bại!");
       }
     } else {
       const tempCart: ICartResponse = JSON.parse(
@@ -391,31 +390,25 @@ const ProductDetail = () => {
 
             <div className={cx("product-options")}>
               <div className={cx("product-color-selector")}>
-                <h3>Chọn màu sắc</h3>
+                {/* <h3>Chọn màu xắc: {selectorColor}</h3> */}
+                <h3>Chọn màu xắc </h3>
                 <div className={cx("product-color-options")}>
-                  {colorOptions.map((color) => {
-                    const isSelected = selectorColor === color.id;
-                    const isDisabled = !color.isActive;
-
-                    return (
-                      <div
-                        key={color.id}
-                        className={cx("product-color-option", {
-                          selected: isSelected,
-                          disabled: isDisabled,
-                        })}
-                        style={{
-                          backgroundColor: color.color,
-                          cursor: isDisabled ? "not-allowed" : "pointer",
-                          opacity: isDisabled ? 0.3 : 1,
-                        }}
-                        onClick={() => {
-                          if (!isDisabled) handleColorChange(color.id);
-                        }}
-                        title={color.color}
-                      />
-                    );
-                  })}
+                  {colorOptions.map((color) => (
+                    <div
+                      key={color.id}
+                      className={cx("product-color-option", {
+                        selected: selectorColor === color.id,
+                        disabled: !color.isActive,
+                      })}
+                      style={{
+                        backgroundColor: color.color,
+                        pointerEvents: color.isActive ? "auto" : "none",
+                        opacity: color.isActive ? 1 : 0.4,
+                      }}
+                      onClick={() => handleColorChange(color.id)}
+                      title={color.color}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -425,7 +418,6 @@ const ProductDetail = () => {
                   options={availableSize.map((size) => ({
                     ...size,
                     inventory: size.inventory || 0,
-                    disabled: size.inventory === 0 || size.isActive === false,
                   }))}
                   value={selectedSize}
                   onChange={handleSizeChange}
@@ -433,9 +425,11 @@ const ProductDetail = () => {
               </div>
 
               <div className={cx("product-inventory-info")}>
-                {selectedSize && (
+                {!isSelectedColorActive ? (
+                  <p>Sản phẩm không có sẵn</p>
+                ) : selectedSize ? (
                   <p>Còn sẵn {getMaxQuantity()} sản phẩm trong kho</p>
-                )}
+                ) : null}
               </div>
 
               <div className={cx("product-quantity-cart")}>
@@ -472,7 +466,9 @@ const ProductDetail = () => {
                   type="primary"
                   className={cx("product-add-cart")}
                   onClick={handleAddToCart}
-                  disabled={!selectedSize || !selectorColor}
+                  disabled={
+                    !selectedSize || !selectorColor || !isSelectedColorActive
+                  }
                   loading={loading}
                 >
                   Thêm vào giỏ
@@ -481,10 +477,10 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        {/* <Reviews
+        <Reviews
           initialReviews={initialReviews}
           additionalReviews={additionalReviews}
-        /> */}
+        />
         <div className={cx("product-card-container")}>
           <ProductSection
             isSlider={true}

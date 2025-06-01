@@ -163,6 +163,12 @@
       font-weight: bold;
     }
   }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    pointer-events: none;
+  }
 }
 
 .product-size-selector {

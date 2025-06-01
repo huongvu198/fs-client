@@ -63,13 +63,6 @@ const OrdersHistoryPage = () => {
       align: "center",
       render: (value: string) => renderTag(value, ORDER_STATUS_LABELS),
     },
-    // {
-    //   title: "TT Thanh toán",
-    //   dataIndex: "paymentStatus",
-    //   key: "paymentStatus",
-    //   align: "center",
-    //   render: (value: string) => renderTag(value, PAYMENT_STATUS_LABELS),
-    // },
     {
       title: "HT Thanh toán",
       dataIndex: "paymentMethod",
@@ -218,30 +211,7 @@ const OrdersHistoryPage = () => {
         // bodyStyle={{
         //   minHeight: 600,
         // }}
-        footer={[
-          selectedOrder?.status === OrderStatusEnum.PROCESSING && (
-            <Button
-              key="cancel"
-              danger
-              onClick={() => handleCancelOrder(selectedOrder.id)}
-            >
-              Hủy đơn hàng
-            </Button>
-          ),
-          selectedOrder?.status === OrderStatusEnum.PENDING &&
-            selectedOrder.paymentMethod === PaymentMethodEnum.BANKING &&
-            isPaymentStillValid(selectedOrder.paymentExpiredAt) && (
-              <Button
-                key="pay"
-                type="primary"
-                onClick={() =>
-                  navigate(PaymentDetailPath.replace(":id", selectedOrder.id))
-                }
-              >
-                Thanh toán
-              </Button>
-            ),
-        ]}
+        footer={[]}
       >
         <Layout
           style={{ background: "white", display: "flex", minHeight: "100%" }}
@@ -575,6 +545,50 @@ const OrdersHistoryPage = () => {
                 </div>
               </Card>
             ) : null}
+            <Row
+              gutter={16}
+              style={{ marginTop: 16, marginLeft: 0, marginRight: 0 }}
+            >
+              {/* Nút Thanh toán chỉ hiển thị nếu đúng điều kiện */}
+              {selectedOrder?.status === OrderStatusEnum.PENDING &&
+                selectedOrder.paymentMethod === PaymentMethodEnum.BANKING &&
+                isPaymentStillValid(selectedOrder.paymentExpiredAt) && (
+                  <Button
+                    key="pay"
+                    type="primary"
+                    danger
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#1890ff",
+                      borderColor: "#1890ff",
+                      color: "#fff",
+                      marginBottom: 8,
+                    }}
+                    onClick={() =>
+                      navigate(
+                        PaymentDetailPath.replace(":id", selectedOrder.id)
+                      )
+                    }
+                  >
+                    Thanh toán
+                  </Button>
+                )}
+              {/* Nút Hủy đơn hàng luôn hiển thị, chỉ disabled khi không hợp lệ */}
+              <Button
+                key="cancel"
+                danger
+                type="primary"
+                style={{ width: "100%" }}
+                disabled={
+                  selectedOrder?.status !== OrderStatusEnum.PROCESSING &&
+                  selectedOrder?.status !== OrderStatusEnum.CONFIRMED &&
+                  selectedOrder?.status !== OrderStatusEnum.PENDING
+                }
+                onClick={() => handleCancelOrder(selectedOrder?.id!)}
+              >
+                Hủy đơn hàng
+              </Button>
+            </Row>
           </Sider>
         </Layout>
       </Modal>

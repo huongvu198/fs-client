@@ -22,6 +22,7 @@ import { getUserIdFromToken } from "shared/common";
 import { getAccessToken } from "@config/accessToken";
 import { useRedux } from "@hooks/useRedux";
 import { getIsOpenChat, setIsOpenChat } from "@redux/appSlice";
+import { getUserApi } from "@redux/userSlice";
 
 const FloatingChatWidget = () => {
   const { isAuthenticated } = useAuthContext();
@@ -74,6 +75,7 @@ const FloatingChatWidget = () => {
   useEffect(() => {
     if (userId) {
       dispatch(getConversation());
+      dispatch(getUserApi());
     }
   }, [userId]);
 

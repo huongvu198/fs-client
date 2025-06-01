@@ -18,7 +18,6 @@ const AuthLayout = () => {
   const navigate = useNavigate();
   const dispatch = useRedux();
   const { masterData } = useReduxSelector((state) => state.app);
-
   const handleShowSideBar = () => {
     setIsOpenSideBar(true);
     sidebarRef.current?.showDrawer();

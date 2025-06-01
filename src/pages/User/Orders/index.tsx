@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Table, Modal, Button, Card, Col, Layout, Row } from "antd";
+import {
+  Table,
+  Modal,
+  Button,
+  Card,
+  Col,
+  Layout,
+  Row,
+  Rate,
+  Input,
+  Flex,
+} from "antd";
 import { FormattedNumber } from "react-intl";
 import {
   ORDER_STATUS_LABELS,
@@ -31,10 +42,13 @@ import { useNavigate } from "react-router-dom";
 import { PaymentDetailPath } from "@config/routerConfig";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { createReview, setUpdateReview } from "@redux/reviewSlice";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const OrdersHistoryPage = () => {
+  const { TextArea } = Input;
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const dispatch = useDispatch<ApiDispatch>();
@@ -44,10 +58,59 @@ const OrdersHistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const navigate = useNavigate();
+  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
+  const [comments, setComments] = useState<Record<string, string>>({});
+  const [ratings, setRatings] = useState<Record<string, number>>({});
 
   const handleViewDetail = (order: Order) => {
     setSelectedOrder(order);
     setIsModalVisible(true);
+  };
+
+  useEffect(() => {
+    if (selectedOrder) {
+      const initialRatings: Record<string, number> = {};
+      const initialComments: Record<string, string> = {};
+
+      selectedOrder.items.forEach((item) => {
+        if (item.isReviewed) {
+          initialRatings[item.id] = item.review?.rating ?? 0;
+          initialComments[item.id] = item.review?.comment ?? "";
+        }
+      });
+
+      setRatings(initialRatings);
+      setComments(initialComments);
+    }
+  }, [selectedOrder]);
+
+  const handleRateChange = (id: string, value: number) => {
+    setRatings((prev) => ({ ...prev, [id]: value }));
+    setExpandedRowKeys((prev) => [...new Set([...prev, id])]);
+  };
+
+  const handleCommentChange = (id: string, value: string) => {
+    setComments((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmitReview = async (item: OrderItem) => {
+    const rating = ratings[item.id];
+    const comment = comments[item.id];
+
+    try {
+      const updatedReview = await dispatch(
+        createReview({
+          orderItemId: item.id,
+          rating,
+          comment: comment ?? "",
+        })
+      ).unwrap();
+
+      setSelectedOrder(updatedReview);
+      dispatch(setUpdateReview(updatedReview));
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+    }
   };
 
   const columns: ColumnsType<Order> = [
@@ -55,6 +118,9 @@ const OrdersHistoryPage = () => {
       title: "Mã đơn hàng",
       dataIndex: "id",
       key: "id",
+      render: (value: string) => {
+        return value.toUpperCase();
+      },
     },
     {
       title: "TT Đơn hàng",
@@ -106,11 +172,6 @@ const OrdersHistoryPage = () => {
       key: "productName",
     },
     {
-      title: "Tên sản phẩm",
-      dataIndex: "productName",
-      key: "productName",
-    },
-    {
       title: "Kích cỡ",
       dataIndex: "sizeValue",
       key: "sizeValue",
@@ -123,28 +184,6 @@ const OrdersHistoryPage = () => {
       align: "center",
     },
     {
-      title: "Đơn giá",
-      dataIndex: "price",
-      key: "price",
-      align: "center",
-
-      render: (_, record) => (
-        <FormattedNumber
-          value={Number(record?.product.price)}
-          style="currency"
-          currency="VND"
-        />
-      ),
-    },
-    {
-      title: "Giảm giá",
-      dataIndex: "price",
-      key: "price",
-      align: "center",
-
-      render: (_, record) => `${record?.product?.discount}%`,
-    },
-    {
       title: "Tổng Tiền",
       dataIndex: "subtotal",
       key: "subtotal",
@@ -154,6 +193,19 @@ const OrdersHistoryPage = () => {
           value={Number(record?.subtotal)}
           style="currency"
           currency="VND"
+        />
+      ),
+    },
+    {
+      title: "Đánh giá",
+      dataIndex: "rating",
+      key: "rating",
+      align: "center",
+      render: (_, record) => (
+        <Rate
+          disabled={record.isReviewed}
+          value={ratings[record.id] || 0}
+          onChange={(val) => handleRateChange(record.id, val)}
         />
       ),
     },
@@ -208,10 +260,6 @@ const OrdersHistoryPage = () => {
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         width={1300}
-        // bodyStyle={{
-        //   minHeight: 600,
-        // }}
-        footer={[]}
       >
         <Layout
           style={{ background: "white", display: "flex", minHeight: "100%" }}
@@ -273,11 +321,45 @@ const OrdersHistoryPage = () => {
               </Col>
             </Row>
             <Table
-              bordered={true}
+              bordered
               columns={columnsItem}
               dataSource={selectedOrder?.items}
-              style={{ marginTop: 16 }}
               pagination={false}
+              rowKey="id"
+              expandedRowKeys={expandedRowKeys}
+              onExpand={(expanded, record) => {
+                setExpandedRowKeys((prev) =>
+                  expanded
+                    ? [...prev, record.id]
+                    : prev.filter((id) => id !== record.id)
+                );
+              }}
+              expandedRowRender={(record) => (
+                <>
+                  <TextArea
+                    rows={3}
+                    placeholder="Nhập đánh giá mô tả sản phẩm..."
+                    value={comments[record.id]}
+                    onChange={(e) =>
+                      handleCommentChange(record.id, e.target.value)
+                    }
+                    readOnly={record.isReviewed}
+                    disabled={record.isReviewed}
+                  />
+                  <Flex justify="flex-end">
+                    <Button
+                      style={{ marginTop: 8 }}
+                      onClick={() => handleSubmitReview(record)}
+                      disabled={
+                        (!ratings[record.id] && !comments[record.id]) ||
+                        record.isReviewed
+                      }
+                    >
+                      Đánh giá
+                    </Button>
+                  </Flex>
+                </>
+              )}
             />
           </Content>
           <Sider

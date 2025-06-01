@@ -69,9 +69,31 @@ const ProductCardComponent = ({
           {product.name}
         </Text>
         <div className={cx("rating-container")}>
-          <Rate disabled defaultValue={5} className={cx("rating")} />
-          <span className={cx("rating-text")}>5/5.0</span>
+          {product.totalReviews > 0 ? (
+            <>
+              <Rate
+                disabled
+                allowHalf
+                defaultValue={Number(product.averageRating)}
+                className={cx("rating")}
+              />
+              <span className={cx("rating-text")}>
+                {`${Number(product.averageRating).toFixed(1)}/5 (${product.totalReviews} Review)`}
+              </span>
+            </>
+          ) : (
+            <>
+              <Rate
+                disabled
+                allowHalf
+                defaultValue={5}
+                className={cx("rating")}
+              />
+              <span className={cx("rating-text")}>{`5/5 (0 Review)`}</span>
+            </>
+          )}
         </div>
+
         <Space>
           {product.discount > 0 ? (
             <>

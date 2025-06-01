@@ -1,42 +1,52 @@
-// Reviews.tsx
-import { useState } from "react";
-import { Button, Select, Rate, Dropdown } from "antd";
-import {
-  MoreOutlined,
-  FilterOutlined,
-  CheckCircleFilled,
-} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Button, Select, Rate, Empty } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
+import { Review } from "../../interfaces/review.interface";
+import { ApiDispatch } from "@redux/index";
+import {
+  getReviewByProductId,
+  getReviewPaging,
+  getReviewsRedux,
+} from "@redux/reviewSlice";
+import { useSelector } from "react-redux";
 const cx = classNames.bind(styles);
 const { Option } = Select;
 
-interface ReviewData {
-  id: string;
-  author: string;
-  rating: number;
-  verified: boolean;
-  content: string;
-  date: string;
-  highlighted?: boolean;
-}
-
 interface ReviewsProps {
-  initialReviews: ReviewData[];
-  additionalReviews: ReviewData[];
+  id: string | undefined;
+  dispatch: ApiDispatch;
 }
 
-const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
-  const [displayedReviews, setDisplayedReviews] =
-    useState<ReviewData[]>(initialReviews);
+const Reviews = ({ id, dispatch }: ReviewsProps) => {
+  const [displayedReviews, setDisplayedReviews] = useState<Review[]>([]);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const [, setSortOption] = useState("latest");
+  const reviewsRedux = useSelector(getReviewsRedux);
+  const pagination = useSelector(getReviewPaging);
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(5);
 
-  const handleLoadMore = () => {
-    if (!hasLoadedMore) {
-      setDisplayedReviews([...displayedReviews, ...additionalReviews]);
+  useEffect(() => {
+    if (id) {
+      dispatch(getReviewByProductId({ id, page, perPage }));
+    }
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    setDisplayedReviews(reviewsRedux);
+    setPage(pagination.currentPage);
+    setPerPage(pagination.perPage);
+    if (pagination.currentPage === pagination.totalPages) {
+      setHasLoadedMore(false);
+    } else {
       setHasLoadedMore(true);
     }
+  }, [reviewsRedux, pagination]);
+
+  const handleLoadMore = () => {
+    setPage(page + 1);
   };
 
   const handleSortChange = (value: string) => {
@@ -45,7 +55,8 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
 
     if (value === "latest") {
       sortedReviews.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } else if (value === "highest") {
       sortedReviews.sort((a, b) => b.rating - a.rating);
@@ -56,22 +67,12 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
     setDisplayedReviews(sortedReviews);
   };
 
-  const reviewActions = [
-    {
-      key: "report",
-      label: "Report Review",
-    },
-    {
-      key: "helpful",
-      label: "Mark as Helpful",
-    },
-  ];
-
   return (
     <div className={cx("reviews-container")}>
       <div className={cx("reviews-header")}>
         <h2 className={cx("reviews-title")}>
-          Tất cả đánh giá <span className={cx("review-count")}>(451)</span>
+          Đánh giá sản phẩm{" "}
+          <span className={cx("review-count")}>({pagination.totalItems})</span>
         </h2>
         <div className={cx("reviews-controls")}>
           <Button icon={<FilterOutlined />} className={cx("filter-button")} />
@@ -85,57 +86,50 @@ const Reviews = ({ initialReviews, additionalReviews }: ReviewsProps) => {
             <Option value="highest">Đánh giá cao nhất</Option>
             <Option value="lowest">Đánh giá thấp nhất</Option>
           </Select>
-          <Button type="primary" className={cx("write-review-button")}>
-            Viết đánh giá
-          </Button>
         </div>
       </div>
 
       <div className={cx("reviews-list")}>
-        {displayedReviews.map((review) => (
-          <div
-            key={review.id}
-            className={`${cx("reivew-card")} ${review.highlighted ? cx("highlighted-review") : ""}`}
-          >
-            <div className={cx("review-header")}>
-              <div className={cx("rating-selection")}>
+        {displayedReviews.length > 0 ? (
+          displayedReviews.map((review) => (
+            <div key={review.id} className={`${cx("reivew-card")}`}>
+              <div className={cx("review-header")}>
+                <div className={cx("review-author")}>
+                  <span className={cx("author-name")}>
+                    {review.user.fullName}
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className={cx("rating-selection")}
+                style={{ marginBottom: 8 }}
+              >
                 <Rate disabled defaultValue={review.rating} allowHalf />
               </div>
-              <Dropdown
-                menu={{ items: reviewActions }}
-                trigger={["click"]}
-                placement="bottomRight"
-              >
-                <Button
-                  type="text"
-                  icon={<MoreOutlined />}
-                  className={cx("more-button")}
-                />
-              </Dropdown>
-            </div>
 
-            <div className={cx("review-author")}>
-              <span className={cx("author-name")}>{review.author}</span>
-              {review.verified && (
-                <CheckCircleFilled className={cx("verified-badge")} />
-              )}
-            </div>
+              <div className={cx("review-content")}>
+                <p>{review.comment}</p>
+              </div>
 
-            <div className={cx("review-content")}>
-              <p>{review.content}</p>
+              <div className={cx("review-footer")}>
+                <span className={cx("review-date")}>
+                  Posted on {review.createdAt}
+                </span>
+              </div>
             </div>
-
-            <div className={cx("review-footer")}>
-              <span className={cx("review-date")}>Posted on {review.date}</span>
-            </div>
+          ))
+        ) : (
+          <div className={cx("empty-review-wrapper")}>
+            <Empty description="Chưa có đánh về sản phẩm" />
           </div>
-        ))}
+        )}
       </div>
 
-      {!hasLoadedMore && (
+      {hasLoadedMore && (
         <div className={cx("load-more-container")}>
           <Button onClick={handleLoadMore} className={cx("load-more-btn")}>
-            Load More Reviews
+            Xem thêm đánh giá
           </Button>
         </div>
       )}

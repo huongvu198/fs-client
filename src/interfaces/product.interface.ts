@@ -51,6 +51,8 @@ export interface IProductResponse {
   totalQuantity: number;
   totalSoldQuantity: number;
   totalInventory: number;
+  averageRating: number;
+  totalReviews: number;
   createdAt: string;
   updatedAt: string;
   segment: ISegment; // Quan hệ với segment

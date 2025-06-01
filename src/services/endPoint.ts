@@ -55,4 +55,8 @@ export const endPoint = {
   CATEGORY: {
     LIST: "/products-public/categories",
   },
+  REVIEWS: {
+    REVIEW_BY_PID: "/products-public/review-by-productId/:id",
+    CREATE: "/products-public/create-review",
+  },
 };

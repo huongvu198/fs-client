@@ -54,6 +54,19 @@ export interface OrderItem {
 
   product: Product;
   variant: Variant;
+  review: ReviewItem | null;
+}
+
+export interface ReviewItem {
+  id: string;
+  orderItemId: string;
+  userId: number;
+  productId: string;
+  rating: number;
+  comment: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Voucher {

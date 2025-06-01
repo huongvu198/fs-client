@@ -12,6 +12,7 @@ import userReducer from "./userSlice";
 import appReducer from "./appSlice";
 import chatReducer from "./chatSlice";
 import segmentReducer from "./segmentSlice";
+import reviewReducer from "./reviewSlice";
 
 const rootReducer = {
   register: registerReducer,
@@ -27,6 +28,7 @@ const rootReducer = {
   app: appReducer,
   chat: chatReducer,
   segment: segmentReducer,
+  review: reviewReducer,
 };
 
 export const store = configureStore({

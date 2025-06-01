@@ -81,24 +81,29 @@
 
 .reviews-list {
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: start;
+  // flex-wrap: wrap;
   @include respond("mobile") {
     grid-template-columns: 1fr;
   }
 }
 
+.empty-review-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  text-align: center;
+}
+
 .reivew-card {
-  width: 396.9px;
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   padding: 16px;
   transition: all 0.3s;
-
-  &:hover {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  }
 
   &.highlighted-review {
     border: 1px solid #1890ff;
@@ -110,14 +115,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .rating-selection {
   :global(.ant-rate) {
     font-size: 14px;
   }
-
   :global(.ant-rate-star) {
     margin-right: 4px;
   }

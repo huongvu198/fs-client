@@ -17,6 +17,7 @@ import {
   addToCartApi,
   clearVoucher,
   deleteCartItemApi,
+  getCartByUserApi,
   getPointAmount,
   getPointSelect,
   setReduxPointUsed,
@@ -230,15 +231,21 @@ const CartList = () => {
 
   useEffect(() => {
     const loadCart = () => {
-      const localStorageKey = hasAccessToken() ? "cartList" : "tempCart";
-      const localCart = localStorage.getItem(localStorageKey);
-
-      if (localCart) {
-        try {
+      // co login
+      if (hasAccessToken()) {
+        dispatch(getCartByUserApi())
+          .unwrap()
+          .then((cartData: any) => {
+            setCartItems(cartData);
+          })
+          .catch((err: any) => {
+            console.error("Failed to fetch cart:", err);
+          });
+      } else {
+        const localCart = localStorage.getItem("tempCart");
+        if (localCart) {
           const parsedCart: ICartResponse = JSON.parse(localCart);
           setCartItems(parsedCart);
-        } catch (error) {
-          console.error("Failed to parse cart from localStorage", error);
         }
       }
     };

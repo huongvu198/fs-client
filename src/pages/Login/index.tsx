@@ -72,6 +72,7 @@ const LoginRegistrationForm: React.FC = () => {
       if (cartRequest.length > 0) {
         // Đợi addToCartImportApi hoàn thành
         await dispatch(addToCartImportApi(cartRequest));
+        await dispatch(getCartByUserApi());
       }
 
       // Sau khi thêm cart xong thì mới gọi getCartByUserApi

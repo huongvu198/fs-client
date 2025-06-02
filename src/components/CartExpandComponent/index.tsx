@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from "./index.module.scss";
 import ButtonComponent from "@components/ButtonComponent";
-import { hasAccessToken, hasLocalAccessToken } from "@config/accessToken";
+import { hasAccessToken } from "@config/accessToken";
 import { useCartContext } from "contexts/cartContext";
 import { useReduxSelector } from "@hooks/useRedux";
 import { CartPath, LoginPath } from "@config/routerConfig";
@@ -69,14 +69,10 @@ const CartExpand = () => {
   };
 
   useEffect(() => {
-    const localKey =
-      hasAccessToken() && hasLocalAccessToken() ? "cartList" : "tempCart";
-
     if (dataCart && dataCart.items && dataCart.items.length > 0) {
       setCart(dataCart);
-      localStorage.setItem(localKey, JSON.stringify(dataCart));
     } else {
-      const localData = localStorage.getItem(localKey);
+      const localData = localStorage.getItem("tempCart");
       if (localData) {
         const parsedCart = JSON.parse(localData);
         if (parsedCart && parsedCart.items && parsedCart.items.length > 0) {

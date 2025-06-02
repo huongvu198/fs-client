@@ -28,8 +28,8 @@ import { useAuthContext } from "contexts/authContext";
 import { removeCartList, removeTempCart } from "shared/localStoreage";
 import { useSelector } from "react-redux";
 import { getUserPoint } from "@redux/userSlice";
-import { useRedux } from "@hooks/useRedux";
-import { clearCartData } from "@redux/cartSlice";
+import { useRedux, useReduxSelector } from "@hooks/useRedux";
+import { clearCartData, getCartByUserApi } from "@redux/cartSlice";
 interface Props {
   handleHiddenSideBar: () => void;
   handleShowSideBar: () => void;
@@ -45,6 +45,7 @@ export default function Nav({ handleShowSideBar }: Props) {
   const { isAuthenticated, logout } = useAuthContext();
   const pointRedux = useSelector(getUserPoint);
   const location = useLocation();
+  const dataCart = useReduxSelector((state) => state.cart.dataCart);
 
   const Logout = () => {
     const handleLogout = () => {
@@ -108,14 +109,14 @@ export default function Nav({ handleShowSideBar }: Props) {
 
   useEffect(() => {
     const loadCart = () => {
-      const localStorageKey = hasAccessToken() ? "cartList" : "tempCart";
-      const localCart = localStorage.getItem(localStorageKey);
-      if (localCart) {
-        try {
+      if (hasAccessToken()) {
+        dispatch(getCartByUserApi());
+        setCartItems(dataCart);
+      } else {
+        const localCart = localStorage.getItem("tempCart");
+        if (localCart) {
           const parsedCart: ICartResponse = JSON.parse(localCart);
           setCartItems(parsedCart);
-        } catch (error) {
-          console.error("Failed to parse cart from localStorage", error);
         }
       }
     };

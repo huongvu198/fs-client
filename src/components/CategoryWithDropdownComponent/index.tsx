@@ -37,7 +37,14 @@ const CategoryWithDropdownComponent = () => {
 
   useEffect(() => {
     if (eventRedux) {
-      setMenuItems((prev: any) => [...prev, eventRedux]);
+      setMenuItems((prev: any) => {
+        const isExist = prev.some((item: any) => item.key === eventRedux.key);
+        if (isExist) {
+          return prev;
+        } else {
+          return [...prev, eventRedux];
+        }
+      });
     }
   }, [eventRedux]);
 

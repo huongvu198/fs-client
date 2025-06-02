@@ -230,7 +230,6 @@ const CartList = () => {
 
   useEffect(() => {
     const loadCart = () => {
-      // co login
       if (hasAccessToken()) {
         dispatch(getCartByUserApi())
           .unwrap()
@@ -240,6 +239,7 @@ const CartList = () => {
           .catch((err: any) => {
             console.error("Failed to fetch cart:", err);
           });
+        dispatch(getVoucherAvailable());
       } else {
         const localCart = localStorage.getItem("tempCart");
         if (localCart) {
@@ -248,7 +248,6 @@ const CartList = () => {
         }
       }
     };
-    dispatch(getVoucherAvailable());
     loadCart();
   }, [reload]);
 

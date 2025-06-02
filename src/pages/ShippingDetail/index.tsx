@@ -14,6 +14,10 @@ import { Address } from "interfaces/user.interface";
 import { PaymentMethodPath } from "@config/routerConfig";
 import { showToast, ToastType } from "shared/toast";
 import { formatPhoneInternal } from "shared/common";
+import useSocket from "@hooks/useSocket";
+import { SocketEvent } from "shared/enum";
+import { getCartByUserApi } from "@redux/cartSlice";
+import { calculateCart } from "@utils/handleCart";
 
 interface ShippingFormData {
   fullName: string;
@@ -35,19 +39,70 @@ const ShippingDetails: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const cartItems = location.state?.cartItems;
-  const discountAmount = location.state?.discountAmount;
-  const discountPercent = location.state?.discount;
-  const voucherType = location.state?.voucherType;
-  const selectedPoint = location.state?.selectedPoint;
-  const voucherId = location.state?.voucherId;
-  const totalPayment = location.state?.totalPayment;
-  const pointUsed = location.state?.pointUsed || 0;
-  const cart = cartItems;
+  const {
+    discountAmount: initialDiscountAmount,
+    discount: initialDiscountPercent,
+    voucherType: initialVoucherType,
+    selectedPoint: initialSelectedPoint = false,
+    voucherId: initialVoucherId,
+    totalPayment: initialTotalPayment = 0,
+    pointUsed: initialPointUsed = 0,
+    cartItems,
+  } = location.state || {};
+
+  const [discountPercent] = useState(initialDiscountPercent);
+  const [discountAmount, setDiscountAmount] = useState(initialDiscountAmount);
+  const [voucherType] = useState(initialVoucherType || "");
+  const [selectedPoint] = useState(initialSelectedPoint);
+  const [voucherId] = useState(initialVoucherId);
+  const [totalPayment, setTotalPayment] = useState(initialTotalPayment);
+  const [pointUsed, setPointUsed] = useState(initialPointUsed);
+  const [cart, setCart] = useState(cartItems);
+
   const { userAddress, createAddressSuccess, error } = useReduxSelector(
     (state) => state.user
   );
   const [prevAddresses, setPrevAddresses] = useState<Address[]>([]);
+
+  useSocket({
+    [SocketEvent.PRODUCT_PRICE_CHANGED]: (data) => {
+      const productIdFromEvent = data.productId;
+
+      const productExistsInCart = cart?.items?.some(
+        (item: any) => item.product?.id === productIdFromEvent
+      );
+
+      if (productExistsInCart) {
+        showToast(
+          ToastType.INFO,
+          "Sản phẩm được cập nhật lại giá, vui lòng kiểm tra lại"
+        );
+        dispatch(getCartByUserApi())
+          .unwrap()
+          .then((cartData: any) => {
+            setCart(cartData);
+
+            const calculationResult = calculateCart({
+              items: cartData.items,
+              discount: discountPercent || 0,
+              dataVoucher: {
+                type: voucherType,
+              },
+              selectedPoint,
+              pointRedux: pointUsed,
+            });
+
+            // Cập nhật lại state tương ứng
+            setDiscountAmount(calculationResult.discountAmount);
+            setTotalPayment(calculationResult.totalPayment);
+            setPointUsed(calculationResult.pointUsed);
+          })
+          .catch((err: any) => {
+            console.error("Failed to fetch cart:", err);
+          });
+      }
+    },
+  });
 
   const handleNext = async () => {
     if (!selectedAddress || selectedAddress === "add") {

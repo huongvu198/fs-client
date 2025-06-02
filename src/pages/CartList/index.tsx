@@ -26,13 +26,15 @@ import { FormattedNumber } from "react-intl";
 import { useReduxSelector } from "@hooks/useRedux";
 import { useNavigate } from "react-router-dom";
 import { ProductDetailPath, ShippingDetailPath } from "@config/routerConfig";
-import { DiscountType, VoucherType } from "shared/enum";
+import { DiscountType, SocketEvent } from "shared/enum";
 import { showToast, ToastType } from "shared/toast";
 import { getColors } from "@redux/appSlice";
 import { getUserPoint } from "@redux/userSlice";
 import NoDataIcon from "@components/Icon/NoData";
 import { getVoucherAvailable, getVoucherRedux } from "@redux/voucherSlice";
 import { Voucher } from "interfaces/order.interface";
+import useSocket from "@hooks/useSocket";
+import { calculateCart } from "@utils/handleCart";
 
 const cx = classNames.bind(styles);
 
@@ -65,45 +67,42 @@ const CartList = () => {
   const pointRedux = useReduxSelector(getUserPoint);
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [vouchers, setVoucher] = useState<Voucher[]>([]);
+  const [reload, setReload] = useState<boolean>(false);
+
+  useSocket({
+    [SocketEvent.PRODUCT_PRICE_CHANGED]: (data) => {
+      const productIdFromEvent = data.productId;
+
+      // Tìm xem trong cartItems có sản phẩm nào có product.id trùng với productIdFromEvent không
+      const productExistsInCart = cartItems?.items?.some(
+        (item) => item.product?.id === productIdFromEvent
+      );
+
+      if (productExistsInCart) {
+        showToast(
+          ToastType.INFO,
+          "Sản phẩm được cập nhật lại giá, vui lòng kiểm tra lại"
+        );
+        setReload(!reload);
+      }
+    },
+  });
 
   useEffect(() => {
-    const calcSubtotal = cartItems.items.reduce(
-      (sum, item) => sum + item.product.discountPrice * item.quantity,
-      0
-    );
+    const result = calculateCart({
+      items: cartItems.items,
+      discount,
+      dataVoucher,
+      selectedPoint,
+      pointRedux,
+    });
 
-    let calcDiscountAmount = 0;
-    let calcTotal = calcSubtotal;
-
-    if (discount > 0) {
-      if (dataVoucher.type === VoucherType.PERCENT) {
-        calcDiscountAmount = (calcSubtotal * discount) / 100;
-        calcTotal = calcSubtotal - calcDiscountAmount;
-      } else {
-        calcDiscountAmount = discount;
-        calcTotal = calcSubtotal - discount;
-      }
-    }
-
-    if (selectedPoint) {
-      const tempCalcTotal = calcTotal;
-      calcTotal = calcTotal - Number(pointRedux);
-      if (calcTotal <= 0) {
-        calcTotal = 0;
-        setPointUsed(tempCalcTotal);
-      } else {
-        calcTotal = calcTotal;
-        setPointUsed(Number(pointRedux));
-      }
-    } else {
-      calcTotal = calcTotal;
-      setPointUsed(0);
-    }
-    setVoucherType(dataVoucher?.type);
-    setSubtotal(calcSubtotal);
-    setDiscountAmount(calcDiscountAmount);
-    setTotalPayment(calcTotal);
-  }, [cartItems, discount, dataVoucher, selectedPoint]);
+    setSubtotal(result.subtotal);
+    setDiscountAmount(result.discountAmount);
+    setVoucherType(result.voucherType);
+    setTotalPayment(result.totalPayment);
+    setPointUsed(result.pointUsed);
+  }, [cartItems, discount, dataVoucher, selectedPoint, pointRedux]);
 
   const handleQuantityChange = async (
     id: string,
@@ -251,7 +250,7 @@ const CartList = () => {
     };
     dispatch(getVoucherAvailable());
     loadCart();
-  }, []);
+  }, [reload]);
 
   useEffect(() => {
     setVoucher(voucherRedux || []);

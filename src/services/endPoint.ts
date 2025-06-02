@@ -59,4 +59,7 @@ export const endPoint = {
     REVIEW_BY_PID: "/products-public/review-by-productId/:id",
     CREATE: "/products-public/create-review",
   },
+  EVENT: {
+    GET: "/event/schedule/active",
+  },
 };

@@ -40,7 +40,7 @@ const RadioComponent = ({
           key={option.id}
           value={option.id}
           className={cx("radio-button")}
-          disabled={!option.isActive}
+          disabled={!option.isActive || option.inventory === 0}
         >
           {option.label}
         </Radio.Button>

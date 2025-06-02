@@ -53,3 +53,9 @@ export enum SocketEvent {
   SEND_MESSAGE = "SEND_MESSAGE",
   NEW_MESSAGE = "NEW_MESSAGE",
 }
+
+export enum EventType {
+  ALL_SHOP = "ALL_SHOP",
+  CATEGORY = "CATEGORY",
+  SUBCATEGORY = "SUBCATEGORY",
+}

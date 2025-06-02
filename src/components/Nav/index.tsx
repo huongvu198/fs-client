@@ -27,7 +27,7 @@ import {
 import { useAuthContext } from "contexts/authContext";
 import { removeCartList, removeTempCart } from "shared/localStoreage";
 import { useSelector } from "react-redux";
-import { getUserPoint } from "@redux/userSlice";
+import { getUserApi, getUserPoint } from "@redux/userSlice";
 import { useRedux, useReduxSelector } from "@hooks/useRedux";
 import { clearCartData, getCartByUserApi } from "@redux/cartSlice";
 interface Props {
@@ -124,6 +124,12 @@ export default function Nav({ handleShowSideBar }: Props) {
     loadCart();
   }, []);
 
+  const handleGetInfo = async (open: boolean) => {
+    if (open) {
+      await dispatch(getUserApi());
+    }
+  };
+
   return (
     <div className={cx(styles["nav-wrapper"])}>
       <div className="nav-component">
@@ -169,6 +175,7 @@ export default function Nav({ handleShowSideBar }: Props) {
               className="drop-down-info"
               menu={{ items }}
               trigger={["click"]}
+              onOpenChange={handleGetInfo}
             >
               <Space>
                 <Avatar icon={<UserOutlined />} />

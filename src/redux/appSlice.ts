@@ -1,6 +1,9 @@
+import { unauthAxios } from "@config/axiosConfig";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { endPoint } from "@services/endPoint";
 import { masterDataService } from "@services/masterdata";
 import { newService } from "@services/new";
+import { EventLink } from "interfaces/app.interface";
 import { New } from "interfaces/new.interface";
 import { CategoryItem } from "interfaces/segment.interface";
 
@@ -13,6 +16,7 @@ interface AppState {
   newData: New | null;
   isOpenChat: boolean;
   categories: CategoryItem[];
+  event: EventLink | null;
 }
 
 const initialState: AppState = {
@@ -24,6 +28,7 @@ const initialState: AppState = {
   newData: null,
   isOpenChat: false,
   categories: [],
+  event: null,
 };
 
 // Thunk để fetch master data từ API
@@ -35,6 +40,10 @@ export const getMasterData = createAsyncThunk("app/getMasterData", async () => {
 export const getNew = createAsyncThunk("app/new", async () => {
   const response = await newService.getNewData();
   return response;
+});
+export const getEvent = createAsyncThunk("app/event", async () => {
+  const response = await unauthAxios.get<EventLink | null>(endPoint.EVENT.GET);
+  return response.data;
 });
 
 export const getCategories = createAsyncThunk("app/categories", async () => {
@@ -73,6 +82,16 @@ export const appSlice = createSlice({
       .addCase(getNew.rejected, (state) => {
         state.isLoading = false;
       })
+      .addCase(getEvent.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEvent.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.event = action.payload;
+      })
+      .addCase(getEvent.rejected, (state) => {
+        state.isLoading = false;
+      })
       .addCase(getCategories.pending, (state) => {
         state.isLoading = true;
       })
@@ -94,4 +113,5 @@ export const getColors = (state: { app: AppState }) =>
 export const getIsOpenChat = (state: { app: AppState }) => state.app.isOpenChat;
 export const getCategoriesRedux = (state: { app: AppState }) =>
   state.app.categories;
+export const getEventRedux = (state: { app: AppState }) => state.app.event;
 export default appSlice.reducer;

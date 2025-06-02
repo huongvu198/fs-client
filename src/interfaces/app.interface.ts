@@ -1,3 +1,5 @@
+import { EventType } from "shared/enum";
+
 export interface Pagination {
   currentPage: number;
   totalPages: number;
@@ -21,4 +23,12 @@ export interface DecodedToken {
   exp?: number;
   iat?: number;
   [key: string]: any;
+}
+
+export interface EventLink {
+  key: string;
+  type: "link";
+  label: string;
+  eventType: EventType;
+  pid: string | null;
 }

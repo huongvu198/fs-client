@@ -133,7 +133,7 @@ const ProductDetail = () => {
     if (!variant) return 1;
 
     const sizeData = variant.sizes.find((s) => s.id === selectedSize);
-    return sizeData?.inventory || 1;
+    return sizeData?.inventory || 0;
   };
 
   const handleAddToCart = async () => {

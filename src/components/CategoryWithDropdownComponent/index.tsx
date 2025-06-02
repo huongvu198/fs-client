@@ -2,31 +2,45 @@ import { Dropdown, Flex, Tree } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import classNames from "classnames/bind";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { NewPath, ProductsQueryPath } from "@config/routerConfig";
-import { getCategoriesRedux } from "@redux/appSlice";
-import { useState } from "react";
+import { getCategoriesRedux, getEvent, getEventRedux } from "@redux/appSlice";
+import { useEffect, useState } from "react";
+import { ApiDispatch } from "@reduxjs/toolkit";
+import { EventType } from "shared/enum";
 
 const cx = classNames.bind(styles);
-
-const menuItems = [
-  {
-    key: "danh-muc",
-    type: "dropdown",
-    label: "DANH MỤC",
-  },
-  {
-    key: "tin-tuc",
-    type: "link",
-    label: "TIN TỨC",
-    path: NewPath,
-  },
-];
 
 const CategoryWithDropdownComponent = () => {
   const navigate = useNavigate();
   const categoriesRedux = useSelector(getCategoriesRedux);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const eventRedux = useSelector(getEventRedux);
+  const dispatch = useDispatch<ApiDispatch>();
+  const [menuItems, setMenuItems] = useState<any>([
+    {
+      key: "danh-muc",
+      type: "dropdown",
+      label: "DANH MỤC",
+    },
+    {
+      key: "tin-tuc",
+      type: "link",
+      label: "TIN TỨC",
+      path: NewPath,
+    },
+  ]);
+
+  useEffect(() => {
+    dispatch(getEvent());
+  }, []);
+
+  useEffect(() => {
+    if (eventRedux) {
+      setMenuItems((prev: any) => [...prev, eventRedux]);
+    }
+  }, [eventRedux]);
+
   const NodeTitle = ({
     label,
     nodeKey,
@@ -48,7 +62,7 @@ const CategoryWithDropdownComponent = () => {
 
   return (
     <div className={cx("category-container")}>
-      {menuItems.map((item) => {
+      {menuItems.map((item: any) => {
         if (item.type === "dropdown") {
           return (
             <Dropdown
@@ -143,6 +157,23 @@ const CategoryWithDropdownComponent = () => {
             <Link
               key={item.key}
               to={item.path!}
+              className={cx("category-item")}
+              style={{ textDecoration: "none", color: "#000000" }}
+            >
+              {item.label}
+            </Link>
+          );
+        }
+
+        if (item.type === "event") {
+          const navigateTo =
+            item.eventType === EventType.ALL_SHOP
+              ? ProductsQueryPath({ tag: "event" })
+              : ProductsQueryPath({ search: item.pid });
+          return (
+            <Link
+              key={item.key}
+              to={navigateTo}
               className={cx("category-item")}
               style={{ textDecoration: "none", color: "#000000" }}
             >
